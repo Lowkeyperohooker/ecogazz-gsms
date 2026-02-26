@@ -15,214 +15,79 @@
             --white: #ffffff;
         }
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            background-color: var(--bg-light);
-            color: var(--text-main);
-            display: flex;
-            height: 100vh;
-            overflow: hidden; 
-        }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; background-color: var(--bg-light); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        /* --- LOGIN SCREEN --- */
-        #login-page {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, var(--brand-dark), var(--brand-color));
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .login-box {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            text-align: center;
-            width: 350px;
-        }
+        /* --- SIDEBAR --- */
+        .sidebar { width: 240px; background-color: var(--brand-dark); color: white; display: flex; flex-direction: column; box-shadow: 2px 0 5px rgba(0,0,0,0.1); flex-shrink: 0; }
+        .brand { padding: 20px; font-size: 20px; font-weight: bold; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); background-color: rgba(0,0,0,0.1); }
+        .menu { flex: 1; padding-top: 15px; overflow-y: auto;}
+        .menu button { background: transparent; border: none; color: rgba(255,255,255,0.8); width: 100%; padding: 12px 20px; text-align: left; cursor: pointer; font-size: 15px; transition: 0.2s; display: flex; align-items: center; border-left: 4px solid transparent;}
+        .menu button:hover, .menu button.active { background-color: var(--brand-color); color: white; border-left-color: var(--accent); }
+        .user-profile { padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 13px; text-align: center; color: rgba(255,255,255,0.6); }
 
-        .login-box h1 { margin-bottom: 20px; color: var(--brand-dark); }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;}
-        .login-btn { width: 100%; padding: 12px; background: var(--brand-color); color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        .login-btn:hover { background: var(--brand-dark); }
-
-        /* --- SIDEBAR NAV --- */
-        .sidebar {
-            width: 240px;
-            background-color: var(--brand-dark);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            flex-shrink: 0;
-        }
-
-        .brand {
-            padding: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            background-color: rgba(0,0,0,0.1);
-        }
-
-        .menu {
-            flex: 1;
-            padding-top: 15px;
-        }
-
-        .menu button {
-            background: transparent;
-            border: none;
-            color: rgba(255,255,255,0.8);
-            width: 100%;
-            padding: 12px 20px;
-            text-align: left;
-            cursor: pointer;
-            font-size: 15px;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-        }
-
-        .menu button:hover, .menu button.active {
-            background-color: var(--brand-color);
-            color: white;
-            border-left: 5px solid var(--accent);
-        }
-
-        .user-profile {
-            padding: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            font-size: 13px;
-            text-align: center;
-            color: rgba(255,255,255,0.6);
-        }
-
-        /* --- MAIN CONTENT --- */
-        .main {
-            flex: 1;
-            padding: 15px 25px;
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
-            height: 100vh;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-shrink: 0;
-        }
-
+        /* --- MAIN --- */
+        .main { flex: 1; padding: 15px 25px; display: flex; flex-direction: column; box-sizing: border-box; height: 100vh; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-shrink: 0; }
         .header h2 { margin: 0; color: var(--brand-dark); font-size: 1.6rem; }
 
-        /* --- CARDS & WIDGETS --- */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-shrink: 0;
-        }
+        /* --- PANELS --- */
+        .panel { background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; display: flex; flex-direction: column; overflow: hidden; flex: 1; }
+        .panel-content { padding: 20px; overflow-y: auto; flex: 1; }
 
-        .card {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border-top: 4px solid var(--brand-color);
-        }
+        /* --- TABLES --- */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
+        th { text-align: left; padding: 10px; background-color: #f8f9fa; color: #555; font-size: 11px; font-weight: 700; text-transform: uppercase; border-bottom: 2px solid #ddd; position: sticky; top: 0; z-index: 10;}
+        td { padding: 8px 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+        
+        .tx-table th { background-color: var(--brand-color); color: white; }
+        .locked-table th { background-color: #607d8b; color: white; }
+        .pump-group { background-color: #eceff1; font-weight: bold; font-size: 12px; color: #37474f; text-align: center; border-right: 1px solid #ddd;}
+        
+        .locked-val { font-family: monospace; background: #f5f5f5; padding: 4px 8px; border-radius: 4px; display: block; text-align: right; color: #666; }
+        .calc-val { font-family: monospace; background: #e3f2fd; padding: 4px 8px; border-radius: 4px; display: block; text-align: right; color: var(--brand-dark); font-weight: bold; }
+        .calib-input { width: 80px; padding: 4px; border: 2px solid #ffa726; border-radius: 4px; text-align: right; font-family: monospace; background: #fff3e0; font-weight: bold; color: #e65100; }
 
-        .card h3 { margin: 0 0 5px 0; font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* --- TABS --- */
+        .tabs { display: flex; background: #f1f3f4; border-bottom: 1px solid #ddd; padding: 0 20px; }
+        .tab-btn { padding: 12px 20px; border: none; background: none; font-size: 13px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; }
+        .tab-btn:hover { background-color: #e0e0e0; }
+        .tab-btn.active { color: var(--brand-color); border-bottom-color: var(--brand-color); background: white; }
+        .tab-content { display: none; padding-top: 15px; animation: fadeIn 0.2s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- FORMS --- */
+        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .input-group { display: flex; flex-direction: column; }
+        .input-group label { margin-bottom: 5px; font-weight: 600; font-size: 11px; color: #555; text-transform: uppercase; }
+        .input-group input, .input-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; width: 100%; box-sizing: border-box; }
+        .entry-box { background: #e0f2f1; padding: 15px; border-radius: 6px; display: flex; gap: 10px; align-items: flex-end; margin-bottom: 15px; border: 1px solid #b2dfdb; }
+
+        .summary-section { background: #fafafa; padding: 15px; border-top: 1px solid #eee; margin-top: auto; }
+        .summary-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+
+        .btn-primary { background-color: var(--brand-color); color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; }
+        .btn-success { background-color: #388e3c; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
+        .btn-danger { background-color: #ef5350; color: white; padding: 4px 8px; border: none; border-radius: 3px; cursor: pointer; font-size: 11px; }
+
+        .page-content { display: none; flex-direction: column; height: 100%; }
+        .page-content.active { display: flex; }
+        .section-title { font-size: 1.1rem; color: var(--brand-dark); margin: 0 0 10px 0; border-bottom: 2px solid #ddd; padding-bottom: 5px; }
+
+        /* --- HISTORY PAGE STYLES --- */
+        .search-bar { display: flex; gap: 10px; padding: 15px; background: #f5f5f5; border-bottom: 1px solid #ddd; align-items: flex-end; }
+        .total-banner { background: var(--brand-dark); color: white; padding: 15px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .total-banner h3 { margin: 0; font-size: 1.2rem; }
+        .total-banner span { font-size: 1.5rem; font-weight: bold; }
+        .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .badge-fuel { background: #e3f2fd; color: #1565c0; }
+        .badge-item { background: #fff3e0; color: #ef6c00; }
+
+        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px; flex-shrink: 0; }
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-top: 4px solid var(--brand-color); }
+        .card h3 { margin: 0 0 5px 0; font-size: 12px; color: #777; text-transform: uppercase; }
         .card .value { font-size: 24px; font-weight: bold; color: var(--text-main); }
         .card .sub { font-size: 11px; color: #999; margin-top: 4px; }
-
-        /* --- TABLES & FORMS --- */
-        .panel {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .panel-flex { flex: 1; overflow-y: auto; padding-right: 10px; } 
-
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        th { text-align: left; padding: 8px; background-color: #f8f9fa; color: #555; font-size: 12px; font-weight: 600; text-transform: uppercase; }
-        td { padding: 6px 8px; border-bottom: 1px solid #eee; font-size: 13px; }
-        tr:hover { background-color: #f9f9f9; }
-
-        table.styled-table th { background-color: var(--brand-color); color: white; }
-        
-        /* Locked Table Styles */
-        table.locked-table th { background-color: #607d8b; color: white; }
-        .pump-group { background-color: #eceff1; font-weight: bold; font-size: 12px; color: #37474f; text-align: center; }
-        .locked-val { font-family: monospace; font-size: 14px; background: #f0f0f0; padding: 3px 6px; border-radius: 3px; display: inline-block; width: 100%; box-sizing: border-box; text-align: right; border: 1px solid #dcdcdc; color: #555;}
-        .calc-val { font-family: monospace; font-size: 14px; background: #e3f2fd; padding: 3px 6px; border-radius: 3px; display: inline-block; width: 100%; box-sizing: border-box; text-align: right; border: 1px solid #bbdefb; color: var(--brand-dark); font-weight: bold;}
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-shrink: 0;
-        }
-        
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
-            background: #fbfbfb;
-            padding: 10px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            margin-top: 15px;
-        }
-
-        .input-group { display: flex; flex-direction: column; }
-        .input-group label { margin-bottom: 4px; font-weight: 600; font-size: 11px; color: #555; text-transform: uppercase; }
-        .input-group input, .input-group select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; width: 100%; font-size: 13px;}
-        .input-group input:read-only { background-color: #f5f5f5; color: #777; border: 1px solid #ddd;}
-        
-        table input, table select { padding: 6px; border: 1px solid #ccc; border-radius: 4px; width: 100%; font-size: 13px; box-sizing: border-box;}
-        table input:read-only { background-color: transparent; border: none; font-weight: bold; color: var(--text-main); }
-
-        .btn-primary { background-color: var(--brand-color); color: white; padding: 8px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 500; }
-        .btn-primary:hover { background-color: var(--brand-dark); }
-        .btn-small { padding: 6px 12px; font-size: 12px; background-color: #e0e0e0; color: #333; border: none; border-radius: 3px; cursor: pointer;}
-        .btn-small:hover { background-color: #ccc; }
-        .btn-danger { background-color: #f44336; color: white; }
-        .btn-danger:hover { background-color: #d32f2f; }
-
-        .bottom-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-            padding-top: 15px;
-            border-top: 2px solid #eee;
-            background: white;
-            padding-bottom: 5px;
-        }
-        .bottom-actions h3 { margin: 0; font-size: 1.4rem; color: var(--brand-dark); }
-
-        .page-content { display: none; flex-direction: column; flex: 1; height: 100%; }
-        .page-content.active { display: flex; animation: fadeEffect 0.3s; }
-        @keyframes fadeEffect { from {opacity: 0;} to {opacity: 1;} }
-        
-        h3.section-title { font-size: 1.1rem; color: var(--brand-dark); margin: 15px 0 10px 0; border-bottom: 2px solid #ddd; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .badge-locked { background-color: #607d8b; color: white; font-size: 10px; padding: 3px 8px; border-radius: 12px; font-weight: normal; text-transform: uppercase; letter-spacing: 0.5px;}
 
     </style>
 </head>
@@ -230,28 +95,28 @@
 
     <div id="login-page">
         <div class="login-box">
-            <h1>EcoGazz GSMS</h1>
-            <p>Staff Portal</p>
-            <input type="password" placeholder="Enter Staff PIN" onkeypress="if(event.key === 'Enter') login()">
-            <button class="login-btn" onclick="login()">Login to Station</button>
+            <h1>EcoGazz Station</h1>
+            <p style="color:#666; margin-bottom:20px;">Staff Terminal</p>
+            <input type="password" placeholder="Enter Staff PIN" onkeypress="if(event.key==='Enter') login()">
+            <button class="login-btn" onclick="login()">Login to Terminal</button>
         </div>
     </div>
 
-    <div class="sidebar" id="sidebar" style="display: none;">
+    <div class="sidebar" id="sidebar" style="display:none;">
         <div class="brand">EcoGazz Kimaya</div>
         <div class="menu">
-            <button class="nav-btn active" onclick="showPage('sales')">Live POS Entry</button>
-            <button class="nav-btn" onclick="showPage('dashboard')">Shift Dashboard</button>
+            <button class="nav-btn active" onclick="showPage('sales')">⛽ Live POS Entry</button>
+            <button class="nav-btn" onclick="showPage('history')">📜 Sales History</button>
+            <button class="nav-btn" onclick="showPage('pumps')">🔢 Pump Status</button>
+            <button class="nav-btn" onclick="showPage('inventory')">🛢️ Inventory</button>
+            <button class="nav-btn" onclick="showPage('dashboard')">📊 Shift Dashboard</button>
         </div>
         <div class="user-profile">
-            Logged in as: <strong>Dodong</strong><br>
-            <span style="font-size: 11px; color: #aaa;">Pump Attendant</span><br>
-            <span style="font-size: 12px; cursor: pointer; color: var(--accent); margin-top: 5px; display: inline-block;" onclick="logout()">Logout</span>
+            <span style="font-size:12px; cursor:pointer; color:var(--accent);" onclick="logout()">Log Out Session</span>
         </div>
     </div>
 
-    <div class="main" id="main" style="display: none;">
-        
+    <div class="main" id="main" style="display:none;">
         <div class="header">
             <h2 id="page-title">Live Point of Sale</h2>
             <div style="text-align: right;">
@@ -260,56 +125,176 @@
             </div>
         </div>
 
-        <div id="dashboard" class="page-content">
-            <div class="grid-container">
-                <div class="card">
-                    <h3>Your Remittance</h3>
-                    <div class="value">₱ <span id="dash-remit">0.00</span></div>
-                    <div class="sub">Cash to turn over</div>
+        <div id="sales" class="page-content active">
+            <div class="panel">
+                <div class="panel-content">
+                    <div class="form-grid">
+                        <div class="input-group"><label>Date</label><input type="date" id="entry-date" readonly></div>
+                        <div class="input-group"><label>Shift</label><select><option>3AM - 12NN</option><option>12NN - 9PM</option></select></div>
+                        <div class="input-group">
+                            <label>Gasman / Attendant</label>
+                            <select id="gasman-select">
+                                <option>DODONG</option>
+                                <option>KENNETH</option>
+                                <option>FRANCIS</option>
+                                <option>ROXAS</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab-btn active" onclick="openTab(event, 'tab-front')">⛽ FRONT PUMP</button>
+                        <button class="tab-btn" onclick="openTab(event, 'tab-back')">⛽ BACK PUMP</button>
+                        <button class="tab-btn" onclick="openTab(event, 'tab-items')">🛢️ OIL / LPG</button>
+                    </div>
+
+                    <div id="tab-front" class="tab-content active">
+                        <div class="entry-box">
+                            <div class="input-group" style="flex:1;">
+                                <label>Product</label>
+                                <select id="front-fuel-type" onchange="updatePrice('front')">
+                                    <option value="Diesel" data-price="55.80">Diesel (₱55.80)</option>
+                                    <option value="Premium" data-price="56.50">Premium (₱56.50)</option>
+                                    <option value="Regular" data-price="55.80">Regular (₱55.80)</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="width: 120px;">
+                                <label>Amount (₱)</label>
+                                <input type="number" id="front-amount" placeholder="0.00" oninput="calcInput('front', 'amount')" style="font-weight:bold; color:var(--brand-color);">
+                            </div>
+                            <div class="input-group" style="width: 100px;">
+                                <label>Liters</label>
+                                <input type="number" id="front-liters" placeholder="0.00" oninput="calcInput('front', 'liters')">
+                            </div>
+                            <button class="btn-success" onclick="addFuelTx('Front')">Add Sale</button>
+                        </div>
+                        <table class="tx-table">
+                            <thead><tr><th>Time</th><th>Fuel</th><th>Liters</th><th>Amount</th><th>Action</th></tr></thead>
+                            <tbody id="list-front"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="tab-back" class="tab-content">
+                        <div class="entry-box">
+                            <div class="input-group" style="flex:1;">
+                                <label>Product</label>
+                                <select id="back-fuel-type" onchange="updatePrice('back')">
+                                    <option value="Diesel" data-price="55.80">Diesel (₱55.80)</option>
+                                    <option value="Premium" data-price="56.50">Premium (₱56.50)</option>
+                                    <option value="Regular" data-price="55.80">Regular (₱55.80)</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="width: 120px;">
+                                <label>Amount (₱)</label>
+                                <input type="number" id="back-amount" placeholder="0.00" oninput="calcInput('back', 'amount')" style="font-weight:bold; color:var(--brand-color);">
+                            </div>
+                            <div class="input-group" style="width: 100px;">
+                                <label>Liters</label>
+                                <input type="number" id="back-liters" placeholder="0.00" oninput="calcInput('back', 'liters')">
+                            </div>
+                            <button class="btn-success" onclick="addFuelTx('Back')">Add Sale</button>
+                        </div>
+                        <table class="tx-table">
+                            <thead><tr><th>Time</th><th>Fuel</th><th>Liters</th><th>Amount</th><th>Action</th></tr></thead>
+                            <tbody id="list-back"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="tab-items" class="tab-content">
+                        <div class="entry-box">
+                            <div class="input-group" style="flex:2;">
+                                <label>Select Product</label>
+                                <select id="item-select">
+                                    </select>
+                            </div>
+                            <div class="input-group" style="width: 80px;">
+                                <label>Qty</label>
+                                <input type="number" id="item-qty" value="1" min="1">
+                            </div>
+                            <button class="btn-success" onclick="addItemTx()">Add Item</button>
+                        </div>
+                        <table class="tx-table">
+                            <thead><tr><th>Brand & Item</th><th>Qty</th><th>Price</th><th>Total</th><th>Action</th></tr></thead>
+                            <tbody id="list-items"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="card">
-                    <h3>Total Shift Sales</h3>
-                    <div class="value">₱ <span id="dash-total">0.00</span></div>
-                    <div class="sub">Gross Amount</div>
+
+                <div class="summary-section">
+                    <h3 class="section-title" style="font-size: 0.9rem;">Deductions & Remittance</h3>
+                    <div class="summary-grid">
+                        <div class="input-group"><label>Expense</label><input type="number" id="val-expense" value="0" oninput="recalcMeters()"></div>
+                        <div class="input-group"><label>P.O</label><input type="number" id="val-po" value="0" oninput="recalcMeters()"></div>
+                        <div class="input-group"><label>MDRRMO</label><input type="number" id="val-mdrrmo" value="0" oninput="recalcMeters()"></div>
+                        <div class="input-group"><label>MOPH</label><input type="number" id="val-moph" value="0" oninput="recalcMeters()"></div>
+                        <div class="input-group"><label>RNDC</label><input type="number" id="val-rndc" value="0" oninput="recalcMeters()"></div>
+                        <div class="input-group">
+                            <label>Cash to Turn Over</label>
+                            <input type="text" id="val-remit" value="0.00" style="background:#e8f5e9; border-color:#4caf50; font-weight:bold; color:green; font-size: 15px;" readonly>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; margin-top:15px; align-items:center;">
+                        <span style="margin-right:15px; font-weight:bold; color:#666;">Total Sales: ₱ <span id="shift-total">0.00</span></span>
+                        <button class="btn-primary" onclick="alert('Shift report submitted securely to Admin!')">Submit Shift</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="sales" class="page-content active">
+        <div id="history" class="page-content">
             <div class="panel">
-                <div class="panel-flex">
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label>Date</label>
-                            <input type="date" id="entry-date" readonly>
-                        </div>
-                        <div class="input-group">
-                            <label>Shift Time</label>
-                            <select>
-                                <option>3AM - 12NN</option>
-                                <option>12NN - 9PM</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>Gasman</label>
-                            <input type="text" value="DODONG" readonly>
-                        </div>
+                <div class="search-bar">
+                    <div class="input-group" style="width: 220px;">
+                        <label>Select Date</label>
+                        <input type="date" id="history-date" onchange="filterHistory()">
+                    </div>
+                    <button class="btn-primary" onclick="filterHistory()">Search Records</button>
+                    <button class="btn-primary" style="background:#757575;" onclick="resetHistory()">Show All</button>
+                </div>
+
+                <div class="panel-content">
+                    <div class="total-banner">
+                        <h3>Total Sales for Selected Period</h3>
+                        <div>₱ <span id="history-total">0.00</span></div>
                     </div>
 
-                    <h3 class="section-title">
-                        <div>Station Pump Readings <span class="badge-locked">View Only - Auto Calculates</span></div>
-                    </h3>
+                    <table class="tx-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Category</th>
+                                <th>Item / Pump</th>
+                                <th>Details (Qty/L)</th>
+                                <th>Amount</th>
+                                <th>Staff</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="pumps" class="page-content">
+            <div class="panel">
+                <div class="panel-content">
+                    <h3 class="section-title">Pump Meter Readings & Calibration</h3>
+                    <div style="background:#fff3e0; padding:10px; border-left:4px solid #ff9800; margin-bottom:15px; font-size:13px; color:#555;">
+                        <strong>Note:</strong> Enter Bucket Test volume in "Calibration". It updates your Closing Meter but <strong>does not charge you</strong> for the fuel.
+                    </div>
                     
                     <table class="locked-table">
                         <thead>
                             <tr>
                                 <th style="width: 10%;">Pump</th>
-                                <th style="width: 15%;">Fuel Type</th>
-                                <th style="width: 15%;">Starting (L)</th>
-                                <th style="width: 15%;">Total Dispensed (L)</th>
-                                <th style="width: 15%;">Closing (L)</th>
-                                <th style="width: 12%;">Price (₱)</th>
-                                <th style="width: 18%;">Amount (₱)</th>
+                                <th style="width: 10%;">Fuel</th>
+                                <th style="width: 15%;">Start Meter</th>
+                                <th style="width: 15%;">Sold (POS)</th>
+                                <th style="width: 15%;">Calibration (L)</th>
+                                <th style="width: 15%;">Closing Meter</th>
+                                <th style="width: 20%;">Total Amount</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -318,355 +303,327 @@
                                 <td>Diesel</td>
                                 <td><span class="locked-val" id="meter-front-diesel-start">1500.00</span></td>
                                 <td><span class="calc-val" id="meter-front-diesel-sold">0.00</span></td>
+                                <td><input type="number" class="calib-input" id="calib-front-diesel" value="0" oninput="recalcMeters()"></td>
                                 <td><span class="calc-val" id="meter-front-diesel-close">1500.00</span></td>
-                                <td><span class="locked-val">55.80</span></td>
-                                <td style="text-align: right; font-weight: bold; color: #555;">₱ <span id="meter-front-diesel-amt">0.00</span></td>
+                                <td><span class="calc-val">₱ <span id="meter-front-diesel-amt">0.00</span></span></td>
                             </tr>
                             <tr>
                                 <td>Premium</td>
                                 <td><span class="locked-val" id="meter-front-premium-start">2000.00</span></td>
                                 <td><span class="calc-val" id="meter-front-premium-sold">0.00</span></td>
+                                <td><input type="number" class="calib-input" id="calib-front-premium" value="0" oninput="recalcMeters()"></td>
                                 <td><span class="calc-val" id="meter-front-premium-close">2000.00</span></td>
-                                <td><span class="locked-val">56.50</span></td>
-                                <td style="text-align: right; font-weight: bold; color: #555;">₱ <span id="meter-front-premium-amt">0.00</span></td>
+                                <td><span class="calc-val">₱ <span id="meter-front-premium-amt">0.00</span></span></td>
                             </tr>
                             <tr>
-                                <td style="border-bottom: 2px solid #b0bec5;">Regular</td>
-                                <td style="border-bottom: 2px solid #b0bec5;"><span class="locked-val" id="meter-front-regular-start">1000.00</span></td>
-                                <td style="border-bottom: 2px solid #b0bec5;"><span class="calc-val" id="meter-front-regular-sold">0.00</span></td>
-                                <td style="border-bottom: 2px solid #b0bec5;"><span class="calc-val" id="meter-front-regular-close">1000.00</span></td>
-                                <td style="border-bottom: 2px solid #b0bec5;"><span class="locked-val">55.80</span></td>
-                                <td style="border-bottom: 2px solid #b0bec5; text-align: right; font-weight: bold; color: #555;">₱ <span id="meter-front-regular-amt">0.00</span></td>
+                                <td style="border-bottom: 2px solid #90a4ae;">Regular</td>
+                                <td style="border-bottom: 2px solid #90a4ae;"><span class="locked-val" id="meter-front-regular-start">1000.00</span></td>
+                                <td style="border-bottom: 2px solid #90a4ae;"><span class="calc-val" id="meter-front-regular-sold">0.00</span></td>
+                                <td style="border-bottom: 2px solid #90a4ae;"><input type="number" class="calib-input" id="calib-front-regular" value="0" oninput="recalcMeters()"></td>
+                                <td style="border-bottom: 2px solid #90a4ae;"><span class="calc-val" id="meter-front-regular-close">1000.00</span></td>
+                                <td style="border-bottom: 2px solid #90a4ae;"><span class="calc-val">₱ <span id="meter-front-regular-amt">0.00</span></span></td>
                             </tr>
-
                             <tr>
-                                <td rowspan="3" class="pump-group" style="background: #e2e8f0;">BACK</td>
+                                <td rowspan="3" class="pump-group" style="background:#cfd8dc;">BACK</td>
                                 <td>Diesel</td>
                                 <td><span class="locked-val" id="meter-back-diesel-start">800.00</span></td>
                                 <td><span class="calc-val" id="meter-back-diesel-sold">0.00</span></td>
+                                <td><input type="number" class="calib-input" id="calib-back-diesel" value="0" oninput="recalcMeters()"></td>
                                 <td><span class="calc-val" id="meter-back-diesel-close">800.00</span></td>
-                                <td><span class="locked-val">55.80</span></td>
-                                <td style="text-align: right; font-weight: bold; color: #555;">₱ <span id="meter-back-diesel-amt">0.00</span></td>
+                                <td><span class="calc-val">₱ <span id="meter-back-diesel-amt">0.00</span></span></td>
                             </tr>
                             <tr>
                                 <td>Premium</td>
                                 <td><span class="locked-val" id="meter-back-premium-start">500.00</span></td>
                                 <td><span class="calc-val" id="meter-back-premium-sold">0.00</span></td>
+                                <td><input type="number" class="calib-input" id="calib-back-premium" value="0" oninput="recalcMeters()"></td>
                                 <td><span class="calc-val" id="meter-back-premium-close">500.00</span></td>
-                                <td><span class="locked-val">56.50</span></td>
-                                <td style="text-align: right; font-weight: bold; color: #555;">₱ <span id="meter-back-premium-amt">0.00</span></td>
+                                <td><span class="calc-val">₱ <span id="meter-back-premium-amt">0.00</span></span></td>
                             </tr>
                             <tr>
                                 <td>Regular</td>
                                 <td><span class="locked-val" id="meter-back-regular-start">300.00</span></td>
                                 <td><span class="calc-val" id="meter-back-regular-sold">0.00</span></td>
+                                <td><input type="number" class="calib-input" id="calib-back-regular" value="0" oninput="recalcMeters()"></td>
                                 <td><span class="calc-val" id="meter-back-regular-close">300.00</span></td>
-                                <td><span class="locked-val">55.80</span></td>
-                                <td style="text-align: right; font-weight: bold; color: #555;">₱ <span id="meter-back-regular-amt">0.00</span></td>
+                                <td><span class="calc-val">₱ <span id="meter-back-regular-amt">0.00</span></span></td>
                             </tr>
                         </tbody>
                     </table>
-
-                    <h3 class="section-title" style="margin-top: 25px;">
-                        Live Fuel Transactions
-                        <button class="btn-primary btn-small" onclick="addFuelRow()">+ Add Fuel Sale</button>
-                    </h3>
-                    <table class="styled-table" style="background: #fbfbfb; border: 1px solid #ddd;">
-                        <thead>
-                            <tr>
-                                <th style="width: 15%;">Pump</th>
-                                <th style="width: 20%;">Fuel Type</th>
-                                <th style="width: 15%;">Price / L</th>
-                                <th style="width: 20%;">Liters (L)</th>
-                                <th style="width: 20%;">Amount (₱)</th>
-                                <th style="width: 10%;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fuel-table">
-                            </tbody>
-                    </table>
-
-                    <h3 class="section-title" style="margin-top: 25px;">
-                        Oil & LPG Transactions
-                        <button class="btn-primary btn-small" onclick="addItemRow()">+ Add Item</button>
-                    </h3>
-                    <table class="styled-table" style="background: #fbfbfb; border: 1px solid #ddd;">
-                        <thead>
-                            <tr>
-                                <th style="width: 40%;">Item</th>
-                                <th style="width: 15%;">Qty</th>
-                                <th style="width: 20%;">Unit Price (₱)</th>
-                                <th style="width: 15%;">Total (₱)</th>
-                                <th style="width: 10%;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="items-table">
-                            </tbody>
-                    </table>
-
-                    <h3 class="section-title" style="margin-top: 25px;">Deductions & Remittance</h3>
-                    <div class="summary-grid">
-                        <div class="input-group">
-                            <label>Expense</label>
-                            <input type="number" id="val-expense" value="0" oninput="calculateTotal()">
-                        </div>
-                        <div class="input-group">
-                            <label>P.O</label>
-                            <input type="number" id="val-po" value="0" oninput="calculateTotal()">
-                        </div>
-                        <div class="input-group">
-                            <label>MDRRMO</label>
-                            <input type="number" id="val-mdrrmo" value="0" oninput="calculateTotal()">
-                        </div>
-                        <div class="input-group">
-                            <label>MOPH</label>
-                            <input type="number" id="val-moph" value="0" oninput="calculateTotal()">
-                        </div>
-                        <div class="input-group">
-                            <label>RNDC</label>
-                            <input type="number" id="val-rndc" value="0" oninput="calculateTotal()">
-                        </div>
-                        <div class="input-group">
-                            <label>Remittance</label>
-                            <input type="text" id="val-remit" value="0.00" style="background-color: #e8f5e9; border-color: #4caf50; font-weight: bold; color: green; font-size: 14px;" readonly>
-                        </div>
-                    </div>
-
                 </div>
+            </div>
+        </div>
 
-                <div class="bottom-actions">
-                    <div style="font-size: 13px; color: #777;">Input either the <strong>Liters</strong> OR the <strong>Amount</strong>. The system calculates the other automatically.</div>
-                    <div style="display: flex; align-items: center;">
-                        <div style="text-align: right; margin-right: 15px;">
-                            <span style="font-size: 12px; font-weight: bold; color: #666; text-transform: uppercase;">Total Shift Sales</span><br>
-                            <span style="font-size: 1.4rem; font-weight: bold; color: var(--brand-dark);">₱ <span id="shift-total">0.00</span></span>
-                        </div>
-                        <button class="btn-primary" onclick="saveData()">Submit Entire Shift</button>
-                    </div>
+        <div id="inventory" class="page-content">
+            <div class="panel">
+                <div class="panel-content">
+                    <h3 class="section-title">Store Inventory</h3>
+                    <table class="tx-table">
+                        <thead><tr><th>Brand</th><th>Item Description</th><th>Category</th><th>Stock</th><th>Selling Price</th></tr></thead>
+                        <tbody id="inv-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard" class="page-content">
+            <div class="grid-container">
+                <div class="card">
+                    <h3>Your Expected Remittance</h3>
+                    <div class="value">₱ <span id="dash-remit">0.00</span></div>
+                    <div class="sub">Cash to turn over after deductions</div>
+                </div>
+                <div class="card">
+                    <h3>Total Shift Gross Sales</h3>
+                    <div class="value">₱ <span id="dash-total">0.00</span></div>
+                    <div class="sub">Total Fuel & Item value</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // System Config Data
+        // --- EXACT ECOGAZZ DATA EXTRACTED FROM FILES ---
         const pumpConfig = {
-            "Front-Diesel": { price: 55.80, startId: "meter-front-diesel-start", soldId: "meter-front-diesel-sold", closeId: "meter-front-diesel-close", amtId: "meter-front-diesel-amt" },
-            "Front-Premium": { price: 56.50, startId: "meter-front-premium-start", soldId: "meter-front-premium-sold", closeId: "meter-front-premium-close", amtId: "meter-front-premium-amt" },
-            "Front-Regular": { price: 55.80, startId: "meter-front-regular-start", soldId: "meter-front-regular-sold", closeId: "meter-front-regular-close", amtId: "meter-front-regular-amt" },
-            "Back-Diesel": { price: 55.80, startId: "meter-back-diesel-start", soldId: "meter-back-diesel-sold", closeId: "meter-back-diesel-close", amtId: "meter-back-diesel-amt" },
-            "Back-Premium": { price: 56.50, startId: "meter-back-premium-start", soldId: "meter-back-premium-sold", closeId: "meter-back-premium-close", amtId: "meter-back-premium-amt" },
-            "Back-Regular": { price: 55.80, startId: "meter-back-regular-start", soldId: "meter-back-regular-sold", closeId: "meter-back-regular-close", amtId: "meter-back-regular-amt" }
+            "Front-Diesel": { price: 55.80, start: 1500 },
+            "Front-Premium": { price: 56.50, start: 2000 },
+            "Front-Regular": { price: 55.80, start: 1000 },
+            "Back-Diesel": { price: 55.80, start: 800 },
+            "Back-Premium": { price: 56.50, start: 500 },
+            "Back-Regular": { price: 55.80, start: 300 }
         };
 
-        const inventoryItems = [
-            { id: 0, name: "-- Select Item --", price: 0 },
-            { id: 1, name: "CASTROL ACTIV 4T 1L", price: 278.00 },
-            { id: 2, name: "CASTROL GO 800ML", price: 226.00 },
-            { id: 3, name: "CASTROL GO 1L", price: 256.00 },
-            { id: 4, name: "SHELL 2T 200ML", price: 65.00 },
-            { id: 5, name: "HAVOLINE EZY 20W-40 800ML", price: 198.00 },
-            { id: 6, name: "PETRON GASUL 11KG", price: 1100.00 },
-            { id: 7, name: "PRYCEGAS 11KG REFILL", price: 1110.00 }
+        const realInventory = [
+            { category: "LPG", brand: "PRYCEGAS", name: "11KG SET WITH CONTENT", price: 2600.00, stock: 5 },
+            { category: "LPG", brand: "PRYCEGAS", name: "11KG REFILL", price: 1100.00, stock: 12 },
+            { category: "LPG", brand: "PRYCEGAS", name: "2.7KG POWER KALAN SET", price: 1300.00, stock: 4 },
+            { category: "LPG", brand: "PRYCEGAS", name: "2.7KG REFILL", price: 370.00, stock: 10 },
+            { category: "LPG", brand: "PETRON GASUL", name: "11KG REFILL", price: 1110.00, stock: 15 },
+            { category: "LPG", brand: "FIESTA GAS", name: "11KG REFILL", price: 1120.00, stock: 14 },
+            { category: "Oil", brand: "CALTEX", name: "TEXAMATIC 1L", price: 290.00, stock: 20 },
+            { category: "Oil", brand: "CALTEX", name: "HAVOLINE 20W-40 1L", price: 240.00, stock: 18 },
+            { category: "Oil", brand: "CALTEX", name: "HAVOLINE EZY 20W-40 1L", price: 239.00, stock: 12 },
+            { category: "Oil", brand: "CASTROL", name: "GO ESSENTIAL 1L", price: 256.00, stock: 15 },
+            { category: "Oil", brand: "CASTROL", name: "GO 800ML", price: 226.00, stock: 3 },
+            { category: "Oil", brand: "CASTROL", name: "ACTIV 4T 1L", price: 278.00, stock: 14 },
+            { category: "Oil", brand: "SHELL", name: "2T 200ML", price: 50.00, stock: 25 },
+            { category: "Oil", brand: "SHELL", name: "2T 1L", price: 216.00, stock: 11 }
         ];
 
-        document.getElementById('date-display').innerText = new Date().toDateString();
-        document.getElementById('entry-date').valueAsDate = new Date();
+        // --- PAST DUMMY DATA FOR HISTORY ---
+        const pastSales = [
+            { date: '2026-02-24', time: '08:30 AM', category: 'Fuel', item: 'Front Diesel', detail: '10.00 L', amount: 558.00, staff: 'DODONG' },
+            { date: '2026-02-25', time: '10:00 AM', category: 'Item', item: 'CASTROL GO 800ML', detail: '1 Qty', amount: 226.00, staff: 'KENNETH' },
+            { date: '2026-02-26', time: '05:00 AM', category: 'Fuel', item: 'Back Premium', detail: '20.00 L', amount: 1130.00, staff: 'FRANCIS' }
+        ];
 
-        window.onload = function() { 
-            addFuelRow(); 
-            addItemRow(); 
-            calculateTotal(); 
+        let transactions = [];
+        let itemsSold = [];
+
+        window.onload = function() {
+            // Setup Date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('entry-date').value = today;
+            document.getElementById('date-display').innerText = new Date().toDateString();
+
+            // Populate Actual Inventory Dropdown
+            const itemSel = document.getElementById('item-select');
+            let optDefault = document.createElement('option');
+            optDefault.text = "-- Select Item --";
+            optDefault.value = "0";
+            itemSel.add(optDefault);
+
+            realInventory.forEach(i => {
+                let opt = document.createElement('option');
+                opt.value = i.price;
+                opt.text = `${i.brand} - ${i.name} (₱${i.price.toFixed(2)})`;
+                opt.dataset.name = `${i.brand} ${i.name}`;
+                itemSel.add(opt);
+            });
+
+            renderInventoryTable();
+            recalcMeters();
+            filterHistory(); // Initial Load (Shows All)
         };
 
+        // --- AUTH & NAV ---
         function login() {
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('sidebar').style.display = 'flex';
             document.getElementById('main').style.display = 'flex';
-            calculateTotal();
             showPage('sales');
         }
-
         function logout() { location.reload(); }
 
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
-
+            
             const buttons = document.querySelectorAll('.nav-btn');
             buttons.forEach(b => b.classList.remove('active'));
             Array.from(buttons).find(btn => btn.getAttribute('onclick') === `showPage('${pageId}')`).classList.add('active');
 
-            const titles = { 'sales': 'Live Point of Sale', 'dashboard': 'Shift Dashboard' };
+            const titles = { 'sales': 'Live Point of Sale', 'pumps': 'Pump Status & Calibration', 'inventory': 'Store Inventory', 'dashboard': 'Shift Dashboard', 'history': 'Sales History & Logs' };
             document.getElementById('page-title').innerText = titles[pageId];
         }
 
-        // --- FUEL TRANSACTIONS LOGIC ---
-        function addFuelRow() {
-            const tbody = document.getElementById('fuel-table');
-            const tr = document.createElement('tr');
-            tr.className = 'fuel-row';
-
-            tr.innerHTML = `
-                <td>
-                    <select class="tx-pump" onchange="updateFuelRowConfig(this)">
-                        <option value="Front">Front</option>
-                        <option value="Back">Back</option>
-                    </select>
-                </td>
-                <td>
-                    <select class="tx-fuel" onchange="updateFuelRowConfig(this)">
-                        <option value="Diesel">Diesel</option>
-                        <option value="Premium">Premium</option>
-                        <option value="Regular">Regular</option>
-                    </select>
-                </td>
-                <td><input type="number" class="tx-price" value="${pumpConfig["Front-Diesel"].price.toFixed(2)}" readonly></td>
-                <td><input type="number" class="tx-liters" value="" step="0.01" oninput="handleTxInput(this, 'liters')" placeholder="0.00"></td>
-                <td><input type="number" class="tx-amount" value="" step="0.01" oninput="handleTxInput(this, 'amount')" placeholder="₱0.00" style="font-weight: bold; color: var(--brand-dark);"></td>
-                <td><button class="btn-small btn-danger" onclick="removeRow(this)">X</button></td>
-            `;
-            tbody.appendChild(tr);
+        function openTab(evt, tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
         }
 
-        function updateFuelRowConfig(selectElement) {
-            const row = selectElement.closest('tr');
-            const pump = row.querySelector('.tx-pump').value;
-            const fuel = row.querySelector('.tx-fuel').value;
-            const key = pump + "-" + fuel;
-            
-            // Set correct price based on combination
-            const price = pumpConfig[key].price;
-            row.querySelector('.tx-price').value = price.toFixed(2);
-            
-            // Recalculate based on existing liters
-            handleTxInput(row.querySelector('.tx-liters'), 'liters');
-        }
+        // --- SALES HISTORY LOGIC ---
+        function filterHistory() {
+            const selectedDate = document.getElementById('history-date').value;
+            const tbody = document.getElementById('history-table-body');
+            const activeStaff = document.getElementById('gasman-select').value;
+            tbody.innerHTML = '';
+            let total = 0;
 
-        function handleTxInput(inputElement, source) {
-            const row = inputElement.closest('tr');
-            const price = parseFloat(row.querySelector('.tx-price').value) || 0;
-            const litersInput = row.querySelector('.tx-liters');
-            const amountInput = row.querySelector('.tx-amount');
+            const currentSessionData = transactions.map(t => ({
+                date: document.getElementById('entry-date').value, time: t.time, category: 'Fuel', item: `${t.pump} ${t.fuel}`, detail: `${t.liters.toFixed(2)} L`, amount: t.amount, staff: activeStaff
+            })).concat(itemsSold.map(i => ({
+                date: document.getElementById('entry-date').value, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), category: 'Item', item: i.name, detail: `${i.qty} Qty`, amount: i.total, staff: activeStaff
+            })));
 
-            if (source === 'liters') {
-                let liters = parseFloat(litersInput.value);
-                if (isNaN(liters)) {
-                    amountInput.value = '';
-                } else {
-                    amountInput.value = (liters * price).toFixed(2);
-                }
-            } else if (source === 'amount') {
-                let amount = parseFloat(amountInput.value);
-                if (isNaN(amount)) {
-                    litersInput.value = '';
-                } else {
-                    if (price > 0) {
-                        litersInput.value = (amount / price).toFixed(2);
-                    }
-                }
+            const allData = [...pastSales, ...currentSessionData];
+            let filtered = selectedDate ? allData.filter(d => d.date === selectedDate) : allData;
+
+            filtered.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#999;">No sales found.</td></tr>';
+            } else {
+                filtered.forEach(row => {
+                    total += row.amount;
+                    const badgeClass = row.category === 'Fuel' ? 'badge-fuel' : 'badge-item';
+                    tbody.innerHTML += `<tr><td>${row.date}</td><td>${row.time}</td><td><span class="badge ${badgeClass}">${row.category}</span></td><td><strong>${row.item}</strong></td><td>${row.detail}</td><td>₱ ${row.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td>${row.staff}</td></tr>`;
+                });
             }
-            calculateTotal();
+            document.getElementById('history-total').innerText = total.toLocaleString('en-US', {minimumFractionDigits: 2});
+        }
+        function resetHistory() { document.getElementById('history-date').value = ''; filterHistory(); }
+
+
+        // --- POS LOGIC ---
+        function getPrice(loc) {
+            const sel = document.getElementById(loc + '-fuel-type');
+            return parseFloat(sel.options[sel.selectedIndex].dataset.price);
         }
 
-        // --- ITEM TRANSACTIONS LOGIC ---
-        function addItemRow() {
-            const tbody = document.getElementById('items-table');
-            const tr = document.createElement('tr');
-            tr.className = 'item-row';
-            let optionsHTML = inventoryItems.map(item => `<option value="${item.price}">${item.name}</option>`).join('');
-            tr.innerHTML = `
-                <td><select class="item-select" onchange="updateItemRow(this)">${optionsHTML}</select></td>
-                <td><input type="number" class="item-qty" value="1" min="1" oninput="calculateTotal()"></td>
-                <td><input type="number" class="item-price" value="0.00" readonly></td>
-                <td style="font-weight:bold; color: var(--brand-dark);">₱ <span class="item-amt">0.00</span></td>
-                <td><button class="btn-small btn-danger" onclick="removeRow(this)">X</button></td>
-            `;
-            tbody.appendChild(tr);
+        function calcInput(loc, type) {
+            const price = getPrice(loc);
+            const litersInput = document.getElementById(loc + '-liters');
+            const amountInput = document.getElementById(loc + '-amount');
+
+            if(type === 'liters') {
+                let l = parseFloat(litersInput.value) || 0;
+                amountInput.value = (l * price).toFixed(2);
+            } else {
+                let a = parseFloat(amountInput.value) || 0;
+                litersInput.value = (a / price).toFixed(2);
+            }
         }
 
-        function updateItemRow(select) {
-            select.closest('tr').querySelector('.item-price').value = parseFloat(select.value).toFixed(2);
-            calculateTotal();
+        function updatePrice(loc) { calcInput(loc, 'liters'); }
+
+        function addFuelTx(pumpLoc) {
+            const loc = pumpLoc.toLowerCase();
+            const fuelName = document.getElementById(loc + '-fuel-type').value;
+            const liters = parseFloat(document.getElementById(loc + '-liters').value);
+            const amount = parseFloat(document.getElementById(loc + '-amount').value);
+
+            if(!liters) return alert("Please enter liters or amount");
+
+            transactions.push({ pump: pumpLoc, fuel: fuelName, liters: liters, amount: amount, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+            
+            document.getElementById(loc + '-liters').value = '';
+            document.getElementById(loc + '-amount').value = '';
+            
+            renderLists(); recalcMeters(); filterHistory();
         }
 
-        function removeRow(btn) {
-            btn.closest('tr').remove();
-            calculateTotal();
+        function addItemTx() {
+            const sel = document.getElementById('item-select');
+            if(sel.value === "0") return alert("Select an item first");
+            
+            const price = parseFloat(sel.value);
+            const name = sel.options[sel.selectedIndex].dataset.name;
+            const qty = parseFloat(document.getElementById('item-qty').value);
+            
+            itemsSold.push({ name: name, qty: qty, price: price, total: qty * price });
+            renderLists(); recalcMeters(); filterHistory();
         }
 
-        // --- MASTER CALCULATION & SYNC ---
-        function calculateTotal() {
-            let fuelTotal = 0;
-            let itemTotal = 0;
-            let deductions = 0;
+        function renderLists() {
+            document.getElementById('list-front').innerHTML = ''; document.getElementById('list-back').innerHTML = ''; document.getElementById('list-items').innerHTML = '';
 
-            // 1. Reset all pump accumulations
-            const pumpAccumulator = {
-                "Front-Diesel": { liters: 0, amount: 0 },
-                "Front-Premium": { liters: 0, amount: 0 },
-                "Front-Regular": { liters: 0, amount: 0 },
-                "Back-Diesel": { liters: 0, amount: 0 },
-                "Back-Premium": { liters: 0, amount: 0 },
-                "Back-Regular": { liters: 0, amount: 0 }
-            };
-
-            // 2. Loop Fuel Transactions and accumulate
-            const fuelRows = document.querySelectorAll('.fuel-row');
-            fuelRows.forEach(row => {
-                const pump = row.querySelector('.tx-pump').value;
-                const fuel = row.querySelector('.tx-fuel').value;
-                const key = pump + "-" + fuel;
-                
-                const liters = parseFloat(row.querySelector('.tx-liters').value) || 0;
-                const amt = parseFloat(row.querySelector('.tx-amount').value) || 0;
-                
-                pumpAccumulator[key].liters += liters;
-                pumpAccumulator[key].amount += amt;
-                fuelTotal += amt;
+            transactions.forEach((tx, index) => {
+                const tr = `<tr><td>${tx.time}</td><td>${tx.fuel}</td><td>${tx.liters.toFixed(2)}</td><td>₱${tx.amount.toFixed(2)}</td><td><button class="btn-danger" onclick="removeTx(${index})">X</button></td></tr>`;
+                if(tx.pump === 'Front') document.getElementById('list-front').innerHTML += tr; else document.getElementById('list-back').innerHTML += tr;
             });
 
-            // 3. Update the Locked Meter Table
+            itemsSold.forEach((item, index) => {
+                const tr = `<tr><td><strong>${item.name}</strong></td><td>${item.qty}</td><td>₱${item.price.toFixed(2)}</td><td>₱${item.total.toFixed(2)}</td><td><button class="btn-danger" onclick="removeItem(${index})">X</button></td></tr>`;
+                document.getElementById('list-items').innerHTML += tr;
+            });
+        }
+
+        function renderInventoryTable() {
+            const tbody = document.getElementById('inv-table-body');
+            tbody.innerHTML = '';
+            realInventory.forEach(item => {
+                let status = item.stock > 5 ? '<span style="color:green; font-weight:bold;">In Stock</span>' : '<span style="color:#ef6c00; font-weight:bold;">Low Stock</span>';
+                if(item.stock === 0) status = '<span style="color:#d32f2f; font-weight:bold;">Out of Stock</span>';
+                tbody.innerHTML += `<tr><td><strong>${item.brand}</strong></td><td>${item.name}</td><td>${item.category}</td><td style="font-weight:bold;">${item.stock}</td><td>₱${item.price.toFixed(2)}</td></tr>`;
+            });
+        }
+
+        function removeTx(index) { transactions.splice(index, 1); renderLists(); recalcMeters(); filterHistory(); }
+        function removeItem(index) { itemsSold.splice(index, 1); renderLists(); recalcMeters(); filterHistory(); }
+
+        // --- MATHS ---
+        function recalcMeters() {
+            let totals = {};
+            Object.keys(pumpConfig).forEach(k => totals[k] = { l: 0, amt: 0 });
+            let grandTotal = 0;
+
+            transactions.forEach(tx => {
+                const key = `${tx.pump}-${tx.fuel}`;
+                totals[key].l += tx.liters;
+                totals[key].amt += tx.amount;
+                grandTotal += tx.amount;
+            });
+            itemsSold.forEach(i => grandTotal += i.total);
+
             Object.keys(pumpConfig).forEach(key => {
                 const conf = pumpConfig[key];
-                const startingMeter = parseFloat(document.getElementById(conf.startId).innerText) || 0;
+                const sold = totals[key].l;
+                const amt = totals[key].amt;
                 
-                const soldLiters = pumpAccumulator[key].liters;
-                const soldAmt = pumpAccumulator[key].amount;
-                const closingMeter = startingMeter + soldLiters;
+                const calibInput = document.getElementById(`calib-${key.toLowerCase()}`);
+                const calibration = calibInput ? (parseFloat(calibInput.value) || 0) : 0;
 
-                document.getElementById(conf.soldId).innerText = soldLiters.toFixed(2);
-                document.getElementById(conf.closeId).innerText = closingMeter.toFixed(2);
-                document.getElementById(conf.amtId).innerText = soldAmt.toFixed(2);
+                document.getElementById(`meter-${key.toLowerCase()}-sold`).innerText = sold.toFixed(2);
+                document.getElementById(`meter-${key.toLowerCase()}-close`).innerText = (conf.start + sold + calibration).toFixed(2);
+                document.getElementById(`meter-${key.toLowerCase()}-amt`).innerText = amt.toFixed(2);
             });
 
-            // 4. Calculate Items
-            const itemRows = document.querySelectorAll('.item-row');
-            itemRows.forEach(row => {
-                let qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-                let price = parseFloat(row.querySelector('.item-price').value) || 0;
-                let amt = qty * price;
-                row.querySelector('.item-amt').innerText = amt.toFixed(2);
-                itemTotal += amt;
-            });
+            const fTotal = grandTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('shift-total').innerText = fTotal;
+            document.getElementById('dash-total').innerText = fTotal;
 
-            // 5. Grand Totals & Remittance
-            let grossTotal = fuelTotal + itemTotal;
-            document.getElementById('shift-total').innerText = grossTotal.toLocaleString('en-US', {minimumFractionDigits: 2});
-            document.getElementById('dash-total').innerText = grossTotal.toLocaleString('en-US', {minimumFractionDigits: 2});
-
+            let deductions = 0;
             ['val-expense', 'val-po', 'val-mdrrmo', 'val-moph', 'val-rndc'].forEach(id => {
                 deductions += parseFloat(document.getElementById(id).value) || 0;
             });
 
-            let remit = grossTotal - deductions;
-            document.getElementById('val-remit').value = remit.toLocaleString('en-US', {minimumFractionDigits: 2});
-            document.getElementById('dash-remit').innerText = remit.toLocaleString('en-US', {minimumFractionDigits: 2});
-        }
-
-        function saveData() {
-            alert('Shift transactions successfully submitted to database!');
-            showPage('dashboard');
+            const remit = grandTotal - deductions;
+            const fRemit = remit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('val-remit').value = fRemit;
+            document.getElementById('dash-remit').innerText = fRemit;
         }
     </script>
 </body>

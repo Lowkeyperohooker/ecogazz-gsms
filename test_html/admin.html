@@ -3,244 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoGazz GSMS | Admin Portal</title>
+    <title>EcoGazz GSMS | Admin Control</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --brand-color: #00796b; /* Teal */
-            --brand-dark: #004d40;
-            --brand-light: #b2dfdb;
-            --accent: #f57c00; /* Orange for alerts */
+            --brand-color: #006064; 
+            --brand-dark: #00363a;
+            --brand-light: #b2ebf2;
+            --accent: #f57c00; 
             --text-main: #263238;
-            --bg-light: #f4f6f8;
+            --bg-light: #eceff1;
             --white: #ffffff;
+            --danger: #d32f2f;
+            --success: #2e7d32;
         }
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            background-color: var(--bg-light);
-            color: var(--text-main);
-            display: flex;
-            height: 100vh;
-            overflow: hidden; 
-        }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; background-color: var(--bg-light); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        /* --- LOGIN SCREEN --- */
+        /* --- LOGIN --- */
         #login-page {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, var(--brand-dark), var(--brand-color));
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
         }
-        
-        .login-box {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            text-align: center;
-            width: 350px;
-        }
-
-        .login-box h1 { margin-bottom: 20px; color: var(--brand-dark); }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;}
-        .login-btn { width: 100%; padding: 12px; background: var(--brand-color); color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center; width: 320px; }
+        .login-box h1 { margin-bottom: 5px; color: var(--brand-dark); font-size: 24px; }
+        .login-box input { width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .login-btn { width: 100%; padding: 12px; background: var(--brand-color); color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; transition: 0.2s; }
         .login-btn:hover { background: var(--brand-dark); }
 
-        /* --- SIDEBAR NAV --- */
-        .sidebar {
-            width: 240px;
-            background-color: var(--brand-dark);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            flex-shrink: 0;
-        }
+        /* --- SIDEBAR --- */
+        .sidebar { width: 250px; background-color: var(--brand-dark); color: white; display: flex; flex-direction: column; box-shadow: 2px 0 10px rgba(0,0,0,0.1); flex-shrink: 0; }
+        .brand { padding: 20px; font-size: 18px; font-weight: bold; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); background-color: rgba(0,0,0,0.2); letter-spacing: 1px; }
+        .menu { flex: 1; padding-top: 10px; overflow-y: auto; }
+        .menu button { background: transparent; border: none; color: rgba(255,255,255,0.7); width: 100%; padding: 14px 20px; text-align: left; cursor: pointer; font-size: 14px; transition: 0.2s; border-left: 4px solid transparent; }
+        .menu button:hover, .menu button.active { background-color: rgba(255,255,255,0.05); color: white; border-left-color: var(--accent); }
+        .user-profile { padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 12px; text-align: center; color: rgba(255,255,255,0.5); }
 
-        .brand {
-            padding: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            background-color: rgba(0,0,0,0.1);
-        }
+        /* --- MAIN --- */
+        .main { flex: 1; padding: 20px 30px; display: flex; flex-direction: column; box-sizing: border-box; height: 100vh; overflow: hidden; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0; }
+        .header h2 { margin: 0; color: var(--brand-dark); font-size: 1.8rem; font-weight: 600; }
 
-        .menu {
-            flex: 1;
-            padding-top: 15px;
-            overflow-y: auto;
-        }
+        /* --- PANELS & CARDS --- */
+        .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; flex-shrink: 0; }
+        .card { background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 4px solid var(--brand-color); }
+        .card.alert { border-left-color: var(--accent); }
+        .card h3 { margin: 0 0 8px 0; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card .value { font-size: 26px; font-weight: bold; color: var(--text-main); }
+        .card .sub { font-size: 11px; color: #aaa; margin-top: 6px; }
 
-        .menu button {
-            background: transparent;
-            border: none;
-            color: rgba(255,255,255,0.8);
-            width: 100%;
-            padding: 12px 20px;
-            text-align: left;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-        }
+        .panel { background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; flex: 1; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f0f0f0; background: #fdfdfd; }
+        .panel-header h3 { margin: 0; font-size: 1.1rem; color: var(--brand-dark); }
+        .panel-content { padding: 20px; overflow-y: auto; flex: 1; }
 
-        .menu button:hover, .menu button.active {
-            background-color: var(--brand-color);
-            color: white;
-            border-left: 5px solid var(--accent);
-        }
-
-        .user-profile {
-            padding: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            font-size: 13px;
-            text-align: center;
-            color: rgba(255,255,255,0.6);
-        }
-
-        /* --- MAIN CONTENT --- */
-        .main {
-            flex: 1;
-            padding: 15px 25px;
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
-            height: 100vh;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-shrink: 0;
-        }
-
-        .header h2 { margin: 0; color: var(--brand-dark); font-size: 1.6rem; }
-
-        /* --- CARDS & WIDGETS --- */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-shrink: 0;
-        }
-
-        .card {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border-top: 4px solid var(--brand-color);
-        }
-
-        .card.alert { border-top-color: var(--accent); }
-        .card h3 { margin: 0 0 5px 0; font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card .value { font-size: 24px; font-weight: bold; color: var(--text-main); }
-        .card .sub { font-size: 11px; color: #999; margin-top: 4px; }
-
-        /* --- TABLES & FORMS --- */
-        .panel {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .panel-flex { flex: 1; overflow-y: auto; padding-right: 10px; } 
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
-        }
-        
-        .panel-header h3 { margin: 0; font-size: 1.1rem; }
-
+        /* --- TABLES --- */
         table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        th { text-align: left; padding: 8px; background-color: #f8f9fa; color: #555; font-size: 12px; font-weight: 600; }
-        td { padding: 6px 8px; border-bottom: 1px solid #eee; font-size: 13px; }
-        tr:hover { background-color: #f9f9f9; }
-
-        table.styled-table th {
-            background-color: var(--brand-color);
-            color: white;
-        }
-
-        .status-ok { color: green; font-weight: bold; background: #e8f5e9; padding: 4px 8px; border-radius: 12px; font-size: 11px; }
-        .status-low { color: #d32f2f; font-weight: bold; background: #ffebee; padding: 4px 8px; border-radius: 12px; font-size: 11px; }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-shrink: 0;
-        }
-
-        .input-group { display: flex; flex-direction: column; }
-        .input-group label { margin-bottom: 4px; font-weight: 600; font-size: 12px; color: #555; }
-        .input-group input, .input-group select { padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; width: 100%; font-size: 13px;}
-        .input-group input:read-only { background-color: #f5f5f5; color: #777; border: 1px solid #ddd;}
+        th { text-align: left; padding: 10px; background-color: #f4f6f8; color: #555; font-size: 11px; font-weight: 700; text-transform: uppercase; border-bottom: 2px solid #ddd; position: sticky; top: 0; z-index: 10;}
+        td { padding: 8px 10px; border-bottom: 1px solid #eee; font-size: 13px; color: #444; }
+        tr:hover { background-color: #fafafa; }
         
-        table input, table select { padding: 4px 6px; border: 1px solid #ccc; border-radius: 4px; width: 100%; font-size: 13px; box-sizing: border-box;}
+        .admin-input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 13px; text-align: right; }
+        .admin-input:focus { border-color: var(--brand-color); outline: none; box-shadow: 0 0 0 2px rgba(0,96,100,0.1); }
+        .money-col { text-align: right; font-family: monospace; font-size: 14px; }
+        .margin-good { color: var(--success); font-weight: bold; }
+        .margin-low { color: var(--accent); font-weight: bold; }
 
-        .btn-primary {
-            background-color: var(--brand-color);
-            color: white;
-            padding: 8px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-        }
+        /* --- BUTTONS & BADGES --- */
+        .btn-primary { background-color: var(--brand-color); color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s;}
         .btn-primary:hover { background-color: var(--brand-dark); }
+        .btn-success { background-color: var(--success); color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; }
         
-        .btn-small {
-            padding: 4px 10px;
-            font-size: 12px;
-            background-color: #e0e0e0;
-            color: #333;
-        }
-        .btn-small:hover { background-color: #ccc; }
-        .btn-danger { background-color: #f44336; color: white; }
-        .btn-danger:hover { background-color: #d32f2f; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .badge-pending { background-color: #fff3e0; color: #ef6c00; }
+        .badge-approved { background-color: #e8f5e9; color: #2e7d32; }
 
-        .bottom-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-            padding-top: 15px;
-            border-top: 2px solid #eee;
-            background: white;
-            padding-bottom: 5px;
-        }
+        .search-bar { display: flex; gap: 10px; padding: 15px 20px; background: #f8f9fa; border-bottom: 1px solid #eee; align-items: flex-end; }
+        .input-group { display: flex; flex-direction: column; }
+        .input-group label { margin-bottom: 4px; font-weight: 600; font-size: 11px; color: #555; text-transform: uppercase;}
+        .input-group input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
+        .total-banner { background: var(--brand-dark); color: white; padding: 15px 20px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
 
-        .bottom-actions h3 {
-            margin: 0;
-            font-size: 1.4rem;
-        }
-
-        /* Page Display Logic */
-        .page-content { display: none; flex-direction: column; flex: 1; height: 100%; }
-        .page-content.active { display: flex; animation: fadeEffect 0.3s; }
+        .page-content { display: none; flex-direction: column; height: 100%; animation: fadeEffect 0.3s; }
+        .page-content.active { display: flex; }
         @keyframes fadeEffect { from {opacity: 0;} to {opacity: 1;} }
 
     </style>
@@ -249,408 +95,406 @@
 
     <div id="login-page">
         <div class="login-box">
-            <h1>EcoGazz GSMS</h1>
-            <p>Admin Portal</p>
-            <input type="password" placeholder="Enter Admin PIN" onkeypress="if(event.key === 'Enter') login()">
-            <button class="login-btn" onclick="login()">Login to Dashboard</button>
+            <h1>EcoGazz Admin</h1>
+            <p style="color:#777; font-size:13px;">Management Console</p>
+            <input type="password" placeholder="Admin Passcode" onkeypress="if(event.key === 'Enter') login()">
+            <button class="login-btn" onclick="login()">Access System</button>
         </div>
     </div>
 
     <div class="sidebar" id="sidebar" style="display: none;">
-        <div class="brand">EcoGazz Kimaya</div>
+        <div class="brand">ECOGAZZ<br><span style="font-size: 11px; font-weight: normal; color: #aaa;">KIMAYA STATION</span></div>
         <div class="menu">
-            <button class="nav-btn active" onclick="showPage('dashboard')">
-                Dashboard
-            </button>
-            <button class="nav-btn" onclick="showPage('sales')">
-                Daily Sales Entry
-            </button>
-            <button class="nav-btn" onclick="showPage('inventory')">
-                Oil & LPG Inventory
-            </button>
-            <button class="nav-btn" onclick="showPage('purchasing')">
-                Purchase Orders
-            </button>
-            <button class="nav-btn" onclick="showPage('employees')">
-                Staff Management
-            </button>
-            <button class="nav-btn" onclick="showPage('reports')">
-                Reports
-            </button>
+            <button class="nav-btn active" onclick="showPage('dashboard')">📊 Executive Dashboard</button>
+            <button class="nav-btn" onclick="showPage('reviews')">📥 Shift Approvals</button>
+            <button class="nav-btn" onclick="showPage('audit')">📅 Daily Sales Audit</button>
+            <button class="nav-btn" onclick="showPage('pumps')">⛽ Pump & Pricing Setup</button>
+            <button class="nav-btn" onclick="showPage('inventory')">🛢️ Item Pricing & Margins</button>
+            <button class="nav-btn" onclick="showPage('purchasing')">🚚 Fuel Purchase Orders</button>
+            <button class="nav-btn" onclick="showPage('employees')">👥 Staff Management</button>
         </div>
         <div class="user-profile">
-            Logged in as: <strong>Admin</strong><br>
-            <span style="font-size: 12px; cursor: pointer; color: var(--accent); margin-top: 5px; display: inline-block;" onclick="logout()">Logout</span>
+            Logged in as: <strong>System Admin</strong><br>
+            <span style="cursor: pointer; color: var(--accent); margin-top: 5px; display: inline-block;" onclick="logout()">Secure Logout</span>
         </div>
     </div>
 
     <div class="main" id="main" style="display: none;">
-        
         <div class="header">
-            <h2 id="page-title">Dashboard Overview</h2>
+            <h2 id="page-title">Executive Dashboard</h2>
             <div style="text-align: right;">
-                <div style="font-weight: bold;" id="date-display"></div>
-                <div style="font-size: 12px; color: #666;">Station: Kimaya, Magsaysay</div>
+                <div style="font-weight: 600; color: var(--brand-dark);" id="date-display"></div>
             </div>
         </div>
 
         <div id="dashboard" class="page-content active">
             <div class="grid-container">
                 <div class="card">
-                    <h3>Today's Gross Sales</h3>
-                    <div class="value">₱ <span id="dash-total">0.00</span></div>
-                    <div class="sub">Includes Fuel, Oil & LPG</div>
+                    <h3>Today's Gross Revenue</h3>
+                    <div class="value">₱ 28,450.00</div>
+                    <div class="sub">From pending shifts</div>
                 </div>
-                <div class="card">
-                    <h3>Diesel Volume</h3>
-                    <div class="value"><span id="dash-diesel-vol">0</span> L</div>
-                    <div class="sub">Current Shift</div>
+                <div class="card" style="border-left-color: var(--success);">
+                    <h3>Est. Daily Profit Margin</h3>
+                    <div class="value" style="color: var(--success);">₱ 3,240.50</div>
+                    <div class="sub">Based on cost logic</div>
                 </div>
                 <div class="card alert">
-                    <h3>Low Stock Alerts</h3>
-                    <div class="value" style="color: var(--accent);">2 Items</div>
-                    <div class="sub">Castrol Go, Petron Gasul</div>
+                    <h3>Pending Remittances</h3>
+                    <div class="value" style="color: var(--accent);">2 Shifts</div>
+                    <div class="sub">Requires admin review</div>
                 </div>
                 <div class="card">
-                    <h3>Next Fuel Delivery</h3>
-                    <div class="value">Pending</div>
-                    <div class="sub">Last PO: Jan 20, 2026</div>
+                    <h3>Total Station Volume</h3>
+                    <div class="value">420.5 L</div>
+                    <div class="sub">Dispensed today</div>
                 </div>
             </div>
-
-            <div class="panel panel-flex">
+            <div class="panel">
                 <div class="panel-header">
-                    <h3>Monthly Sales Trend (2026)</h3>
+                    <h3>30-Day Revenue Trend</h3>
                 </div>
-                <div style="flex: 1; position: relative;">
+                <div class="panel-content" style="position: relative;">
                     <canvas id="salesChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <div id="sales" class="page-content">
+        <div id="reviews" class="page-content">
             <div class="panel">
-                <div class="panel-flex">
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label>Date</label>
-                            <input type="date" id="entry-date">
-                        </div>
-                        <div class="input-group">
-                            <label>Shift Time</label>
-                            <select>
-                                <option>12NN - 9PM</option>
-                                <option>3AM - 12NN</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>Gasman / Attendant</label>
-                            <select>
-                                <option>KENNETH</option>
-                                <option>DODONG</option>
-                                <option>FRANCIS</option>
-                                <option>ROXAS</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 5px;">
-                        <h3 style="margin-bottom: 8px; font-size: 1.05rem; color: var(--brand-dark);">Fuel Tracking (By Pump)</h3>
-                        <table class="styled-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 12%;">Pump</th>
-                                    <th style="width: 14%;">Item</th>
-                                    <th style="width: 13%;">Starting (L)</th>
-                                    <th style="width: 13%;">Closing (L)</th>
-                                    <th style="width: 12%;">Calibration</th>
-                                    <th style="width: 12%;">Result (L)</th>
-                                    <th style="width: 10%;">Price</th>
-                                    <th style="width: 14%;">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pump-table">
-                                <tr>
-                                    <td><strong>FRONT</strong></td>
-                                    <td><strong>Diesel</strong></td>
-                                    <td><input type="number" id="n1-open" class="calc-input" value="1500" oninput="calculateTotal()"></td>
-                                    <td><input type="number" id="n1-close" class="calc-input" value="1650" oninput="calculateTotal()"></td>
-                                    <td><input type="number" id="n1-cal" class="calc-input" value="0" oninput="calculateTotal()"></td>
-                                    <td><span id="n1-net" style="padding-left: 6px; font-weight:bold;">150.00</span></td>
-                                    <td><input type="number" id="n1-price" value="55.80" readonly></td>
-                                    <td style="font-weight: bold;">₱ <span id="n1-amt">8370.00</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>FRONT</strong></td>
-                                    <td><strong>Premium</strong></td>
-                                    <td><input type="number" id="n2-open" class="calc-input" value="2000" oninput="calculateTotal()"></td>
-                                    <td><input type="number" id="n2-close" class="calc-input" value="2000" oninput="calculateTotal()"></td>
-                                    <td><input type="number" id="n2-cal" class="calc-input" value="0" oninput="calculateTotal()"></td>
-                                    <td><span id="n2-net" style="padding-left: 6px; font-weight:bold;">0.00</span></td>
-                                    <td><input type="number" id="n2-price" value="56.50" readonly></td>
-                                    <td style="font-weight: bold;">₱ <span id="n2-amt">0.00</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>FRONT</strong></td>
-                                    <td><strong>Regular</strong></td>
-                                    <td><input type="number" id="n3-open" class="calc-input" value="1000" oninput="calculateTotal()"></td>
-                                    <td><input type="number" id="n3-close" class="calc-input" value="1000" oninput="calculateTotal()"></td>
-                                    <td><input type="number" id="n3-cal" class="calc-input" value="0" oninput="calculateTotal()"></td>
-                                    <td><span id="n3-net" style="padding-left: 6px; font-weight:bold;">0.00</span></td>
-                                    <td><input type="number" id="n3-price" value="55.80" readonly></td>
-                                    <td style="font-weight: bold;">₱ <span id="n3-amt">0.00</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div style="margin-top: 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <h3 style="font-size: 1.05rem; margin: 0; color: var(--brand-dark);">Oil & LPG Sales Log</h3>
-                            <button class="btn-primary btn-small" onclick="addItemRow()">+ Add Item</button>
-                        </div>
-                        <table class="styled-table" style="background: #fbfbfb; border: 1px solid #ddd;">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40%;">Item Description</th>
-                                    <th style="width: 15%;">Qty Sold</th>
-                                    <th style="width: 20%;">Unit Price (₱)</th>
-                                    <th style="width: 15%;">Amount (₱)</th>
-                                    <th style="width: 10%;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="items-table">
-                                </tbody>
-                        </table>
-                    </div>
+                <div class="panel-header">
+                    <h3>Pending Staff Shift Reports</h3>
+                    <button class="btn-primary">Sync Latest</button>
                 </div>
+                <div class="panel-content" style="padding: 0;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Shift</th>
+                                <th>Gasman</th>
+                                <th class="money-col">Gross Sales</th>
+                                <th class="money-col">Deductions</th>
+                                <th class="money-col">Expected Remittance</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Feb 26, 2026</td>
+                                <td>3AM - 12NN</td>
+                                <td>Dodong</td>
+                                <td class="money-col">₱ 12,450.00</td>
+                                <td class="money-col" style="color:var(--danger);">₱ 450.00</td>
+                                <td class="money-col" style="font-weight:bold;">₱ 12,000.00</td>
+                                <td><span class="badge badge-pending">Review</span></td>
+                                <td><button class="btn-success">Approve</button></td>
+                            </tr>
+                            <tr>
+                                <td>Feb 25, 2026</td>
+                                <td>12NN - 9PM</td>
+                                <td>Kenneth</td>
+                                <td class="money-col">₱ 16,000.00</td>
+                                <td class="money-col" style="color:var(--danger);">₱ 0.00</td>
+                                <td class="money-col" style="font-weight:bold;">₱ 16,000.00</td>
+                                <td><span class="badge badge-approved">Posted</span></td>
+                                <td><button class="btn-primary" style="background:#888;">View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-                <div class="bottom-actions">
-                    <div style="font-size: 12px; color: #777;">Review entries before submitting to database.</div>
-                    <div style="text-align: right;">
-                        <h3 style="color: var(--brand-dark);">Shift Grand Total: ₱ <span id="shift-total">8370.00</span></h3>
-                        <button class="btn-primary" style="margin-top: 5px;" onclick="saveData()">Save Shift Report</button>
+        <div id="audit" class="page-content">
+            <div class="panel">
+                <div class="search-bar">
+                    <div class="input-group" style="width: 220px;">
+                        <label>Filter by Date</label>
+                        <input type="date" id="audit-date">
                     </div>
+                    <button class="btn-primary">Search</button>
+                </div>
+                <div class="panel-content">
+                    <div class="total-banner">
+                        <h3 style="margin:0; font-weight:normal; color:#b2ebf2;">Audited Gross Sales for Selected Period</h3>
+                        <div style="font-size: 1.6rem; font-weight: bold;">₱ 28,450.00</div>
+                    </div>
+                    <table>
+                        <thead style="background: var(--brand-color); color: white;">
+                            <tr>
+                                <th style="color:white; border:none;">Date</th>
+                                <th style="color:white; border:none;">Time</th>
+                                <th style="color:white; border:none;">Type</th>
+                                <th style="color:white; border:none;">Description</th>
+                                <th style="color:white; border:none;">Qty / Liters</th>
+                                <th class="money-col" style="color:white; border:none; text-align:right;">Amount (₱)</th>
+                                <th style="color:white; border:none;">Staff</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2026-02-26</td>
+                                <td>05:00 AM</td>
+                                <td><span class="badge" style="background: #e3f2fd; color: #1565c0;">Fuel</span></td>
+                                <td><strong>Back Diesel</strong></td>
+                                <td>50.00 L</td>
+                                <td class="money-col">₱ 2,790.00</td>
+                                <td>Dodong</td>
+                            </tr>
+                            <tr>
+                                <td>2026-02-26</td>
+                                <td>06:30 AM</td>
+                                <td><span class="badge" style="background: #e3f2fd; color: #1565c0;">Fuel</span></td>
+                                <td><strong>Front Diesel</strong></td>
+                                <td>10.00 L</td>
+                                <td class="money-col">₱ 558.00</td>
+                                <td>Dodong</td>
+                            </tr>
+                            <tr>
+                                <td>2026-02-26</td>
+                                <td>08:15 AM</td>
+                                <td><span class="badge" style="background: #f3e5f5; color: #ad1457;">Item</span></td>
+                                <td><strong>CASTROL ACTIV 4T 1L</strong></td>
+                                <td>2 Qty</td>
+                                <td class="money-col">₱ 556.00</td>
+                                <td>Dodong</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="pumps" class="page-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>Master Pump Configuration</h3>
+                    <button class="btn-primary" onclick="alert('Prices Synced to POS')">Push to Stations</button>
+                </div>
+                <div class="panel-content" style="padding: 0;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pump Location</th>
+                                <th>Fuel Type</th>
+                                <th>Base Cost / L</th>
+                                <th>Selling Price / L</th>
+                                <th>Profit Margin</th>
+                                <th>Starting Meter (L)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>FRONT PUMP</td>
+                                <td>Diesel</td>
+                                <td><input type="number" class="admin-input" value="52.00"></td>
+                                <td><input type="number" class="admin-input" value="55.80" style="font-weight:bold;"></td>
+                                <td class="money-col margin-good">₱ 3.80</td>
+                                <td><input type="number" class="admin-input" value="1500.00" style="border-color:#b0bec5;"></td>
+                            </tr>
+                            <tr>
+                                <td>FRONT PUMP</td>
+                                <td>Premium</td>
+                                <td><input type="number" class="admin-input" value="52.50"></td>
+                                <td><input type="number" class="admin-input" value="56.50" style="font-weight:bold;"></td>
+                                <td class="money-col margin-good">₱ 4.00</td>
+                                <td><input type="number" class="admin-input" value="2000.00" style="border-color:#b0bec5;"></td>
+                            </tr>
+                            <tr>
+                                <td>FRONT PUMP</td>
+                                <td>Regular</td>
+                                <td><input type="number" class="admin-input" value="52.00"></td>
+                                <td><input type="number" class="admin-input" value="55.80" style="font-weight:bold;"></td>
+                                <td class="money-col margin-good">₱ 3.80</td>
+                                <td><input type="number" class="admin-input" value="1000.00" style="border-color:#b0bec5;"></td>
+                            </tr>
+                             <tr>
+                                <td>BACK PUMP</td>
+                                <td>Diesel</td>
+                                <td><input type="number" class="admin-input" value="52.00"></td>
+                                <td><input type="number" class="admin-input" value="55.80" style="font-weight:bold;"></td>
+                                <td class="money-col margin-good">₱ 3.80</td>
+                                <td><input type="number" class="admin-input" value="800.00" style="border-color:#b0bec5;"></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
         <div id="inventory" class="page-content">
-            <div class="panel panel-flex">
+            <div class="panel">
                 <div class="panel-header">
-                    <h3>Current Stock Levels (Oil & LPG)</h3>
-                    <button class="btn-primary">Update Count</button>
+                    <h3>Item Cost & Margin Table (Real Records)</h3>
+                    <button class="btn-success">Save Database</button>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Item Name</th>
-                            <th>Category</th>
-                            <th>Stock Count</th>
-                            <th>Unit Price</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Castrol Activ 4T 1L</td>
-                            <td>Oil</td>
-                            <td>14</td>
-                            <td>₱ 278.00</td>
-                            <td><span class="status-ok">In Stock</span></td>
-                        </tr>
-                        <tr>
-                            <td>Castrol Go 800ml</td>
-                            <td>Oil</td>
-                            <td>2</td>
-                            <td>₱ 226.00</td>
-                            <td><span class="status-low">Low Stock</span></td>
-                        </tr>
-                        <tr>
-                            <td>Prycegas 11kg Refill</td>
-                            <td>LPG</td>
-                            <td>5</td>
-                            <td>₱ 1,100.00</td>
-                            <td><span class="status-ok">In Stock</span></td>
-                        </tr>
-                         <tr>
-                            <td>Petron Gasul 2.7kg</td>
-                            <td>LPG</td>
-                            <td>0</td>
-                            <td>₱ 350.00</td>
-                            <td><span class="status-low">Out of Stock</span></td>
-                        </tr>
-                        <tr>
-                            <td>Havoline 20W-40 1L</td>
-                            <td>Oil</td>
-                            <td>8</td>
-                            <td>₱ 240.00</td>
-                            <td><span class="status-ok">In Stock</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="panel-content" style="padding: 0;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:15%">Brand</th>
+                                <th style="width:30%">Product Description</th>
+                                <th style="width:15%">Cost Price (₱)</th>
+                                <th style="width:15%">Sell Price (₱)</th>
+                                <th style="width:15%">Margin (₱)</th>
+                                <th style="width:10%">Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody id="real-inventory-body">
+                            </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <div id="purchasing" class="page-content">
-             <div class="panel panel-flex">
+             <div class="panel">
                 <div class="panel-header">
-                    <h3>Fuel Delivery Log (Purchase Orders)</h3>
-                    <button class="btn-primary">+ New Delivery</button>
+                    <h3>Fuel Purchase Orders (Consuelo, Kimaya)</h3>
+                    <button class="btn-primary">+ Add P.O.</button>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>PO Reference</th>
-                            <th>Product</th>
-                            <th>Liters Received</th>
-                            <th>Supplier Price</th>
-                            <th>Total Cost</th>
-                            <th>Receiver</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2026-01-20</td>
-                            <td>PO-001</td>
-                            <td>Diesel</td>
-                            <td>200 L</td>
-                            <td>₱ 55.80</td>
-                            <td>₱ 11,160.00</td>
-                            <td>Bryan Bacoy</td>
-                        </tr>
-                        <tr>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="panel-content" style="padding: 0;">
+                    <table>
+                        <thead style="background:#1565c0; color:white;">
+                            <tr>
+                                <th style="color:white; border:none;">Date</th>
+                                <th style="color:white; border:none;">Fuel</th>
+                                <th style="color:white; border:none;">Liters</th>
+                                <th style="color:white; border:none;">Price/L</th>
+                                <th style="color:white; border:none;">Add Price</th>
+                                <th style="color:white; border:none;">Total Add</th>
+                                <th style="color:white; border:none; text-align:right;">Amount (₱)</th>
+                                <th style="color:white; border:none;">Receiver</th>
+                                <th style="color:white; border:none;">Gas Man</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>20-Jan-26</td>
+                                <td><strong>DIESEL</strong></td>
+                                <td>200</td>
+                                <td class="money-col">₱55.80</td>
+                                <td class="money-col" style="color:#d32f2f;">₱0.00</td>
+                                <td class="money-col" style="color:#d32f2f;">₱55.80</td>
+                                <td class="money-col" style="font-weight:bold; color:#d32f2f;">₱11,160.00</td>
+                                <td>BRYAN BACOY</td>
+                                <td>DODONG</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <div id="employees" class="page-content">
-            <div class="panel panel-flex">
+            <div class="panel">
                 <div class="panel-header">
-                    <h3>Station Staff & Employees</h3>
+                    <h3>Station Staff Management</h3>
                     <button class="btn-primary">+ Add Employee</button>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>EMP-001</td>
-                            <td>Dodong</td>
-                            <td>Pump Attendant</td>
-                            <td><span class="status-ok">Active</span></td>
-                            <td><button class="btn-primary btn-small">Edit</button></td>
-                        </tr>
-                        <tr>
-                            <td>EMP-002</td>
-                            <td>Francis</td>
-                            <td>Pump Attendant</td>
-                            <td><span class="status-ok">Active</span></td>
-                            <td><button class="btn-primary btn-small">Edit</button></td>
-                        </tr>
-                        <tr>
-                            <td>EMP-003</td>
-                            <td>Kenneth</td>
-                            <td>Pump Attendant</td>
-                            <td><span class="status-ok">Active</span></td>
-                            <td><button class="btn-primary btn-small">Edit</button></td>
-                        </tr>
-                        <tr>
-                            <td>EMP-004</td>
-                            <td>Roxas</td>
-                            <td>Pump Attendant</td>
-                            <td><span class="status-ok">Active</span></td>
-                            <td><button class="btn-primary btn-small">Edit</button></td>
-                        </tr>
-                        <tr>
-                            <td>EMP-005</td>
-                            <td>Bryan Bacoy</td>
-                            <td>Station Manager / Receiver</td>
-                            <td><span class="status-ok">Active</span></td>
-                            <td><button class="btn-primary btn-small">Edit</button></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="panel-content" style="padding:0;">
+                    <table>
+                        <thead>
+                            <tr><th>Name</th><th>Role</th><th>PIN Code</th><th>Status</th><th>Action</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>DODONG</td><td>Pump Attendant</td><td>****</td><td><span class="badge badge-approved">Active</span></td><td><button class="btn-primary">Edit</button></td></tr>
+                            <tr><td>KENNETH</td><td>Pump Attendant</td><td>****</td><td><span class="badge badge-approved">Active</span></td><td><button class="btn-primary">Edit</button></td></tr>
+                            <tr><td>FRANCIS</td><td>Pump Attendant</td><td>****</td><td><span class="badge badge-approved">Active</span></td><td><button class="btn-primary">Edit</button></td></tr>
+                            <tr><td>ROXAS</td><td>Pump Attendant</td><td>****</td><td><span class="badge badge-approved">Active</span></td><td><button class="btn-primary">Edit</button></td></tr>
+                            <tr><td>BRYAN BACOY</td><td>Manager / Receiver</td><td>****</td><td><span class="badge badge-approved">Active</span></td><td><button class="btn-primary">Edit</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        
-        <div id="reports" class="page-content">
-            <div class="panel">
-                <div class="panel-header" style="border:none; margin-bottom: 0;">
-                    <h3>Generate Reports</h3>
-                </div>
-                <div class="form-grid">
-                     <div class="input-group">
-                        <label>Report Type</label>
-                        <select>
-                            <option>Daily Sales Summary</option>
-                            <option>Inventory Movement</option>
-                            <option>Monthly Revenue</option>
-                        </select>
-                     </div>
-                     <div class="input-group">
-                        <label>Date Range</label>
-                        <input type="month" value="2026-02">
-                     </div>
-                     <div class="input-group" style="justify-content: flex-end;">
-                        <button class="btn-primary" style="margin-top: 25px;">Download PDF</button>
-                     </div>
-                </div>
-            </div>
-         </div>
 
     </div>
 
     <script>
-        // Inventory Reference for Dropdown
-        const inventoryItems = [
-            { id: 0, name: "-- Select Item --", price: 0 },
-            { id: 1, name: "Castrol Activ 4T 1L", price: 278.00 },
-            { id: 2, name: "Castrol Go 800ml", price: 226.00 },
-            { id: 3, name: "Prycegas 11kg Refill", price: 1100.00 },
-            { id: 4, name: "Petron Gasul 2.7kg", price: 350.00 },
-            { id: 5, name: "Havoline 20W-40 1L", price: 240.00 }
+        document.getElementById('date-display').innerText = new Date().toDateString();
+
+        // ---------------------------------------------------------
+        // EXACT DATA EXTRACTED FROM YOUR EXCEL FILES
+        // ---------------------------------------------------------
+        const realInventoryData = [
+            { brand: "PRYCEGAS", item: "11KG SET WITH CONTENT", cost: 2300, sell: 2600, stock: 5, color: "#fff3e0" },
+            { brand: "PRYCEGAS", item: "11KG REFILL", cost: 950, sell: 1100, stock: 12, color: "#fff3e0" },
+            { brand: "PRYCEGAS", item: "2.7KG SET POWER KALAN (W/ CONTENT)", cost: 1100, sell: 1300, stock: 4, color: "#fff3e0" },
+            { brand: "PRYCEGAS", item: "2.7KG POWER KALAN REFILL", cost: 300, sell: 370, stock: 10, color: "#fff3e0" },
+            { brand: "PRYCEGAS", item: "BURNER", cost: 500, sell: 650, stock: 8, color: "#fff3e0" },
+            
+            { brand: "PETRON GASUL", item: "11KG SET WITH CONTENT", cost: 1800, sell: 2000, stock: 3, color: "#eceff1" },
+            { brand: "PETRON GASUL", item: "11KG REFILL", cost: 980, sell: 1110, stock: 15, color: "#eceff1" },
+            { brand: "PETRON GASUL", item: "2.7KG SET WITH CONTENT", cost: 1300, sell: 1499, stock: 2, color: "#eceff1" },
+            
+            { brand: "FIESTA GAS", item: "11KG SET WITH CONTENT", cost: 1800, sell: 2000, stock: 4, color: "#e0f7fa" },
+            { brand: "FIESTA GAS", item: "11KG REFILL", cost: 980, sell: 1120, stock: 14, color: "#e0f7fa" },
+            { brand: "FIESTA GAS", item: "2.7KG SET WITH CONTENT", cost: 1150, sell: 1300, stock: 5, color: "#e0f7fa" },
+            { brand: "FIESTA GAS", item: "2.7KG REFILL", cost: 300, sell: 370, stock: 10, color: "#e0f7fa" },
+            
+            { brand: "CALTEX", item: "TEXAMATIC 1L", cost: 240, sell: 290, stock: 20, color: "#f5f5f5" },
+            { brand: "CALTEX", item: "HAVOLINE 20W-40 1L", cost: 190, sell: 240, stock: 18, color: "#f5f5f5" },
+            { brand: "CALTEX", item: "HAVOLINE EZY 20W-40 1L", cost: 190, sell: 239, stock: 12, color: "#f5f5f5" },
+            { brand: "CALTEX", item: "DELO GEAR EP4 90 1L", cost: 240, sell: 288, stock: 8, color: "#f5f5f5" },
+            
+            { brand: "CASTROL", item: "GO ESSENTIAL 1L", cost: 210, sell: 256, stock: 15, color: "#fce4ec" },
+            { brand: "CASTROL", item: "GO ESSENTIAL 800ML", cost: 180, sell: 226, stock: 6, color: "#fce4ec" },
+            { brand: "CASTROL", item: "ACTIV 4T 1L", cost: 230, sell: 278, stock: 14, color: "#fce4ec" },
+            { brand: "CASTROL", item: "ACTIV 4T 800ML", cost: 200, sell: 247, stock: 9, color: "#fce4ec" },
+            
+            { brand: "SHELL", item: "2T 200ML", cost: 40, sell: 50, stock: 25, color: "#fff9c4" },
+            { brand: "SHELL", item: "2T 1L", cost: 180, sell: 216, stock: 11, color: "#fff9c4" },
+            { brand: "SHELL", item: "AX3 ADVANCE 1L", cost: 220, sell: 262, stock: 16, color: "#fff9c4" },
+            { brand: "SHELL", item: "COOLANT 1L", cost: 230, sell: 278, stock: 10, color: "#fff9c4" },
+            
+            { brand: "WHIZ", item: "BRAKE FLUID 900ML", cost: 200, sell: 240, stock: 5, color: "#e8eaf6" },
+            { brand: "WHIZ", item: "BRAKE FLUID 270ML", cost: 60, sell: 79, stock: 12, color: "#e8eaf6" },
+            
+            { brand: "VS1", item: "PROTECTOR 250ML", cost: 170, sell: 216, stock: 8, color: "#f3e5f5" },
+            { brand: "GUAPO", item: "WASHER FLUID", cost: 180, sell: 230, stock: 20, color: "#e0f2f1" }
         ];
 
-        // Set Today's Date
-        document.getElementById('date-display').innerText = new Date().toDateString();
-        document.getElementById('entry-date').valueAsDate = new Date();
-
-        // Initialize first item row
         window.onload = function() {
-            addItemRow();
+            renderRealInventory();
         };
 
-        // Login Logic
+        // Inject real items into the table
+        function renderRealInventory() {
+            const tbody = document.getElementById('real-inventory-body');
+            tbody.innerHTML = '';
+
+            realInventoryData.forEach(item => {
+                const margin = item.sell - item.cost;
+                const marginClass = margin < 30 ? "money-col margin-val margin-low" : "money-col margin-val margin-good";
+                
+                tbody.innerHTML += `
+                    <tr style="background:${item.color};">
+                        <td><strong>${item.brand}</strong></td>
+                        <td>${item.item}</td>
+                        <td><input type="number" class="admin-input cost-input" value="${item.cost.toFixed(2)}" oninput="calcMargin(this)"></td>
+                        <td><input type="number" class="admin-input sell-input" value="${item.sell.toFixed(2)}" oninput="calcMargin(this)"></td>
+                        <td class="${marginClass}">${margin.toFixed(2)}</td>
+                        <td style="text-align:center; font-weight:bold;">${item.stock}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Login System
         function login() {
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('sidebar').style.display = 'flex';
             document.getElementById('main').style.display = 'flex';
-            calculateTotal();
             renderChart();
             showPage('dashboard');
         }
 
         function logout() { location.reload(); }
 
-        // Navigation Logic
+        // Navigation
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
@@ -660,130 +504,58 @@
             Array.from(buttons).find(btn => btn.getAttribute('onclick') === `showPage('${pageId}')`).classList.add('active');
 
             const titles = {
-                'dashboard': 'Dashboard Overview',
-                'sales': 'Daily Sales Entry',
-                'inventory': 'Oil & LPG Inventory',
-                'purchasing': 'Purchase Orders',
-                'employees': 'Staff Management',
-                'reports': 'Analytics & Reporting'
+                'dashboard': 'Executive Dashboard',
+                'reviews': 'Shift Approvals & Audit',
+                'audit': 'Daily Sales Audit Log',
+                'pumps': 'Pump & Pricing Setup',
+                'inventory': 'Item Pricing & Margins',
+                'purchasing': 'Fuel Purchase Orders',
+                'employees': 'Staff Management'
             };
             document.getElementById('page-title').innerText = titles[pageId];
         }
 
-        // --- CALCULATION LOGIC ---
-
-        function calculateTotal() {
-            let fuelTotal = 0;
-            let itemTotal = 0;
-
-            // Calculate Fuel (Nozzles)
-            ['n1', 'n2', 'n3'].forEach(id => {
-                let open = parseFloat(document.getElementById(id+'-open').value) || 0;
-                let close = parseFloat(document.getElementById(id+'-close').value) || 0;
-                let cal = parseFloat(document.getElementById(id+'-cal').value) || 0;
-                let price = parseFloat(document.getElementById(id+'-price').value) || 0;
-                
-                let gross = close - open;
-                if(gross < 0) gross = 0; // Prevent negative volume
-                
-                let net = gross - cal;
-                if(net < 0) net = 0; // Prevent negative net
-                
-                let amount = net * price;
-                
-                document.getElementById(id+'-net').innerText = net.toFixed(2);
-                document.getElementById(id+'-amt').innerText = amount.toFixed(2);
-                
-                fuelTotal += amount;
-            });
-
-            // Calculate Items
-            const itemRows = document.querySelectorAll('.item-row');
-            itemRows.forEach(row => {
-                let qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-                let price = parseFloat(row.querySelector('.item-price').value) || 0;
-                let amt = qty * price;
-                
-                row.querySelector('.item-amt').innerText = amt.toFixed(2);
-                itemTotal += amt;
-            });
-
-            // Grand Total
-            let grandTotal = fuelTotal + itemTotal;
-            document.getElementById('shift-total').innerText = grandTotal.toLocaleString('en-US', {minimumFractionDigits: 2});
-        }
-
-        // --- ITEM ROW MANAGEMENT ---
-
-        function addItemRow() {
-            const tbody = document.getElementById('items-table');
-            const tr = document.createElement('tr');
-            tr.className = 'item-row';
+        // Live Margin Calculation for when admin edits pricing
+        function calcMargin(inputElem) {
+            const row = inputElem.closest('tr');
+            const cost = parseFloat(row.querySelector('.cost-input').value) || 0;
+            const sell = parseFloat(row.querySelector('.sell-input').value) || 0;
+            const marginCell = row.querySelector('.margin-val');
             
-            // Generate dropdown options
-            let optionsHTML = inventoryItems.map(item => 
-                `<option value="${item.price}">${item.name}</option>`
-            ).join('');
-
-            tr.innerHTML = `
-                <td>
-                    <select class="item-select" onchange="updateItemRow(this)">
-                        ${optionsHTML}
-                    </select>
-                </td>
-                <td><input type="number" class="item-qty" value="1" min="1" oninput="calculateTotal()"></td>
-                <td><input type="number" class="item-price" value="0" readonly></td>
-                <td style="font-weight:bold;">₱ <span class="item-amt">0.00</span></td>
-                <td><button class="btn-small btn-danger" onclick="removeItemRow(this)">X</button></td>
-            `;
-            tbody.appendChild(tr);
-        }
-
-        function updateItemRow(selectElement) {
-            const row = selectElement.closest('tr');
-            const priceInput = row.querySelector('.item-price');
-            // The value of the option is set to the price
-            priceInput.value = selectElement.value;
-            calculateTotal();
-        }
-
-        function removeItemRow(btnElement) {
-            const row = btnElement.closest('tr');
-            row.remove();
-            calculateTotal();
-        }
-
-        function saveData() {
-            let total = document.getElementById('shift-total').innerText;
-            document.getElementById('dash-total').innerText = total;
-            document.getElementById('dash-diesel-vol').innerText = document.getElementById('n1-net').innerText;
+            const margin = sell - cost;
+            marginCell.innerText = margin.toFixed(2);
             
-            alert('Shift report successfully saved to database!');
-            showPage('dashboard');
+            if (margin < 30) {
+                marginCell.className = "money-col margin-val margin-low";
+            } else {
+                marginCell.className = "money-col margin-val margin-good";
+            }
         }
 
-        // Chart.js Rendering
+        // Dashboard Chart
         function renderChart() {
             const ctx = document.getElementById('salesChart').getContext('2d');
             new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
-                    labels: ['Jan 1', 'Jan 5', 'Jan 10', 'Jan 15', 'Jan 20', 'Jan 25', 'Jan 30'],
+                    labels: ['Feb 20', 'Feb 21', 'Feb 22', 'Feb 23', 'Feb 24', 'Feb 25', 'Feb 26'],
                     datasets: [{
-                        label: 'Daily Sales (₱)',
-                        data: [12000, 15400, 11000, 18500, 14200, 21000, 17500],
-                        borderColor: '#00796b',
-                        backgroundColor: 'rgba(0, 121, 107, 0.1)',
-                        fill: true,
-                        tension: 0.3
+                        label: 'Gross Sales (₱)',
+                        data: [25000, 28400, 22000, 31000, 29000, 27500, 28450],
+                        backgroundColor: '#006064',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Profit Margin (₱)',
+                        data: [2500, 2800, 2100, 3500, 3000, 2900, 3240],
+                        backgroundColor: '#f57c00',
+                        borderRadius: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
+                    scales: { y: { beginAtZero: true } }
                 }
             });
         }

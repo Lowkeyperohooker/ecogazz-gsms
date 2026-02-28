@@ -58,12 +58,21 @@
         .panel-header h3 { margin: 0; font-size: 1.1rem; color: var(--brand-dark); }
         .panel-content { padding: 20px; overflow-y: auto; flex: 1; }
 
-        /* --- TABLES --- */
+        /* --- TABLES & ALIGNMENT --- */
         table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        th { text-align: left; padding: 10px; background-color: #f4f6f8; color: #555; font-size: 11px; font-weight: 700; text-transform: uppercase; border-bottom: 2px solid #ddd; position: sticky; top: 0; z-index: 10;}
+        th { text-align: left; padding: 10px; background-color: #f4f6f8; color: #333; font-size: 11px; font-weight: 700; text-transform: uppercase; border-bottom: 2px solid #ddd; position: sticky; top: 0; z-index: 10;}
         td { padding: 8px 10px; border-bottom: 1px solid #eee; font-size: 13px; color: #444; }
         tr:hover { background-color: #fafafa; }
         
+        /* Alignment Utilities */
+        .text-center { text-align: center !important; }
+        .text-right { text-align: right !important; }
+
+        /* Colored Headers */
+        .thead-teal th { background-color: var(--brand-color) !important; color: #ffffff !important; border-bottom: none; }
+        .thead-blue th { background-color: #1565c0 !important; color: #ffffff !important; border-bottom: none; }
+        .locked-table th { background-color: #607d8b !important; color: #ffffff !important; border-bottom: none; }
+
         .admin-input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 13px; text-align: right; }
         .admin-input:focus { border-color: var(--brand-color); outline: none; box-shadow: 0 0 0 2px rgba(0,96,100,0.1); }
         .money-col { text-align: right; font-family: monospace; font-size: 14px; }
@@ -74,20 +83,45 @@
         .btn-primary { background-color: var(--brand-color); color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s;}
         .btn-primary:hover { background-color: var(--brand-dark); }
         .btn-success { background-color: var(--success); color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-outline { background-color: white; color: #555; border: 1px solid #ccc; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-outline:hover { background-color: #f5f5f5; }
         
-        .badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; display: inline-block;}
         .badge-pending { background-color: #fff3e0; color: #ef6c00; }
         .badge-approved { background-color: #e8f5e9; color: #2e7d32; }
+        .badge-fuel { background: #e3f2fd; color: #1565c0; }
+        .badge-item { background: #f3e5f5; color: #ad1457; }
 
         .search-bar { display: flex; gap: 10px; padding: 15px 20px; background: #f8f9fa; border-bottom: 1px solid #eee; align-items: flex-end; }
         .input-group { display: flex; flex-direction: column; }
         .input-group label { margin-bottom: 4px; font-weight: 600; font-size: 11px; color: #555; text-transform: uppercase;}
         .input-group input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
         .total-banner { background: var(--brand-dark); color: white; padding: 15px 20px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .total-banner h3 { margin: 0; font-size: 1.1rem; color: var(--brand-light); font-weight: normal;}
+        .total-banner span { font-size: 1.6rem; font-weight: bold; }
 
         .page-content { display: none; flex-direction: column; height: 100%; animation: fadeEffect 0.3s; }
         .page-content.active { display: flex; }
         @keyframes fadeEffect { from {opacity: 0;} to {opacity: 1;} }
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); z-index: 2000; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: white; width: 850px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; max-height: 90vh;
+        }
+        .modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; border-radius: 8px 8px 0 0; }
+        .modal-header h3 { margin: 0; color: var(--brand-dark); }
+        .modal-body { padding: 20px; overflow-y: auto; }
+        .modal-footer { padding: 15px 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px; background: #fafafa; border-radius: 0 0 8px 8px; }
+
+        .summary-box { background: #e0f7fa; padding: 15px; border-radius: 6px; border: 1px solid #b2ebf2; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .summary-box div { text-align: center; }
+        .summary-box span { display: block; font-size: 11px; color: #006064; text-transform: uppercase; font-weight: bold; margin-bottom: 4px; }
+        .summary-box strong { font-size: 18px; color: var(--brand-dark); }
 
     </style>
 </head>
@@ -105,13 +139,13 @@
     <div class="sidebar" id="sidebar" style="display: none;">
         <div class="brand">ECOGAZZ<br><span style="font-size: 11px; font-weight: normal; color: #aaa;">KIMAYA STATION</span></div>
         <div class="menu">
-            <button class="nav-btn active" onclick="showPage('dashboard')">📊 Executive Dashboard</button>
-            <button class="nav-btn" onclick="showPage('reviews')">📥 Shift Approvals</button>
-            <button class="nav-btn" onclick="showPage('audit')">📅 Daily Sales Audit</button>
-            <button class="nav-btn" onclick="showPage('pumps')">⛽ Pump & Pricing Setup</button>
-            <button class="nav-btn" onclick="showPage('inventory')">🛢️ Item Pricing & Margins</button>
-            <button class="nav-btn" onclick="showPage('purchasing')">🚚 Fuel Purchase Orders</button>
-            <button class="nav-btn" onclick="showPage('employees')">👥 Staff Management</button>
+            <button class="nav-btn active" onclick="showPage('dashboard')">Executive Dashboard</button>
+            <button class="nav-btn" onclick="showPage('reviews')">Shift Approvals</button>
+            <button class="nav-btn" onclick="showPage('audit')">Daily Sales Audit</button>
+            <button class="nav-btn" onclick="showPage('pumps')">Pump & Pricing Setup</button>
+            <button class="nav-btn" onclick="showPage('inventory')">Item Pricing & Margins</button>
+            <button class="nav-btn" onclick="showPage('purchasing')">Fuel Purchase Orders</button>
+            <button class="nav-btn" onclick="showPage('employees')">Staff Management</button>
         </div>
         <div class="user-profile">
             Logged in as: <strong>System Admin</strong><br>
@@ -168,16 +202,16 @@
                 </div>
                 <div class="panel-content" style="padding: 0;">
                     <table>
-                        <thead>
+                        <thead class="thead-teal">
                             <tr>
                                 <th>Date</th>
                                 <th>Shift</th>
                                 <th>Gasman</th>
-                                <th class="money-col">Gross Sales</th>
-                                <th class="money-col">Deductions</th>
-                                <th class="money-col">Expected Remittance</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th class="text-right">Gross Sales</th>
+                                <th class="text-right">Deductions</th>
+                                <th class="text-right">Expected Remittance</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -188,8 +222,8 @@
                                 <td class="money-col">₱ 12,450.00</td>
                                 <td class="money-col" style="color:var(--danger);">₱ 450.00</td>
                                 <td class="money-col" style="font-weight:bold;">₱ 12,000.00</td>
-                                <td><span class="badge badge-pending">Review</span></td>
-                                <td><button class="btn-success">Approve</button></td>
+                                <td class="text-center"><span class="badge badge-pending">Review</span></td>
+                                <td class="text-center"><button class="btn-primary" onclick="openShiftModal('Dodong', 'Feb 26, 2026', '3AM - 12NN', 'Pending')">Review Shift</button></td>
                             </tr>
                             <tr>
                                 <td>Feb 25, 2026</td>
@@ -198,8 +232,8 @@
                                 <td class="money-col">₱ 16,000.00</td>
                                 <td class="money-col" style="color:var(--danger);">₱ 0.00</td>
                                 <td class="money-col" style="font-weight:bold;">₱ 16,000.00</td>
-                                <td><span class="badge badge-approved">Posted</span></td>
-                                <td><button class="btn-primary" style="background:#888;">View</button></td>
+                                <td class="text-center"><span class="badge badge-approved">Posted</span></td>
+                                <td class="text-center"><button class="btn-outline" onclick="openShiftModal('Kenneth', 'Feb 25, 2026', '12NN - 9PM', 'Approved')">View Details</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -222,42 +256,42 @@
                         <div style="font-size: 1.6rem; font-weight: bold;">₱ 28,450.00</div>
                     </div>
                     <table>
-                        <thead style="background: var(--brand-color); color: white;">
+                        <thead class="thead-teal">
                             <tr>
-                                <th style="color:white; border:none;">Date</th>
-                                <th style="color:white; border:none;">Time</th>
-                                <th style="color:white; border:none;">Type</th>
-                                <th style="color:white; border:none;">Description</th>
-                                <th style="color:white; border:none;">Qty / Liters</th>
-                                <th class="money-col" style="color:white; border:none; text-align:right;">Amount (₱)</th>
-                                <th style="color:white; border:none;">Staff</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th class="text-center">Type</th>
+                                <th>Description</th>
+                                <th class="text-right">Qty / Liters</th>
+                                <th class="text-right">Amount (₱)</th>
+                                <th>Staff</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>2026-02-26</td>
                                 <td>05:00 AM</td>
-                                <td><span class="badge" style="background: #e3f2fd; color: #1565c0;">Fuel</span></td>
+                                <td class="text-center"><span class="badge badge-fuel">Fuel</span></td>
                                 <td><strong>Back Diesel</strong></td>
-                                <td>50.00 L</td>
+                                <td class="text-right">50.00 L</td>
                                 <td class="money-col">₱ 2,790.00</td>
                                 <td>Dodong</td>
                             </tr>
                             <tr>
                                 <td>2026-02-26</td>
                                 <td>06:30 AM</td>
-                                <td><span class="badge" style="background: #e3f2fd; color: #1565c0;">Fuel</span></td>
+                                <td class="text-center"><span class="badge badge-fuel">Fuel</span></td>
                                 <td><strong>Front Diesel</strong></td>
-                                <td>10.00 L</td>
+                                <td class="text-right">10.00 L</td>
                                 <td class="money-col">₱ 558.00</td>
                                 <td>Dodong</td>
                             </tr>
                             <tr>
                                 <td>2026-02-26</td>
                                 <td>08:15 AM</td>
-                                <td><span class="badge" style="background: #f3e5f5; color: #ad1457;">Item</span></td>
+                                <td class="text-center"><span class="badge badge-item">Item</span></td>
                                 <td><strong>CASTROL ACTIV 4T 1L</strong></td>
-                                <td>2 Qty</td>
+                                <td class="text-right">2 Qty</td>
                                 <td class="money-col">₱ 556.00</td>
                                 <td>Dodong</td>
                             </tr>
@@ -274,49 +308,44 @@
                     <button class="btn-primary" onclick="alert('Prices Synced to POS')">Push to Stations</button>
                 </div>
                 <div class="panel-content" style="padding: 0;">
+                    <div style="padding: 15px 20px; background: #fff3e0; border-bottom: 1px solid #ddd; font-size: 13px; color: #e65100;">
+                        <strong>Warning:</strong> Editing Starting Meters here forces a hard-reset on the staff POS terminals.
+                    </div>
                     <table>
-                        <thead>
+                        <thead class="thead-teal">
                             <tr>
                                 <th>Pump Location</th>
                                 <th>Fuel Type</th>
-                                <th>Base Cost / L</th>
-                                <th>Selling Price / L</th>
-                                <th>Profit Margin</th>
-                                <th>Starting Meter (L)</th>
+                                <th class="text-right">Base Cost / L</th>
+                                <th class="text-right">Selling Price / L</th>
+                                <th class="text-right">Profit Margin</th>
+                                <th class="text-right">Starting Meter (L)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>FRONT PUMP</td>
                                 <td>Diesel</td>
-                                <td><input type="number" class="admin-input" value="52.00"></td>
-                                <td><input type="number" class="admin-input" value="55.80" style="font-weight:bold;"></td>
+                                <td class="text-right"><input type="number" class="admin-input" value="52.00"></td>
+                                <td class="text-right"><input type="number" class="admin-input" value="55.80" style="font-weight:bold;"></td>
                                 <td class="money-col margin-good">₱ 3.80</td>
-                                <td><input type="number" class="admin-input" value="1500.00" style="border-color:#b0bec5;"></td>
+                                <td class="text-right"><input type="number" class="admin-input" value="1500.00" style="border-color:#b0bec5;"></td>
                             </tr>
                             <tr>
                                 <td>FRONT PUMP</td>
                                 <td>Premium</td>
-                                <td><input type="number" class="admin-input" value="52.50"></td>
-                                <td><input type="number" class="admin-input" value="56.50" style="font-weight:bold;"></td>
+                                <td class="text-right"><input type="number" class="admin-input" value="52.50"></td>
+                                <td class="text-right"><input type="number" class="admin-input" value="56.50" style="font-weight:bold;"></td>
                                 <td class="money-col margin-good">₱ 4.00</td>
-                                <td><input type="number" class="admin-input" value="2000.00" style="border-color:#b0bec5;"></td>
+                                <td class="text-right"><input type="number" class="admin-input" value="2000.00" style="border-color:#b0bec5;"></td>
                             </tr>
                             <tr>
                                 <td>FRONT PUMP</td>
                                 <td>Regular</td>
-                                <td><input type="number" class="admin-input" value="52.00"></td>
-                                <td><input type="number" class="admin-input" value="55.80" style="font-weight:bold;"></td>
+                                <td class="text-right"><input type="number" class="admin-input" value="52.00"></td>
+                                <td class="text-right"><input type="number" class="admin-input" value="55.80" style="font-weight:bold;"></td>
                                 <td class="money-col margin-good">₱ 3.80</td>
-                                <td><input type="number" class="admin-input" value="1000.00" style="border-color:#b0bec5;"></td>
-                            </tr>
-                             <tr>
-                                <td>BACK PUMP</td>
-                                <td>Diesel</td>
-                                <td><input type="number" class="admin-input" value="52.00"></td>
-                                <td><input type="number" class="admin-input" value="55.80" style="font-weight:bold;"></td>
-                                <td class="money-col margin-good">₱ 3.80</td>
-                                <td><input type="number" class="admin-input" value="800.00" style="border-color:#b0bec5;"></td>
+                                <td class="text-right"><input type="number" class="admin-input" value="1000.00" style="border-color:#b0bec5;"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -332,14 +361,14 @@
                 </div>
                 <div class="panel-content" style="padding: 0;">
                     <table>
-                        <thead>
+                        <thead class="thead-teal">
                             <tr>
                                 <th style="width:15%">Brand</th>
                                 <th style="width:30%">Product Description</th>
-                                <th style="width:15%">Cost Price (₱)</th>
-                                <th style="width:15%">Sell Price (₱)</th>
-                                <th style="width:15%">Margin (₱)</th>
-                                <th style="width:10%">Stock</th>
+                                <th style="width:15%" class="text-right">Cost Price (₱)</th>
+                                <th style="width:15%" class="text-right">Sell Price (₱)</th>
+                                <th style="width:15%" class="text-right">Margin (₱)</th>
+                                <th style="width:10%" class="text-center">Stock</th>
                             </tr>
                         </thead>
                         <tbody id="real-inventory-body">
@@ -353,28 +382,28 @@
              <div class="panel">
                 <div class="panel-header">
                     <h3>Fuel Purchase Orders (Consuelo, Kimaya)</h3>
-                    <button class="btn-primary">+ Add P.O.</button>
+                    <button class="btn-primary">Add P.O.</button>
                 </div>
                 <div class="panel-content" style="padding: 0;">
                     <table>
-                        <thead style="background:#1565c0; color:white;">
+                        <thead class="thead-blue">
                             <tr>
-                                <th style="color:white; border:none;">Date</th>
-                                <th style="color:white; border:none;">Fuel</th>
-                                <th style="color:white; border:none;">Liters</th>
-                                <th style="color:white; border:none;">Price/L</th>
-                                <th style="color:white; border:none;">Add Price</th>
-                                <th style="color:white; border:none;">Total Add</th>
-                                <th style="color:white; border:none; text-align:right;">Amount (₱)</th>
-                                <th style="color:white; border:none;">Receiver</th>
-                                <th style="color:white; border:none;">Gas Man</th>
+                                <th>Date</th>
+                                <th>Fuel</th>
+                                <th class="text-right">Liters</th>
+                                <th class="text-right">Price/L</th>
+                                <th class="text-right">Add Price</th>
+                                <th class="text-right">Total Add</th>
+                                <th class="text-right">Amount (₱)</th>
+                                <th>Receiver</th>
+                                <th>Gas Man</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>20-Jan-26</td>
                                 <td><strong>DIESEL</strong></td>
-                                <td>200</td>
+                                <td class="text-right">200</td>
                                 <td class="money-col">₱55.80</td>
                                 <td class="money-col" style="color:#d32f2f;">₱0.00</td>
                                 <td class="money-col" style="color:#d32f2f;">₱55.80</td>
@@ -392,19 +421,55 @@
             <div class="panel">
                 <div class="panel-header">
                     <h3>Station Staff Management</h3>
-                    <button class="btn-primary">+ Add Employee</button>
+                    <button class="btn-primary">Add Employee</button>
                 </div>
                 <div class="panel-content" style="padding:0;">
                     <table>
-                        <thead>
-                            <tr><th>Name</th><th>Role</th><th>PIN Code</th><th>Status</th><th>Action</th></tr>
+                        <thead class="thead-teal">
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>PIN Code</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Action</th>
+                            </tr>
                         </thead>
                         <tbody>
-                            <tr><td>DODONG</td><td>Pump Attendant</td><td>****</td><td><span class="badge badge-approved">Active</span></td><td><button class="btn-primary">Edit</button></td></tr>
-                            <tr><td>KENNETH</td><td>Pump Attendant</td><td>****</td><td><span class="badge badge-approved">Active</span></td><td><button class="btn-primary">Edit</button></td></tr>
-                            <tr><td>FRANCIS</td><td>Pump Attendant</td><td>****</td><td><span class="badge badge-approved">Active</span></td><td><button class="btn-primary">Edit</button></td></tr>
-                            <tr><td>ROXAS</td><td>Pump Attendant</td><td>****</td><td><span class="badge badge-approved">Active</span></td><td><button class="btn-primary">Edit</button></td></tr>
-                            <tr><td>BRYAN BACOY</td><td>Manager / Receiver</td><td>****</td><td><span class="badge badge-approved">Active</span></td><td><button class="btn-primary">Edit</button></td></tr>
+                            <tr>
+                                <td>DODONG</td>
+                                <td>Pump Attendant</td>
+                                <td>****</td>
+                                <td class="text-center"><span class="badge badge-approved">Active</span></td>
+                                <td class="text-center"><button class="btn-outline">Edit</button></td>
+                            </tr>
+                            <tr>
+                                <td>KENNETH</td>
+                                <td>Pump Attendant</td>
+                                <td>****</td>
+                                <td class="text-center"><span class="badge badge-approved">Active</span></td>
+                                <td class="text-center"><button class="btn-outline">Edit</button></td>
+                            </tr>
+                            <tr>
+                                <td>FRANCIS</td>
+                                <td>Pump Attendant</td>
+                                <td>****</td>
+                                <td class="text-center"><span class="badge badge-approved">Active</span></td>
+                                <td class="text-center"><button class="btn-outline">Edit</button></td>
+                            </tr>
+                            <tr>
+                                <td>ROXAS</td>
+                                <td>Pump Attendant</td>
+                                <td>****</td>
+                                <td class="text-center"><span class="badge badge-approved">Active</span></td>
+                                <td class="text-center"><button class="btn-outline">Edit</button></td>
+                            </tr>
+                            <tr>
+                                <td>BRYAN BACOY</td>
+                                <td>Manager / Receiver</td>
+                                <td>****</td>
+                                <td class="text-center"><span class="badge badge-approved">Active</span></td>
+                                <td class="text-center"><button class="btn-outline">Edit</button></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -413,12 +478,83 @@
 
     </div>
 
+    <div id="shift-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 style="margin-bottom: 4px;">Shift Audit & Verification</h3>
+                    <div style="font-size: 13px; color: #666;" id="modal-subtitle">Dodong | Feb 26, 2026 | 3AM - 12NN</div>
+                </div>
+                <button class="btn-outline" onclick="closeShiftModal()" style="padding: 4px 10px;">Close</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="summary-box">
+                    <div><span>Gross Fuel Sales</span><strong id="modal-fuel-val">₱ 10,500.00</strong></div>
+                    <div><span>Gross Item Sales</span><strong id="modal-item-val">₱ 1,950.00</strong></div>
+                    <div><span>Total Deductions</span><strong style="color: var(--danger);" id="modal-deduct-val">₱ 450.00</strong></div>
+                    <div><span>Expected Cash</span><strong style="color: var(--success); font-size: 22px;" id="modal-net-val">₱ 12,000.00</strong></div>
+                </div>
+
+                <h4 style="margin: 0 0 10px 0; color: var(--brand-dark); border-bottom: 2px solid #eee; padding-bottom: 5px;">Fuel Volume Dispensed</h4>
+                <table style="margin-bottom: 20px;">
+                    <thead class="thead-teal">
+                        <tr>
+                            <th>Pump</th>
+                            <th>Fuel</th>
+                            <th class="text-right">Liters Sold</th>
+                            <th class="text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Front Pump</td><td>Diesel</td><td class="text-right">100.00 L</td><td class="money-col">₱ 5,580.00</td></tr>
+                        <tr><td>Front Pump</td><td>Premium</td><td class="text-right">50.00 L</td><td class="money-col">₱ 2,825.00</td></tr>
+                        <tr><td>Back Pump</td><td>Regular</td><td class="text-right">37.54 L</td><td class="money-col">₱ 2,095.00</td></tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin: 0 0 10px 0; color: var(--brand-dark); border-bottom: 2px solid #eee; padding-bottom: 5px;">Items Sold</h4>
+                <table style="margin-bottom: 20px;">
+                    <thead class="thead-teal">
+                        <tr>
+                            <th>Brand</th>
+                            <th>Description</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>PRYCEGAS</td><td>11KG REFILL</td><td class="text-center">1</td><td class="money-col">₱ 1,100.00</td></tr>
+                        <tr><td>CASTROL</td><td>ACTIV 4T 1L</td><td class="text-center">3</td><td class="money-col">₱ 834.00</td></tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin: 0 0 10px 0; color: var(--brand-dark); border-bottom: 2px solid #eee; padding-bottom: 5px;">Declared Deductions</h4>
+                <table class="thead-teal">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th class="text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Expense</td><td>Station cleaning supplies</td><td class="money-col" style="color:var(--danger);">₱ 150.00</td></tr>
+                        <tr><td>MDRRMO</td><td>Government unit credit</td><td class="money-col" style="color:var(--danger);">₱ 300.00</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-outline" onclick="closeShiftModal()">Cancel</button>
+                <button class="btn-success" id="modal-approve-btn" onclick="approveShift()">Approve & Post to Ledger</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.getElementById('date-display').innerText = new Date().toDateString();
 
-        // ---------------------------------------------------------
-        // EXACT DATA EXTRACTED FROM YOUR EXCEL FILES
-        // ---------------------------------------------------------
         const realInventoryData = [
             { brand: "PRYCEGAS", item: "11KG SET WITH CONTENT", cost: 2300, sell: 2600, stock: 5, color: "#fff3e0" },
             { brand: "PRYCEGAS", item: "11KG REFILL", cost: 950, sell: 1100, stock: 12, color: "#fff3e0" },
@@ -459,6 +595,7 @@
 
         window.onload = function() {
             renderRealInventory();
+            document.getElementById('audit-date').value = new Date().toISOString().split('T')[0];
         };
 
         // Inject real items into the table
@@ -474,10 +611,10 @@
                     <tr style="background:${item.color};">
                         <td><strong>${item.brand}</strong></td>
                         <td>${item.item}</td>
-                        <td><input type="number" class="admin-input cost-input" value="${item.cost.toFixed(2)}" oninput="calcMargin(this)"></td>
-                        <td><input type="number" class="admin-input sell-input" value="${item.sell.toFixed(2)}" oninput="calcMargin(this)"></td>
-                        <td class="${marginClass}">${margin.toFixed(2)}</td>
-                        <td style="text-align:center; font-weight:bold;">${item.stock}</td>
+                        <td class="text-right"><input type="number" class="admin-input cost-input" value="${item.cost.toFixed(2)}" oninput="calcMargin(this)"></td>
+                        <td class="text-right"><input type="number" class="admin-input sell-input" value="${item.sell.toFixed(2)}" oninput="calcMargin(this)"></td>
+                        <td class="${marginClass} text-right">${margin.toFixed(2)}</td>
+                        <td class="text-center" style="font-weight:bold;">${item.stock}</td>
                     </tr>
                 `;
             });
@@ -526,10 +663,32 @@
             marginCell.innerText = margin.toFixed(2);
             
             if (margin < 30) {
-                marginCell.className = "money-col margin-val margin-low";
+                marginCell.className = "money-col margin-val margin-low text-right";
             } else {
-                marginCell.className = "money-col margin-val margin-good";
+                marginCell.className = "money-col margin-val margin-good text-right";
             }
+        }
+
+        // --- MODAL LOGIC ---
+        function openShiftModal(gasman, date, shift, status) {
+            document.getElementById('shift-modal').style.display = 'flex';
+            document.getElementById('modal-subtitle').innerText = `${gasman} | ${date} | ${shift}`;
+            
+            const approveBtn = document.getElementById('modal-approve-btn');
+            if(status === 'Approved') {
+                approveBtn.style.display = 'none';
+            } else {
+                approveBtn.style.display = 'block';
+            }
+        }
+
+        function closeShiftModal() {
+            document.getElementById('shift-modal').style.display = 'none';
+        }
+
+        function approveShift() {
+            alert('Shift Remittance Approved and Saved to Ledger.');
+            closeShiftModal();
         }
 
         // Dashboard Chart

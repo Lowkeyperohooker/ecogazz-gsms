@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gas POS System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-color: #eaf5f1;
+      --card-bg: #ffffff;
+      --primary: #52c49a;
+      --primary-hover: #45a883;
+      --text-dark: #1a1f1d;
+      --text-gray: #8b9692;
+      --light-gray: #f4f7f6;
+      --orange: #f6b26b;
+      --blue: #5b7cfa;
+      --border-radius: 24px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .dashboard {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 1100px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+      display: grid;
+      grid-template-columns: 220px 1fr 280px;
+      gap: 30px;
+      padding: 30px;
+    }
+
+    /* --- Sidebar --- */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .nav-menu {
+      list-style: none;
+      flex-grow: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      color: var(--text-dark);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .nav-item i {
+      font-size: 1.1rem;
+    }
+
+    .nav-item.active {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .nav-item:not(.active):hover {
+      background-color: var(--light-gray);
+    }
+
+    .sync-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+      padding: 20px 0;
+      font-size: 0.8rem;
+      color: var(--text-gray);
+    }
+
+    .sync-icon {
+      background: var(--light-gray);
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      color: var(--text-gray);
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-top: 15px;
+      border-top: 1px solid var(--light-gray);
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      background: #fce4b3;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d19a22;
+      font-size: 1.2rem;
+    }
+
+    .user-info p {
+      font-size: 0.75rem;
+      color: var(--text-gray);
+    }
+
+    .user-info h4 {
+      font-size: 0.9rem;
+      color: var(--text-dark);
+    }
+
+    /* --- Main Content (Fuel Selection) --- */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 10px 20px;
+      border-left: 1px solid var(--light-gray);
+      border-right: 1px solid var(--light-gray);
+    }
+
+    .fuel-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 0;
+    }
+
+    .fuel-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .fuel-icon {
+      font-size: 2rem;
+    }
+
+    .fuel-icon.orange { color: var(--orange); }
+    .fuel-icon.green { color: var(--primary); }
+    .fuel-icon.blue { color: var(--blue); }
+
+    .fuel-details h3 {
+      font-size: 1.4rem;
+      color: var(--text-dark);
+      line-height: 1.1;
+    }
+
+    .fuel-details span {
+      font-size: 0.75rem;
+      color: var(--text-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .counter button {
+      width: 35px;
+      height: 35px;
+      border-radius: 10px;
+      border: 1px solid var(--primary);
+      background: white;
+      color: var(--primary);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+
+    .counter button.add {
+      background: var(--primary);
+      color: white;
+    }
+
+    .counter span {
+      font-weight: 600;
+      width: 20px;
+      text-align: center;
+    }
+
+    .summary {
+      margin-top: auto;
+      padding-top: 20px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: var(--text-gray);
+    }
+
+    .summary-row.total {
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .summary-row .discount-val {
+      color: var(--orange);
+    }
+
+    .actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 15px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-confirm {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-clear {
+      background: white;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    /* --- Right Panel (Analytics) --- */
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--light-gray);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+    }
+
+    /* Donut Chart */
+    .chart-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .donut-chart {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      /* conic-gradient mapping: Orange (34%), Green (26%), Blue (28%), Empty (12%) */
+      background: conic-gradient(
+        var(--orange) 0% 34%, 
+        var(--primary) 34% 60%, 
+        var(--blue) 60% 88%, 
+        #f0f0f0 88% 100%
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .donut-inner {
+      width: 90px;
+      height: 90px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .donut-inner h3 {
+      font-size: 1.2rem;
+      color: var(--text-dark);
+      line-height: 1;
+    }
+
+    .donut-inner span {
+      font-size: 0.6rem;
+      color: var(--text-gray);
+    }
+
+    .legend {
+      list-style: none;
+      font-size: 0.75rem;
+    }
+
+    .legend li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      color: var(--text-gray);
+    }
+
+    .legend-color {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-color i {
+      font-size: 0.5rem;
+    }
+
+    .legend span {
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    /* Bar Chart */
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .card-header span {
+      font-size: 0.7rem;
+      color: var(--text-gray);
+      font-weight: 400;
+    }
+
+    .bar-chart {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      height: 120px;
+    }
+
+    .bar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      width: 15px;
+    }
+
+    .bar {
+      width: 6px;
+      border-radius: 5px;
+    }
+
+    .bar.blue { background-color: var(--blue); }
+    .bar.green { background-color: var(--primary); }
+    .bar.orange { background-color: var(--orange); }
+
+    .day-label {
+      font-size: 0.6rem;
+      color: var(--text-gray);
+      margin-top: 10px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="dashboard">
+    
+    <aside class="sidebar">
+      <div class="logo">
+        GAS POS<br>System
+      </div>
+      
+      <ul class="nav-menu">
+        <li class="nav-item active">
+          Fuel <i class="fa-solid fa-gas-pump"></i>
+        </li>
+        <li class="nav-item">
+          Food & Drinks <i class="fa-solid fa-burger"></i>
+        </li>
+        <li class="nav-item">
+          Tobacco <i class="fa-solid fa-smoking"></i>
+        </li>
+        <li class="nav-item">
+          Settings <i class="fa-solid fa-gear"></i>
+        </li>
+      </ul>
+
+      <div class="sync-status">
+        <div class="sync-icon">
+          <i class="fa-regular fa-circle-question"></i>
+        </div>
+        <div>
+          <p>Last sync</p>
+          <p style="color: var(--text-dark); font-weight: 500;"><span class="dot"></span>1 min ago</p>
+        </div>
+      </div>
+
+      <div class="user-profile">
+        <div class="avatar">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="user-info">
+          <p>Cashier</p>
+          <h4>Antony Wanko</h4>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      
+      <div class="fuel-row">
+        <div class="fuel-info">
+          <i class="fa-solid fa-gas-pump fuel-icon orange"></i>
+          <div class="fuel-details">
+            <h3>87</h3>
+            <span>UNLEADED</span>
+          </div>
+        </div>
+        <div class="counter">
+          <button class="minus"><i class="fa-solid fa-minus"></i></button>
+          <span>0</span>
+          <button class="add"><i class="fa-solid fa-plus"></i></button>
+        </div>
+      </div>
+
+      <div class="fuel-row">
+        <div class="fuel-info">
+          <i class="fa-solid fa-gas-pump fuel-icon green"></i>
+          <div class="fuel-details">
+            <h3>89</h3>
+            <span>MID-GRADE</span>
+          </div>
+        </div>
+        <div class="counter">
+          <button class="minus"><i class="fa-solid fa-minus"></i></button>
+          <span>0</span>
+          <button class="add"><i class="fa-solid fa-plus"></i></button>
+        </div>
+      </div>
+
+      <div class="fuel-row">
+        <div class="fuel-info">
+          <i class="fa-solid fa-gas-pump fuel-icon blue"></i>
+          <div class="fuel-details">
+            <h3>91</h3>
+            <span>SUPREME</span>
+          </div>
+        </div>
+        <div class="counter">
+          <button class="minus"><i class="fa-solid fa-minus"></i></button>
+          <span>15</span>
+          <button class="add"><i class="fa-solid fa-plus"></i></button>
+        </div>
+      </div>
+
+      <div class="summary">
+        <div class="summary-row total">
+          <p>Total pay</p>
+          <p>$125.98</p>
+        </div>
+        <div class="summary-row">
+          <p>Discount</p>
+          <p class="discount-val">-$3.13</p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-confirm">Confirm</button>
+          <button class="btn btn-clear"><i class="fa-solid fa-rotate-right"></i> Clear</button>
+        </div>
+      </div>
+
+    </main>
+
+    <aside class="right-panel">
+      
+      <div class="card">
+        <div class="chart-container">
+          <div class="donut-chart">
+            <div class="donut-inner">
+              <h3>88%</h3>
+              <span>Fuel left</span>
+            </div>
+          </div>
+        </div>
+        <ul class="legend">
+          <li>
+            <div class="legend-color"><i class="fa-solid fa-circle" style="color: var(--orange);"></i> UNLEADED</div>
+            <span>34%</span>
+          </li>
+          <li>
+            <div class="legend-color"><i class="fa-solid fa-circle" style="color: var(--primary);"></i> MID-GRADE</div>
+            <span>26%</span>
+          </li>
+          <li>
+            <div class="legend-color"><i class="fa-solid fa-circle" style="color: var(--blue);"></i> SUPREME</div>
+            <span>28%</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          Sales <span>This week <i class="fa-solid fa-chevron-down"></i></span>
+        </div>
+        <div class="bar-chart">
+          
+          <div class="bar-group">
+            <div class="bar blue" style="height: 15px;"></div>
+            <div class="bar green" style="height: 25px;"></div>
+            <div class="bar orange" style="height: 35px;"></div>
+            <span class="day-label">Mon</span>
+          </div>
+          
+          <div class="bar-group">
+            <div class="bar blue" style="height: 10px;"></div>
+            <div class="bar green" style="height: 40px;"></div>
+            <span class="day-label">Tue</span>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar green" style="height: 30px;"></div>
+            <div class="bar orange" style="height: 20px;"></div>
+            <span class="day-label">Wed</span>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar blue" style="height: 20px;"></div>
+            <div class="bar green" style="height: 15px;"></div>
+            <div class="bar orange" style="height: 25px;"></div>
+            <span class="day-label">Thu</span>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar blue" style="height: 25px;"></div>
+            <div class="bar green" style="height: 30px;"></div>
+            <div class="bar orange" style="height: 15px;"></div>
+            <span class="day-label">Fri</span>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar blue" style="height: 15px;"></div>
+            <div class="bar green" style="height: 20px;"></div>
+            <div class="bar orange" style="height: 40px;"></div>
+            <span class="day-label">Sat</span>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar orange" style="height: 25px;"></div>
+            <span class="day-label">Sun</span>
+          </div>
+
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+</body>
+</html>

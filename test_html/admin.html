@@ -53,7 +53,7 @@
         .card .value { font-size: 26px; font-weight: bold; color: var(--text-main); }
         .card .sub { font-size: 11px; color: #aaa; margin-top: 6px; }
 
-        .panel { background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; flex: 1; }
+        .panel { background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-bottom: 15px; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f0f0f0; background: #fdfdfd; }
         .panel-header h3 { margin: 0; font-size: 1.1rem; color: var(--brand-dark); }
         .panel-content { padding: 20px; overflow-y: auto; flex: 1; }
@@ -142,7 +142,7 @@
             <button class="nav-btn active" onclick="showPage('dashboard')">Executive Dashboard</button>
             <button class="nav-btn" onclick="showPage('reviews')">Shift Approvals</button>
             <button class="nav-btn" onclick="showPage('audit')">Daily Sales Audit</button>
-            <button class="nav-btn" onclick="showPage('pumps')">Pump & Pricing Setup</button>
+            <button class="nav-btn" onclick="showPage('pumps')">Pump Control & Tracking</button>
             <button class="nav-btn" onclick="showPage('inventory')">Item Pricing & Margins</button>
             <button class="nav-btn" onclick="showPage('purchasing')">Fuel Purchase Orders</button>
             <button class="nav-btn" onclick="showPage('employees')">Staff Management</button>
@@ -302,7 +302,7 @@
         </div>
 
         <div id="pumps" class="page-content">
-            <div class="panel">
+            <div class="panel" style="max-height: 45vh;">
                 <div class="panel-header">
                     <h3>Master Pump Configuration</h3>
                     <button class="btn-primary" onclick="alert('Prices Synced to POS')">Push to Stations</button>
@@ -315,6 +315,7 @@
                         <thead class="thead-teal">
                             <tr>
                                 <th>Pump Location</th>
+                                <th>Pump Type</th>
                                 <th>Fuel Type</th>
                                 <th class="text-right">Base Cost / L</th>
                                 <th class="text-right">Selling Price / L</th>
@@ -325,6 +326,7 @@
                         <tbody>
                             <tr>
                                 <td>FRONT PUMP</td>
+                                <td>Digital</td>
                                 <td>Diesel</td>
                                 <td class="text-right"><input type="number" class="admin-input" value="52.00"></td>
                                 <td class="text-right"><input type="number" class="admin-input" value="55.80" style="font-weight:bold;"></td>
@@ -333,6 +335,7 @@
                             </tr>
                             <tr>
                                 <td>FRONT PUMP</td>
+                                <td>Digital</td>
                                 <td>Premium</td>
                                 <td class="text-right"><input type="number" class="admin-input" value="52.50"></td>
                                 <td class="text-right"><input type="number" class="admin-input" value="56.50" style="font-weight:bold;"></td>
@@ -340,12 +343,75 @@
                                 <td class="text-right"><input type="number" class="admin-input" value="2000.00" style="border-color:#b0bec5;"></td>
                             </tr>
                             <tr>
-                                <td>FRONT PUMP</td>
+                                <td>BACK PUMP</td>
+                                <td>Mechanical</td>
                                 <td>Regular</td>
                                 <td class="text-right"><input type="number" class="admin-input" value="52.00"></td>
                                 <td class="text-right"><input type="number" class="admin-input" value="55.80" style="font-weight:bold;"></td>
                                 <td class="money-col margin-good">₱ 3.80</td>
                                 <td class="text-right"><input type="number" class="admin-input" value="1000.00" style="border-color:#b0bec5;"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="panel" style="flex: 1; margin-top: 15px;">
+                <div class="panel-header">
+                    <h3>Pump Meter Reading Logs</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="date" class="admin-input" style="width:auto;" value="2026-02-26">
+                        <button class="btn-primary" style="background:#00838f;">Filter Logs</button>
+                    </div>
+                </div>
+                <div class="panel-content" style="padding: 0;">
+                    <table>
+                        <thead class="thead-blue">
+                            <tr>
+                                <th>Date & Shift</th>
+                                <th>Pump & Type</th>
+                                <th>Fuel Type</th>
+                                <th class="text-right">Start Meter</th>
+                                <th class="text-right">Close Meter</th>
+                                <th class="text-right">Calibration</th>
+                                <th class="text-right">Net Liters</th>
+                                <th class="text-right">Total (₱)</th>
+                                <th>Gasman</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Feb 26, 2026 | 3AM-12NN</td>
+                                <td>FRONT (Digital)</td>
+                                <td><strong>Diesel</strong></td>
+                                <td class="text-right">1500.00</td>
+                                <td class="text-right">1610.00</td>
+                                <td class="text-right" style="color:var(--danger);">10.00</td>
+                                <td class="text-right" style="font-weight:bold; color:var(--brand-dark);">100.00 L</td>
+                                <td class="money-col">₱ 5,580.00</td>
+                                <td>Dodong</td>
+                            </tr>
+                            <tr>
+                                <td>Feb 26, 2026 | 3AM-12NN</td>
+                                <td>FRONT (Digital)</td>
+                                <td><strong>Premium</strong></td>
+                                <td class="text-right">2000.00</td>
+                                <td class="text-right">2050.00</td>
+                                <td class="text-right" style="color:var(--danger);">0.00</td>
+                                <td class="text-right" style="font-weight:bold; color:var(--brand-dark);">50.00 L</td>
+                                <td class="money-col">₱ 2,825.00</td>
+                                <td>Dodong</td>
+                            </tr>
+                            <tr>
+                                <td>Feb 25, 2026 | 12NN-9PM</td>
+                                <td>BACK (Mechanical)</td>
+                                <td><strong>Regular</strong></td>
+                                <td class="text-right">962.46</td>
+                                <td class="text-right">1000.00</td>
+                                <td class="text-right" style="color:var(--danger);">0.00</td>
+                                <td class="text-right" style="font-weight:bold; color:var(--brand-dark);">37.54 L</td>
+                                <td class="money-col">₱ 2,095.00</td>
+                                <td>Kenneth</td>
                             </tr>
                         </tbody>
                     </table>
@@ -626,7 +692,7 @@
             document.getElementById('sidebar').style.display = 'flex';
             document.getElementById('main').style.display = 'flex';
             renderChart();
-            showPage('dashboard');
+            showPage('pumps'); // Setting Pumps to default view for this demonstration
         }
 
         function logout() { location.reload(); }
@@ -644,7 +710,7 @@
                 'dashboard': 'Executive Dashboard',
                 'reviews': 'Shift Approvals & Audit',
                 'audit': 'Daily Sales Audit Log',
-                'pumps': 'Pump & Pricing Setup',
+                'pumps': 'Pump Control & Tracking',
                 'inventory': 'Item Pricing & Margins',
                 'purchasing': 'Fuel Purchase Orders',
                 'employees': 'Staff Management'

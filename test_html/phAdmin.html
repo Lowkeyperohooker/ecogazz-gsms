@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ecogazz Kimaya POS</title>
+    <style>
+        /* Base Reset & Lock to Viewport */
+        body { font-family: sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
+        
+        /* Top Navigation */
+        .top-bar { background: #333; color: white; padding: 0 15px; height: 50px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; flex-shrink: 0; }
+        .role-selector { display: flex; align-items: center; gap: 10px; }
+        .role-selector select { padding: 5px; font-size: 0.9em; border-radius: 4px; font-weight: bold; }
+        
+        /* Admin Controls Visibility */
+        .admin-controls { display: none; gap: 5px; }
+        body.role-admin .admin-controls { display: flex; }
+        .btn-top { background: #00529b; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; }
+
+        /* Main Layout */
+        .container { display: flex; flex: 1; flex-direction: column; gap: 10px; padding: 10px; box-sizing: border-box; overflow: hidden; }
+        @media (min-width: 768px) { .container { flex-direction: row; } }
+
+        /* Panels */
+        .panel { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; box-sizing: border-box; height: 100%; }
+        .panel-left { flex: 2; }
+        .panel-right { flex: 1; }
+        h2 { margin: 0 0 10px 0; color: #333; border-bottom: 2px solid #00529b; padding-bottom: 5px; font-size: 1.2em; flex-shrink: 0; }
+
+        /* Fuel Grid */
+        .fuel-grid { display: flex; gap: 10px; margin-bottom: 10px; flex: 1; min-height: 0; }
+        .fuel-card { flex: 1; border: 2px solid #ddd; border-radius: 5px; text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.2s; background: #fff; padding: 5px; }
+        .fuel-card:hover { border-color: #00529b; }
+        .fuel-card.active { border-color: #00529b; background-color: #e7f3ff; }
+        .fuel-card strong { font-size: 0.9em; }
+        .price { font-size: 1.1em; font-weight: bold; color: #d32f2f; margin-top: 5px; }
+
+        /* Inputs */
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; flex-shrink: 0; }
+        .input-group { flex: 1; display: flex; flex-direction: column; }
+        label { margin-bottom: 3px; font-weight: bold; font-size: 0.85em; }
+        input[type="number"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em; }
+
+        /* Presets */
+        .preset-row { display: flex; gap: 5px; margin-bottom: 10px; flex-shrink: 0; }
+        .btn-preset { flex: 1; padding: 10px 0; font-size: 0.85em; font-weight: bold; background: #e0e0e0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; color: #333; text-align: center; transition: 0.1s; }
+        .btn-preset:hover { background: #d0d0d0; }
+
+        /* Buttons */
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 4px; font-size: 1em; font-weight: bold; cursor: pointer; flex-shrink: 0; }
+        .btn-primary { background-color: #00529b; color: white; margin-bottom: 5px; }
+        .btn-secondary { background-color: #28a745; color: white; }
+        .btn-danger { background-color: #d32f2f; color: white; }
+        .btn-cancel { background-color: #ccc; color: black; }
+
+        /* Receipt */
+        .receipt-wrapper { flex: 1; background: #fffde7; padding: 10px; border: 1px dashed #999; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 10px; }
+        .receipt-content { font-family: monospace; font-size: 0.85em; flex: 1; }
+        .receipt-header { text-align: center; margin-bottom: 10px; font-weight: bold; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 3px; }
+        .total-row { border-top: 1px dashed #000; margin-top: 5px; padding-top: 5px; font-weight: bold; font-size: 1.1em; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; display: flex; flex-direction: column; max-height: 90vh; }
+        .modal-content.wide { max-width: 700px; }
+        .modal-content h3 { margin-top: 0; border-bottom: 1px solid #ccc; padding-bottom: 10px; flex-shrink: 0; }
+        .price-edit-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .price-edit-group input { width: 100px; padding: 8px; }
+        
+        /* Modal Actions */
+        .modal-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; flex-shrink: 0; }
+        .modal-actions-full { display: flex; gap: 10px; margin-top: 15px; flex-shrink: 0; }
+
+        /* Data Table */
+        .table-container { overflow-y: auto; flex: 1; margin-bottom: 15px; border: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f4f4f4; position: sticky; top: 0; }
+        .summary-box { background: #e7f3ff; padding: 10px; border-radius: 4px; font-weight: bold; font-size: 0.9em; display: flex; justify-content: space-between; flex-shrink: 0; }
+    </style>
+</head>
+<body class="role-staff">
+
+<div class="top-bar">
+    <div><strong>ECOGAZZ POS</strong> | Kimaya</div>
+    <div class="role-selector">
+        <div class="admin-controls">
+            <button class="btn-top" onclick="openSalesModal()">Sales Log</button>
+            <button class="btn-top" onclick="openPriceModal()">Prices</button>
+        </div>
+        <select id="userSelect" onchange="toggleUser()">
+            <option value="Kenneth" data-role="staff">Gasman: Kenneth</option>
+            <option value="Dodong" data-role="staff">Gasman: Dodong</option>
+            <option value="Francis" data-role="staff">Gasman: Francis</option>
+            <option value="Admin" data-role="admin">Manager (Admin)</option>
+        </select>
+    </div>
+</div>
+
+<div class="container">
+    <div class="panel panel-left">
+        <h2>Pump Selection</h2>
+        
+        <div class="fuel-grid">
+            <div class="fuel-card" onclick="selectFuel('Diesel', 'priceDiesel', this)">
+                <strong>DIESEL</strong>
+                <div class="price">PHP <span id="priceDiesel">55.80</span></div>
+            </div>
+            <div class="fuel-card" onclick="selectFuel('Regular', 'priceRegular', this)">
+                <strong>REGULAR</strong>
+                <div class="price">PHP <span id="priceRegular">55.80</span></div>
+            </div>
+            <div class="fuel-card" onclick="selectFuel('Premium', 'pricePremium', this)">
+                <strong>PREMIUM</strong>
+                <div class="price">PHP <span id="pricePremium">56.50</span></div>
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div class="input-group">
+                <label>Amount (PHP)</label>
+                <input type="number" id="inputAmount" placeholder="0.00" oninput="calculateLiters()">
+            </div>
+            <div class="input-group">
+                <label>Liters (L)</label>
+                <input type="number" id="inputLiters" placeholder="0.000" oninput="calculateAmount()">
+            </div>
+        </div>
+
+        <div class="preset-row">
+            <button class="btn-preset" onclick="setPreset(100)">PHP 100</button>
+            <button class="btn-preset" onclick="setPreset(500)">PHP 500</button>
+            <button class="btn-preset" onclick="setPreset(1000)">PHP 1000</button>
+            <button class="btn-preset" onclick="setPreset('FULL')">Full Tank</button>
+        </div>
+
+        <button class="btn btn-primary" onclick="processTransaction()">Authorize Pump</button>
+    </div>
+
+    <div class="panel panel-right">
+        <h2>Transaction Receipt</h2>
+        <div class="receipt-wrapper">
+            <div id="receiptOutput" class="receipt-content">
+                <div class="receipt-header">
+                    ECOGAZZ GASOLINE STATION<br>
+                    Kimaya, Magsaysay, Mis. Or.<br>
+                    TIN: 000-000-000-000
+                </div>
+                <div style="text-align:center; margin-top:20px; color:#666;">
+                    Awaiting transaction...
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-secondary" onclick="window.print()">Print Receipt</button>
+    </div>
+</div>
+
+<div id="priceModal" class="modal">
+    <div class="modal-content">
+        <h3>Update Fuel Prices</h3>
+        <div class="price-edit-group">
+            <label>Diesel (PHP):</label>
+            <input type="number" id="editDiesel" value="55.80" step="0.01">
+        </div>
+        <div class="price-edit-group">
+            <label>Regular (PHP):</label>
+            <input type="number" id="editRegular" value="55.80" step="0.01">
+        </div>
+        <div class="price-edit-group">
+            <label>Premium (PHP):</label>
+            <input type="number" id="editPremium" value="56.50" step="0.01">
+        </div>
+        <div class="modal-actions-full">
+            <button class="btn btn-primary" onclick="updatePrices()">Save Prices</button>
+            <button class="btn btn-cancel" onclick="closeModals()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="salesModal" class="modal">
+    <div class="modal-content wide">
+        <h3>Daily Sales Log</h3>
+        
+        <div class="table-container">
+            <table id="salesTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Fuel</th>
+                        <th>Price/L</th>
+                        <th>Vol (L)</th>
+                        <th>Total (PHP)</th>
+                        <th>Gasman</th>
+                    </tr>
+                </thead>
+                <tbody id="salesTableBody">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="summary-box">
+            <div>Total Vol: <span id="totalVolume">0.000</span> L</div>
+            <div>Total Sales: PHP <span id="totalRevenue">0.00</span></div>
+        </div>
+
+        <div class="modal-actions-grid">
+            <button class="btn btn-secondary" onclick="exportToCSV()">Export to CSV</button>
+            <button class="btn btn-danger" onclick="clearLog()">Clear Shift Log</button>
+        </div>
+        <button class="btn btn-cancel" style="margin-top: 10px;" onclick="closeModals()">Close Dashboard</button>
+    </div>
+</div>
+
+<script>
+    let selectedFuel = "";
+    let currentPricePerLiter = 0;
+    let transactionLog = []; 
+
+    // User & Role Management
+    function toggleUser() {
+        const select = document.getElementById('userSelect');
+        const selectedOption = select.options[select.selectedIndex];
+        const role = selectedOption.getAttribute('data-role');
+        
+        document.body.className = `role-${role}`;
+        resetPump();
+        closeModals();
+    }
+
+    // Modal Management
+    function openPriceModal() { document.getElementById('priceModal').style.display = 'flex'; }
+    function openSalesModal() { document.getElementById('salesModal').style.display = 'flex'; renderSalesTable(); }
+    function closeModals() { 
+        document.getElementById('priceModal').style.display = 'none'; 
+        document.getElementById('salesModal').style.display = 'none'; 
+    }
+
+    // Admin Feature: Update Prices
+    function updatePrices() {
+        const newDiesel = document.getElementById('editDiesel').value;
+        const newRegular = document.getElementById('editRegular').value;
+        const newPremium = document.getElementById('editPremium').value;
+
+        document.getElementById('priceDiesel').innerText = parseFloat(newDiesel).toFixed(2);
+        document.getElementById('priceRegular').innerText = parseFloat(newRegular).toFixed(2);
+        document.getElementById('pricePremium').innerText = parseFloat(newPremium).toFixed(2);
+        
+        closeModals();
+        resetPump();
+    }
+
+    // Core POS Logic
+    function selectFuel(name, priceElementId, element) {
+        selectedFuel = name;
+        currentPricePerLiter = parseFloat(document.getElementById(priceElementId).innerText);
+        
+        document.querySelectorAll('.fuel-card').forEach(card => card.classList.remove('active'));
+        element.classList.add('active');
+        calculateLiters();
+    }
+
+    function calculateLiters() {
+        const amount = document.getElementById('inputAmount').value;
+        if (currentPricePerLiter > 0 && amount > 0) {
+            document.getElementById('inputLiters').value = (amount / currentPricePerLiter).toFixed(3);
+        }
+    }
+
+    function calculateAmount() {
+        const liters = document.getElementById('inputLiters').value;
+        if (currentPricePerLiter > 0 && liters > 0) {
+            document.getElementById('inputAmount').value = (liters * currentPricePerLiter).toFixed(2);
+        }
+    }
+
+    function setPreset(value) {
+        if (!selectedFuel) { alert("Please select a fuel type first."); return; }
+        if (value === 'FULL') {
+            document.getElementById('inputLiters').value = 40; 
+            calculateAmount();
+        } else {
+            document.getElementById('inputAmount').value = value;
+            calculateLiters();
+        }
+    }
+
+    function resetPump() {
+        selectedFuel = "";
+        currentPricePerLiter = 0;
+        document.getElementById('inputAmount').value = "";
+        document.getElementById('inputLiters').value = "";
+        document.querySelectorAll('.fuel-card').forEach(card => card.classList.remove('active'));
+    }
+
+    function processTransaction() {
+        if (!selectedFuel) { alert("Please select fuel type."); return; }
+
+        const amount = parseFloat(document.getElementById('inputAmount').value);
+        const liters = parseFloat(document.getElementById('inputLiters').value);
+        
+        if (isNaN(amount) || amount <= 0) { alert("Please enter a valid amount or liter volume."); return; }
+
+        const dateObj = new Date();
+        const dateStr = dateObj.toLocaleDateString();
+        const timeStr = dateObj.toLocaleTimeString();
+        const activeGasman = document.getElementById('userSelect').value;
+
+        // Log the transaction
+        transactionLog.push({
+            date: dateStr,
+            time: timeStr,
+            fuel: selectedFuel,
+            pricePerLiter: currentPricePerLiter,
+            liters: liters,
+            amount: amount,
+            gasman: activeGasman
+        });
+
+        // Generate Receipt
+        const receiptHTML = `
+            <div class="receipt-header">
+                ECOGAZZ GASOLINE STATION<br>
+                Kimaya, Magsaysay, Mis. Or.<br>
+                TIN: 000-000-000-000
+            </div>
+            <div class="row"><span>Date:</span> <span>${dateStr}</span></div>
+            <div class="row"><span>Time:</span> <span>${timeStr}</span></div>
+            <div class="row"><span>Gasman:</span> <span>${activeGasman.toUpperCase()}</span></div>
+            <div class="row" style="margin-top:10px;"><span>Fuel:</span> <span>${selectedFuel}</span></div>
+            <div class="row"><span>Price/L:</span> <span>PHP ${currentPricePerLiter.toFixed(2)}</span></div>
+            <div class="row"><span>Volume:</span> <span>${liters.toFixed(3)} L</span></div>
+            <div class="total-row">
+                <div class="row"><span>TOTAL:</span> <span>PHP ${amount.toFixed(2)}</span></div>
+            </div>
+        `;
+
+        document.getElementById('receiptOutput').innerHTML = receiptHTML;
+        resetPump();
+    }
+
+    // Render Data Table Function
+    function renderSalesTable() {
+        const tbody = document.getElementById('salesTableBody');
+        tbody.innerHTML = '';
+        
+        let totalVol = 0;
+        let totalRev = 0;
+
+        transactionLog.forEach(tx => {
+            totalVol += tx.liters;
+            totalRev += tx.amount;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${tx.date}</td>
+                <td>${tx.time}</td>
+                <td>${tx.fuel}</td>
+                <td>${tx.pricePerLiter.toFixed(2)}</td>
+                <td>${tx.liters.toFixed(3)}</td>
+                <td>${tx.amount.toFixed(2)}</td>
+                <td>${tx.gasman.toUpperCase()}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('totalVolume').innerText = totalVol.toFixed(3);
+        document.getElementById('totalRevenue').innerText = totalRev.toFixed(2);
+    }
+
+    // Export to CSV Function
+    function exportToCSV() {
+        if (transactionLog.length === 0) {
+            alert("No transactions to export.");
+            return;
+        }
+
+        let csvContent = "Date,Time,Fuel Type,Price per Liter,Liters,Total Amount,Gasman\n";
+        
+        transactionLog.forEach(tx => {
+            let row = `${tx.date},${tx.time},${tx.fuel},${tx.pricePerLiter.toFixed(2)},${tx.liters.toFixed(3)},${tx.amount.toFixed(2)},${tx.gasman.toUpperCase()}`;
+            csvContent += row + "\n";
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        
+        const currentDate = new Date().toISOString().slice(0, 10);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Ecogazz_Pump_Log_${currentDate}.csv`);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Clear Log Function
+    function clearLog() {
+        if (transactionLog.length === 0) {
+            alert("The log is already empty.");
+            return;
+        }
+
+        const confirmClear = confirm("Are you sure you want to clear the shift log? Please ensure you have exported the data to CSV first. This action cannot be undone.");
+        
+        if (confirmClear) {
+            transactionLog = [];
+            renderSalesTable();
+            alert("Shift log cleared successfully.");
+        }
+    }
+</script>
+
+</body>
+</html>

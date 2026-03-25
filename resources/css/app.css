@@ -4,8 +4,36 @@
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source '../**/*.vue'; /* MAKE SURE .vue IS HERE */
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Poppins', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+
+    /* EcoGazz Custom Colors */
+    --color-bg: #f0f4f3;
+    --color-card: #ffffff;
+    --color-primary: #3dbb91;
+    --color-primary-hover: #2fa57d;
+    --color-primary-light: #e4f7ef;
+    --color-dark: #1a2332;
+    --color-gray: #8b9692;
+    --color-light: #f4f7f6;
+    --color-orange: #f5a623;
+    --color-blue: #5b7cfa;
+    --color-danger: #ef5350;
+    --color-success: #3dbb91;
+}
+
+/* Base styles that affect the whole app */
+@layer base {
+    html, body {
+        @apply h-full overflow-hidden text-[18px] bg-bg text-dark font-sans;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { @apply bg-[#d0d8d4] rounded-full; }
+    ::-webkit-scrollbar-thumb:hover { @apply bg-[#b8c2be]; }
 }

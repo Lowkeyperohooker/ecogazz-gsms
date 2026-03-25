@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EcoGazz GSMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg:#eaf5f1; --card:#ffffff; --primary:#52c49a; --primary-hover:#45a883;
+            --primary-light:#e8f8f0; --dark:#1a1f1d; --gray:#8b9692; --light:#f4f7f6;
+            --orange:#f6b26b; --orange-light:#fef5e7; --blue:#5b7cfa; --danger:#ff6b6b;
+            --danger-light:#fff0f0; --success:#52c49a; --warning:#f39c12;
+            --radius:16px; --radius-sm:10px; --radius-xs:6px;
+            --shadow:0 2px 8px rgba(0,0,0,.03); --shadow-md:0 4px 15px rgba(0,0,0,.06);
+            --shadow-lg:0 8px 25px rgba(0,0,0,.08);
+        }
+
+        * {
+            margin:0; padding:0; box-sizing:border-box;
+            font-family:'Poppins',sans-serif;
+            -webkit-tap-highlight-color:transparent;
+        }
+        html, body { height:100%; overflow:hidden; }
+        body {
+            background:var(--bg); color:var(--dark);
+            display:flex; justify-content:center; align-items:center;
+        }
+
+        ::-webkit-scrollbar { width:4px; height:4px; }
+        ::-webkit-scrollbar-track { background:transparent; }
+        ::-webkit-scrollbar-thumb { background:#d0d8d4; border-radius:10px; }
+
+        /* ==================== LOGIN ==================== */
+        #loginPage {
+            position:fixed; inset:0; background:var(--bg);
+            display:flex; justify-content:center; align-items:center;
+            z-index:9000; transition:opacity .4s; padding:20px;
+        }
+        .login-box {
+            background:var(--card); padding:36px 32px; border-radius:var(--radius);
+            box-shadow:var(--shadow-lg); text-align:center; width:100%; max-width:360px;
+        }
+        .login-icon { font-size:2.5rem; color:var(--primary); margin-bottom:10px; }
+        .login-box h1 { font-size:1.3rem; font-weight:700; margin-bottom:2px; }
+        .login-sub { color:var(--gray); font-size:.8rem; margin-bottom:24px; }
+        .login-box input {
+            width:100%; padding:12px; margin-bottom:14px;
+            border:1.5px solid #e8ebe9; border-radius:var(--radius-sm);
+            font-size:.9rem; text-align:center; letter-spacing:2px;
+            font-weight:600; transition:.3s;
+        }
+        .login-box input:focus {
+            outline:none; border-color:var(--primary);
+            box-shadow:0 0 0 3px rgba(82,196,154,.12);
+        }
+        .role-btns { display:flex; gap:8px; }
+        .rbtn {
+            flex:1; padding:12px; border:none; border-radius:var(--radius-sm);
+            font-size:.85rem; font-weight:600; cursor:pointer; transition:.2s;
+            display:flex; justify-content:center; align-items:center; gap:6px;
+        }
+        .rbtn:hover { opacity:.9; transform:translateY(-1px); }
+        .rbtn-admin { background:var(--dark); color:#fff; }
+        .rbtn-staff { background:var(--primary); color:#fff; }
+
+        /* ==================== APP SHELL ==================== */
+        #appShell {
+            display:none; width:100vw; height:100vh;
+            background:var(--card); overflow:hidden;
+        }
+        #appShell.show { display:flex; }
+
+        /* ==================== SIDEBAR ==================== */
+        .sidebar {
+            width:200px; background:var(--card); border-right:1px solid var(--light);
+            display:flex; flex-direction:column; flex-shrink:0;
+            padding:14px 10px 10px; z-index:60;
+        }
+        .brand { text-align:center; margin-bottom:14px; }
+        .brand h2 { font-size:.95rem; font-weight:700; }
+        .brand span { font-size:.6rem; color:var(--gray); display:block; margin-top:1px; }
+        .menu { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:2px; }
+        .nav-btn {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:8px 10px; border-radius:var(--radius-xs); color:var(--dark);
+            font-weight:500; font-size:.75rem; border:none; background:transparent;
+            cursor:pointer; transition:.2s; text-align:left; width:100%;
+        }
+        .nav-btn i { font-size:.8rem; color:var(--gray); width:16px; text-align:center; }
+        .nav-btn:hover { background:var(--light); }
+        .nav-btn.active {
+            background:var(--primary); color:#fff;
+            box-shadow:0 3px 10px rgba(82,196,154,.25);
+        }
+        .nav-btn.active i { color:#fff; }
+
+        .user-box {
+            display:flex; align-items:center; gap:8px;
+            padding-top:10px; border-top:1px solid var(--light); margin-top:6px;
+        }
+        .avatar {
+            width:30px; height:30px; background:#fce4b3; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            color:#d19a22; font-size:.8rem; flex-shrink:0;
+        }
+        .uinfo { flex:1; }
+        .uinfo p { font-size:.58rem; color:var(--gray); }
+        .uinfo h4 { font-size:.7rem; font-weight:600; }
+        .logout-btn {
+            color:var(--danger); cursor:pointer; padding:4px;
+            background:none; border:none; font-size:.8rem;
+        }
+
+        .sidebar-overlay {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,.35); z-index:55;
+        }
+        .sidebar-overlay.show { display:block; }
+        .hamburger {
+            display:none; background:none; border:none;
+            font-size:1.1rem; cursor:pointer; color:var(--dark); padding:4px;
+        }
+
+        /* ==================== MAIN AREA ==================== */
+        .main-area {
+            flex:1; display:flex; flex-direction:column;
+            background:var(--bg); overflow:hidden; min-width:0;
+        }
+        .top-bar {
+            display:flex; justify-content:space-between; align-items:center;
+            padding:8px 16px 0; flex-shrink:0;
+        }
+        .top-bar h2 { font-size:1.05rem; font-weight:600; }
+        .top-date { font-weight:500; color:var(--gray); font-size:.72rem; }
+
+        .content-scroll {
+            flex:1; overflow:hidden; padding:8px 12px 8px;
+            display:flex; flex-direction:column;
+        }
+
+        .page { display:none; flex:1; overflow:hidden; }
+        .page.active { display:flex; flex-direction:column; }
+        .page.scrollable { overflow-y:auto; display:none; }
+        .page.scrollable.active { display:block; overflow-y:auto; flex:1; }
+
+        /* ==================== POS LAYOUT ==================== */
+        #staff-pos { display:none; flex:1; overflow:hidden; }
+        #staff-pos.active { display:flex !important; flex-direction:row; gap:8px; }
+        .pos-left {
+            flex:1.1; display:flex; flex-direction:column;
+            gap:6px; overflow:hidden; min-width:0;
+        }
+        .pos-right {
+            flex:.9; display:flex; flex-direction:column;
+            overflow:hidden; min-width:0;
+        }
+
+        /* ==================== SHIFT BAR ==================== */
+        .shift-bar {
+            display:flex; gap:10px; background:var(--card); padding:6px 12px;
+            border-radius:var(--radius-xs); border:1px solid var(--light);
+            box-shadow:var(--shadow); flex-shrink:0; align-items:center; flex-wrap:wrap;
+        }
+        .sfield { display:flex; flex-direction:column; }
+        .sfield .sl {
+            font-size:.55rem; color:var(--gray); text-transform:uppercase;
+            font-weight:600; letter-spacing:.3px;
+        }
+        .sfield .sv { font-size:.75rem; font-weight:600; }
+        .sfield select {
+            border:none; background:transparent; font-weight:600;
+            font-size:.72rem; color:var(--dark); font-family:'Poppins',sans-serif;
+            cursor:pointer; padding:0;
+        }
+        .sfield select:focus { outline:none; }
+
+        /* ==================== FUEL CARDS - ALWAYS 3 COLS ==================== */
+        .fuel-section {
+            background:var(--card); border-radius:var(--radius-xs); padding:8px;
+            border:1px solid var(--light); box-shadow:var(--shadow); flex-shrink:0;
+        }
+        .fuel-section h3 { font-size:.75rem; font-weight:600; margin-bottom:4px; }
+
+        .fuel-row {
+            display:grid;
+            grid-template-columns:repeat(3, 1fr) !important;
+            gap:5px;
+        }
+
+        .fcard-mini {
+            background:var(--light); border-radius:var(--radius-xs);
+            padding:5px 6px; min-width:0; overflow:hidden;
+        }
+        .fcard-mini h4 {
+            font-size:.62rem; font-weight:700; color:var(--primary);
+            margin-bottom:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+        }
+        .fcard-mini .fprice { font-size:.55rem; color:var(--gray); margin-bottom:2px; }
+        .fcard-mini select {
+            width:100%; padding:2px; border:1px solid #e0e4e2; border-radius:3px;
+            font-size:.58rem; font-weight:600; margin-bottom:2px;
+            font-family:'Poppins',sans-serif; background:#fff;
+        }
+        .fcard-mini select:focus { outline:none; border-color:var(--primary); }
+
+        .finput-row {
+            display:grid; grid-template-columns:1fr 1fr;
+            gap:2px; margin-bottom:2px;
+        }
+        .finput-row input {
+            width:100%; padding:3px 2px; border:1px solid #e0e4e2;
+            border-radius:3px; font-weight:600; text-align:right;
+            font-size:.6rem; font-family:'Poppins',sans-serif;
+            min-width:0;
+        }
+        .finput-row input:focus { outline:none; border-color:var(--primary); }
+        .finput-row input::placeholder { color:#c8ceca; font-weight:500; font-size:.55rem; }
+
+        .btn-add-fuel {
+            width:100%; padding:3px; background:var(--primary); color:#fff;
+            border:none; border-radius:3px; font-weight:600; font-size:.58rem;
+            cursor:pointer; display:flex; align-items:center;
+            justify-content:center; gap:2px;
+        }
+        .btn-add-fuel:hover { background:var(--primary-hover); }
+
+        /* ==================== PRODUCTS ==================== */
+        .prod-section {
+            background:var(--card); border-radius:var(--radius-xs); padding:8px;
+            border:1px solid var(--light); box-shadow:var(--shadow);
+            flex:1; display:flex; flex-direction:column;
+            overflow:hidden; min-height:0;
+        }
+        .prod-section h3 { font-size:.75rem; font-weight:600; margin-bottom:4px; }
+
+        .brand-tabs {
+            display:flex; gap:3px; margin-bottom:4px;
+            overflow-x:auto; flex-shrink:0;
+        }
+        .brand-tabs::-webkit-scrollbar { display:none; }
+        .btab {
+            padding:3px 8px; border:none; background:var(--light);
+            border-radius:12px; font-weight:600; font-size:.6rem;
+            cursor:pointer; white-space:nowrap;
+            font-family:'Poppins',sans-serif; color:var(--gray);
+        }
+        .btab.active { background:var(--primary); color:#fff; }
+
+        .prod-grid {
+            display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr));
+            gap:4px; overflow-y:auto; flex:1; min-height:0; padding:2px;
+        }
+        .pcard {
+            background:var(--light); border-radius:var(--radius-xs);
+            padding:5px 6px; display:flex; flex-direction:column; gap:1px;
+        }
+        .pcard .pn { font-weight:600; font-size:.62rem; line-height:1.15; }
+        .pcard .pp { color:var(--success); font-weight:700; font-size:.7rem; }
+        .pcard .ps { font-size:.52rem; color:var(--gray); }
+        .pcard .pact { display:flex; gap:3px; margin-top:2px; }
+        .pcard .pq {
+            width:28px; padding:2px; border:1px solid #dde1df; border-radius:3px;
+            text-align:center; font-weight:600; font-size:.62rem;
+            font-family:'Poppins',sans-serif;
+        }
+        .pcard .pq:focus { outline:none; border-color:var(--primary); }
+        .padd {
+            flex:1; padding:3px; background:var(--primary); color:#fff;
+            border:none; border-radius:3px; font-weight:600; font-size:.58rem;
+            cursor:pointer; font-family:'Poppins',sans-serif;
+        }
+        .padd:hover { background:var(--primary-hover); }
+
+        /* ==================== TRANSACTION PANEL ==================== */
+        .tx-panel {
+            background:var(--card); border-radius:var(--radius-xs); padding:8px;
+            border:1px solid var(--light); box-shadow:var(--shadow);
+            flex:1; display:flex; flex-direction:column;
+            overflow:hidden; min-height:0;
+        }
+        .tx-hdr {
+            display:flex; justify-content:space-between; align-items:center;
+            margin-bottom:4px; flex-shrink:0;
+        }
+        .tx-hdr h3 { font-size:.75rem; font-weight:600; }
+        .tx-count { color:var(--gray); font-size:.62rem; }
+
+        .tx-table-wrap {
+            flex:1; overflow-y:auto; min-height:0;
+            border:1px solid var(--light); border-radius:var(--radius-xs);
+        }
+
+        .tx-totals {
+            display:flex; gap:14px; background:var(--light);
+            padding:6px 10px; border-radius:var(--radius-xs);
+            margin:4px 0; flex-shrink:0;
+        }
+        .titem { display:flex; flex-direction:column; }
+        .titem .tl {
+            font-size:.5rem; color:var(--gray);
+            text-transform:uppercase; font-weight:600;
+        }
+        .titem .ta { font-size:.85rem; font-weight:700; }
+        .titem .ta.green { color:var(--success); }
+        .titem .ta.orange { color:var(--warning); }
+
+        .ded-grid {
+            display:grid; grid-template-columns:repeat(3, 1fr);
+            gap:3px; margin:3px 0; flex-shrink:0;
+        }
+        .ditem { display:flex; flex-direction:column; }
+        .ditem label {
+            font-size:.48rem; color:var(--gray); font-weight:600;
+            text-transform:uppercase; margin-bottom:1px;
+        }
+        .ditem input {
+            padding:3px 2px; border:1px solid #e0e4e2; border-radius:3px;
+            font-weight:600; font-size:.65rem; font-family:'Poppins',sans-serif;
+            text-align:right;
+        }
+        .ditem input:focus { outline:none; border-color:var(--primary); }
+
+        .remit-row {
+            display:flex; justify-content:space-between; align-items:center;
+            flex-shrink:0; margin:3px 0;
+        }
+        .action-row { display:flex; gap:6px; justify-content:flex-end; flex-shrink:0; }
+        .abtn {
+            padding:6px 14px; border-radius:var(--radius-xs); font-weight:600;
+            border:none; cursor:pointer; font-size:.68rem;
+            font-family:'Poppins',sans-serif;
+            display:flex; align-items:center; gap:5px;
+        }
+        .abtn:hover { transform:translateY(-1px); box-shadow:var(--shadow-md); }
+        .abtn-confirm { background:var(--primary); color:#fff; }
+        .abtn-clear { background:var(--danger); color:#fff; }
+
+        /* ==================== TABLES ==================== */
+        .tbl-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+        table { width:100%; border-collapse:collapse; }
+        th {
+            text-align:left; padding:5px 6px; background:var(--light);
+            color:var(--gray); font-size:.56rem; font-weight:600;
+            text-transform:uppercase; letter-spacing:.3px;
+            position:sticky; top:0; z-index:5; white-space:nowrap;
+        }
+        th.teal { background:var(--primary); color:#fff; }
+        th.blue { background:var(--blue); color:#fff; }
+        td {
+            padding:4px 6px; border-bottom:1px solid var(--light);
+            font-size:.65rem; white-space:nowrap;
+        }
+        tr:hover td { background:#fafcfb; }
+        .tc { text-align:center !important; }
+        .tr { text-align:right !important; }
+        .money {
+            text-align:right; font-family:'Poppins',monospace;
+            font-weight:600; font-size:.65rem;
+        }
+        .fw { font-weight:600; }
+
+        /* ==================== BUTTONS & BADGES ==================== */
+        .btn {
+            padding:5px 12px; border:none; border-radius:var(--radius-xs);
+            font-weight:600; cursor:pointer; font-size:.65rem;
+            display:inline-flex; align-items:center; gap:4px;
+        }
+        .btn-p { background:var(--primary); color:#fff; }
+        .btn-p:hover { background:var(--primary-hover); }
+        .btn-s { background:var(--success); color:#fff; }
+        .btn-o { background:var(--card); border:1.5px solid #e0e4e2; color:var(--dark); }
+        .btn-d { background:var(--danger); color:#fff; }
+        .btn-sm { padding:3px 7px; font-size:.58rem; border-radius:4px; }
+
+        .badge {
+            padding:2px 7px; border-radius:12px; font-size:.52rem;
+            font-weight:600; text-transform:uppercase;
+        }
+        .badge-pend { background:var(--orange-light); color:#d4880f; }
+        .badge-ok { background:var(--primary-light); color:var(--primary); }
+        .badge-fuel { background:#e8f0fe; color:var(--blue); }
+        .badge-item { background:#f5eeff; color:#7c3aed; }
+
+        /* ==================== PUMP READINGS ==================== */
+        .pump-section {
+            background:var(--card); border-radius:var(--radius-sm); padding:12px;
+            border:1px solid var(--light); box-shadow:var(--shadow);
+        }
+        .pump-section h3 { font-size:.82rem; margin-bottom:4px; }
+        .pump-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; }
+        .pump-card {
+            background:var(--light); border-radius:var(--radius-xs); padding:10px;
+        }
+        .pump-card h4 { margin-bottom:6px; font-size:.78rem; }
+        .pr-row {
+            display:grid; grid-template-columns:65px 1fr 1fr 55px 65px;
+            gap:4px; align-items:center; margin-bottom:5px; font-size:.65rem;
+        }
+        .pr-row.pr-hdr {
+            font-weight:600; color:var(--gray); font-size:.55rem;
+            text-transform:uppercase; margin-bottom:6px;
+        }
+        .pr-row input {
+            padding:4px; border:1px solid #dde1df; border-radius:3px;
+            width:100%; font-weight:600; font-size:.65rem;
+            font-family:'Poppins',sans-serif; text-align:right;
+        }
+        .pr-row input:focus { outline:none; border-color:var(--primary); }
+        .pr-row input.calib {
+            border-color:var(--orange); background:var(--orange-light); color:#b8860b;
+        }
+        .pr-result { font-weight:700; color:var(--primary); text-align:right; font-size:.7rem; }
+
+        /* ==================== PANELS ==================== */
+        .panel {
+            background:var(--card); border-radius:var(--radius-sm);
+            box-shadow:var(--shadow); display:flex; flex-direction:column;
+            overflow:hidden; margin-bottom:10px;
+        }
+        .panel.f1 { flex:1; min-height:0; }
+        .phdr {
+            display:flex; justify-content:space-between; align-items:center;
+            padding:10px 14px; border-bottom:1px solid var(--light);
+        }
+        .phdr h3 { font-size:.82rem; font-weight:600; }
+        .pbody { padding:10px 14px; overflow-y:auto; flex:1; }
+        .pbody.np { padding:0; }
+
+        .info-bar {
+            background:var(--orange-light); padding:6px 12px;
+            border-left:3px solid var(--orange); font-size:.62rem; color:#b8860b;
+        }
+
+        .search-bar {
+            display:flex; gap:6px; padding:8px 14px; background:var(--light);
+            border-bottom:1px solid #eaeaea; flex-wrap:wrap; align-items:flex-end;
+        }
+        .search-bar .sfield input {
+            padding:5px 8px; border:1px solid #dde1df;
+            border-radius:var(--radius-xs); font-size:.72rem;
+            font-family:'Poppins',sans-serif;
+        }
+        .search-bar .sfield input:focus { outline:none; border-color:var(--primary); }
+
+        .total-banner {
+            background:var(--dark); color:#fff; padding:8px 14px;
+            border-radius:var(--radius-xs); display:flex;
+            justify-content:space-between; align-items:center; margin-bottom:8px;
+        }
+        .total-banner h3 { font-size:.7rem; color:rgba(255,255,255,.7); font-weight:500; }
+        .total-banner .tv { font-size:1.05rem; font-weight:700; }
+
+        .ainput {
+            width:100%; padding:4px; border:1px solid #dde1df; border-radius:3px;
+            font-size:.65rem; text-align:right; font-family:'Poppins',sans-serif;
+        }
+        .ainput:focus { outline:none; border-color:var(--primary); }
+        .mg { color:var(--success); font-weight:600; }
+        .ml { color:var(--orange); font-weight:600; }
+
+        /* ==================== STAT CARDS ==================== */
+        .stat-row {
+            display:grid; grid-template-columns:repeat(4, 1fr);
+            gap:8px; margin-bottom:10px;
+        }
+        .stat {
+            background:var(--card); padding:12px 14px;
+            border-radius:var(--radius-sm); box-shadow:var(--shadow);
+        }
+        .stat h4 {
+            font-size:.56rem; color:var(--gray); font-weight:500;
+            text-transform:uppercase; margin-bottom:3px;
+        }
+        .stat .sv { font-size:1.15rem; font-weight:700; }
+        .stat .ss { font-size:.56rem; color:var(--gray); margin-top:2px; }
+
+        /* ==================== MODAL ==================== */
+        .modal-ov {
+            display:none; position:fixed; inset:0; background:rgba(0,0,0,.4);
+            backdrop-filter:blur(4px); z-index:8000;
+            justify-content:center; align-items:center; padding:16px;
+        }
+        .modal-ov.active { display:flex; }
+        .modal {
+            background:var(--card); width:100%; max-width:680px;
+            border-radius:var(--radius); box-shadow:var(--shadow-lg);
+            display:flex; flex-direction:column; max-height:85vh;
+        }
+        .mhdr {
+            padding:14px 18px; border-bottom:1px solid var(--light);
+            display:flex; justify-content:space-between; align-items:flex-start;
+        }
+        .mhdr h3 { font-size:.95rem; font-weight:700; }
+        .mhdr .msub { font-size:.65rem; color:var(--gray); margin-top:2px; }
+        .mbody { padding:14px 18px; overflow-y:auto; flex:1; }
+        .mbody table { min-width:360px; }
+        .mfoot {
+            padding:10px 18px; border-top:1px solid var(--light);
+            display:flex; justify-content:flex-end; gap:8px;
+        }
+
+        .summary-strip {
+            background:var(--primary-light); padding:10px;
+            border-radius:var(--radius-xs); display:flex;
+            justify-content:space-between; margin-bottom:12px;
+            border:1px solid #c8e8da;
+        }
+        .summary-strip div { text-align:center; flex:1; }
+        .summary-strip span {
+            display:block; font-size:.52rem; color:var(--primary);
+            text-transform:uppercase; font-weight:600; margin-bottom:2px;
+        }
+        .summary-strip strong { font-size:.85rem; }
+        .sec-label {
+            font-size:.7rem; font-weight:600;
+            border-bottom:2px solid var(--light);
+            padding-bottom:3px; margin:0 0 6px;
+        }
+
+        /* ==================== TOAST ==================== */
+        .toast-c {
+            position:fixed; bottom:16px; right:16px; z-index:10000;
+            display:flex; flex-direction:column; gap:6px;
+        }
+        .toast {
+            background:var(--dark); color:#fff; padding:8px 14px;
+            border-radius:var(--radius-xs); display:flex; align-items:center;
+            gap:6px; font-weight:500; font-size:.7rem; box-shadow:var(--shadow-md);
+            animation:toastIn .3s cubic-bezier(.34,1.56,.64,1);
+        }
+        .toast.error { background:var(--danger); }
+        .toast.warning { background:var(--warning); }
+        @keyframes toastIn {
+            from { transform:translateX(100%); opacity:0; }
+            to { transform:translateX(0); opacity:1; }
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width:900px) {
+            #staff-pos.active {
+                flex-direction:column !important;
+                overflow-y:auto !important;
+            }
+            .pos-left, .pos-right {
+                flex:none !important;
+                overflow:visible !important;
+            }
+            .prod-section { max-height:260px; }
+            .tx-table-wrap { max-height:150px; }
+            .stat-row { grid-template-columns:repeat(2, 1fr); }
+            .pump-grid { grid-template-columns:1fr; }
+        }
+
+        @media (max-width:768px) {
+            .hamburger { display:block; }
+            .sidebar {
+                position:fixed; left:0; top:0; bottom:0; width:220px;
+                transform:translateX(-100%); z-index:60;
+                box-shadow:4px 0 20px rgba(0,0,0,.1);
+            }
+            .sidebar.open { transform:translateX(0); }
+            .content-scroll { padding:6px 8px 8px; }
+        }
+
+        @media (max-width:600px) {
+            .fuel-row {
+                grid-template-columns:repeat(3, 1fr) !important;
+                gap:3px;
+            }
+            .fcard-mini { padding:4px 5px; }
+            .fcard-mini h4 { font-size:.56rem; }
+            .fcard-mini .fprice { font-size:.48rem; }
+            .fcard-mini select { font-size:.52rem; padding:1px 2px; }
+            .finput-row input { font-size:.52rem; padding:2px 1px; }
+            .finput-row input::placeholder { font-size:.46rem; }
+            .btn-add-fuel { font-size:.5rem; padding:2px; }
+            .finput-row { gap:1px; margin-bottom:1px; }
+
+            .prod-grid { grid-template-columns:repeat(2, 1fr); }
+            .ded-grid { grid-template-columns:repeat(3, 1fr); }
+            .stat-row { grid-template-columns:1fr 1fr; }
+        }
+
+        @media (max-width:380px) {
+            .fuel-row {
+                grid-template-columns:repeat(3, 1fr) !important;
+                gap:2px;
+            }
+            .fcard-mini { padding:3px 4px; }
+            .fcard-mini h4 { font-size:.5rem; }
+            .fcard-mini .fprice { font-size:.44rem; }
+            .fcard-mini select { font-size:.46rem; padding:1px; }
+            .finput-row input { font-size:.46rem; padding:1px; }
+            .finput-row input::placeholder { font-size:.42rem; }
+            .btn-add-fuel { font-size:.46rem; padding:2px; }
+
+            .prod-grid { grid-template-columns:repeat(2, 1fr); }
+            .pcard .pn { font-size:.56rem; }
+            .pcard .pp { font-size:.62rem; }
+
+            .ded-grid { grid-template-columns:repeat(2, 1fr); }
+            .action-row { flex-direction:row; }
+            .abtn { flex:1; justify-content:center; padding:6px 8px; font-size:.6rem; }
+
+            .pump-grid { grid-template-columns:1fr; }
+            .pr-row {
+                grid-template-columns:45px repeat(4, 1fr);
+                gap:2px; font-size:.56rem;
+            }
+            .pr-row input { padding:3px; font-size:.56rem; }
+
+            .titem .ta { font-size:.78rem; }
+            .top-bar h2 { font-size:.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== LOGIN ==================== -->
+<div id="loginPage">
+    <div class="login-box">
+        <i class="fa-solid fa-gas-pump login-icon"></i>
+        <h1>EcoGazz GSMS</h1>
+        <div class="login-sub">Kimaya Station</div>
+        <input type="password" id="loginPin" placeholder="Enter PIN"
+               onkeydown="if(event.key==='Enter')doLogin(selectedRole)">
+        <div class="role-btns">
+            <button class="rbtn rbtn-admin" onclick="doLogin('admin')">
+                <i class="fa-solid fa-shield-halved"></i> Admin
+            </button>
+            <button class="rbtn rbtn-staff" onclick="doLogin('staff')">
+                <i class="fa-solid fa-user"></i> Staff
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== APP SHELL ==================== -->
+<div id="appShell">
+    <div class="sidebar-overlay" id="sidebarOv" onclick="closeSB()"></div>
+    <div class="sidebar" id="sidebar"></div>
+    <div class="main-area">
+        <div class="top-bar">
+            <div style="display:flex;align-items:center;gap:6px">
+                <button class="hamburger" id="hamBtn" onclick="toggleSB()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h2 id="pageTitle">Dashboard</h2>
+            </div>
+            <span class="top-date" id="topDate"></span>
+        </div>
+        <div class="content-scroll">
+
+            <!-- ===== STAFF: POS ===== -->
+            <div id="staff-pos" class="page">
+                <div class="pos-left">
+                    <div class="shift-bar">
+                        <div class="sfield">
+                            <span class="sl">Date</span>
+                            <span class="sv" id="posDate"></span>
+                        </div>
+                        <div class="sfield">
+                            <span class="sl">Schedule</span>
+                            <select id="shiftSched">
+                                <option>3AM - 12NN</option>
+                                <option>12NN - 9PM</option>
+                            </select>
+                        </div>
+                        <div class="sfield">
+                            <span class="sl">Gasman</span>
+                            <select id="gasmanSel">
+                                <option>DODONG</option>
+                                <option>KENNETH</option>
+                                <option>FRANCIS</option>
+                                <option>ROXAS</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="fuel-section">
+                        <h3><i class="fa-solid fa-gas-pump" style="color:var(--primary);margin-right:3px"></i>Fuel Sales</h3>
+                        <div class="fuel-row" id="fuelGrid"></div>
+                    </div>
+
+                    <div class="prod-section">
+                        <h3><i class="fa-solid fa-oil-can" style="color:var(--primary);margin-right:3px"></i>Products</h3>
+                        <div class="brand-tabs" id="brandTabs"></div>
+                        <div class="prod-grid" id="prodGrid"></div>
+                    </div>
+                </div>
+
+                <div class="pos-right">
+                    <div class="tx-panel">
+                        <div class="tx-hdr">
+                            <h3><i class="fa-solid fa-receipt" style="color:var(--primary);margin-right:3px"></i>Transaction</h3>
+                            <span class="tx-count" id="txCount">0 items</span>
+                        </div>
+                        <div class="tx-table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th class="tr">Qty/L</th>
+                                        <th class="tr">Price</th>
+                                        <th class="tr">Total</th>
+                                        <th class="tc" style="width:24px">×</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="txBody">
+                                    <tr><td colspan="5" class="tc" style="padding:12px;color:var(--gray);font-size:.6rem">No transactions yet</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tx-totals">
+                            <div class="titem">
+                                <span class="tl">Gross Sales</span>
+                                <span class="ta" id="grossT">₱0.00</span>
+                            </div>
+                            <div class="titem">
+                                <span class="tl">Total Liters</span>
+                                <span class="ta" id="totalL">0 L</span>
+                            </div>
+                        </div>
+                        <div class="ded-grid">
+                            <div class="ditem"><label>Expense</label><input type="number" id="d-exp" value="0" oninput="calcR()"></div>
+                            <div class="ditem"><label>P.O</label><input type="number" id="d-po" value="0" oninput="calcR()"></div>
+                            <div class="ditem"><label>MDRRMO</label><input type="number" id="d-md" value="0" oninput="calcR()"></div>
+                            <div class="ditem"><label>MOPH</label><input type="number" id="d-mo" value="0" oninput="calcR()"></div>
+                            <div class="ditem"><label>RNDC</label><input type="number" id="d-rn" value="0" oninput="calcR()"></div>
+                            <div class="ditem"><label>HON.BIMBO</label><input type="number" id="d-hb" value="0" oninput="calcR()"></div>
+                        </div>
+                        <div class="remit-row">
+                            <div class="titem">
+                                <span class="tl">Expected Remittance</span>
+                                <span class="ta green" id="netR">₱0.00</span>
+                            </div>
+                            <div class="titem">
+                                <span class="tl">Over/Short</span>
+                                <span class="ta orange" id="osR">₱0.00</span>
+                            </div>
+                        </div>
+                        <div class="action-row">
+                            <button class="abtn abtn-clear" onclick="clearCart()">
+                                <i class="fa-solid fa-trash"></i> Clear
+                            </button>
+                            <button class="abtn abtn-confirm" onclick="submitShift()">
+                                <i class="fa-solid fa-paper-plane"></i> Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== STAFF: PUMPS ===== -->
+            <div id="staff-pumps" class="page scrollable">
+                <div class="pump-section">
+                    <h3><i class="fa-solid fa-gauge-high" style="color:var(--primary);margin-right:4px"></i>Pump Meter Readings</h3>
+                    <p style="font-size:.6rem;color:var(--gray);margin-bottom:10px">Calibration updates meter but doesn't charge fuel</p>
+                    <div class="pump-grid" id="pumpGrid"></div>
+                </div>
+            </div>
+
+            <!-- ===== STAFF: HISTORY ===== -->
+            <div id="staff-history" class="page scrollable">
+                <div class="panel f1">
+                    <div class="search-bar">
+                        <div class="sfield">
+                            <span class="sl">Date</span>
+                            <input type="date" id="histDate">
+                        </div>
+                        <button class="btn btn-p" onclick="filterHist()"><i class="fa-solid fa-search"></i> Search</button>
+                        <button class="btn btn-o" onclick="resetHist()">All</button>
+                    </div>
+                    <div class="pbody">
+                        <div class="total-banner">
+                            <h3>Total Sales</h3>
+                            <div class="tv">₱ <span id="histTotal">0.00</span></div>
+                        </div>
+                        <div class="tbl-wrap" style="overflow-x:auto">
+                            <table>
+                                <thead>
+                                    <tr><th>Date</th><th>Time</th><th class="tc">Type</th><th>Desc</th><th class="tr">Details</th><th class="tr">Amount</th><th>Staff</th></tr>
+                                </thead>
+                                <tbody id="histBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ADMIN: DASHBOARD ===== -->
+            <div id="admin-dashboard" class="page scrollable">
+                <div class="stat-row">
+                    <div class="stat"><h4>Today's Revenue</h4><div class="sv" id="aRev">₱0</div><div class="ss">All shifts</div></div>
+                    <div class="stat"><h4>Est. Profit</h4><div class="sv" style="color:var(--success)" id="aProf">���0</div><div class="ss">~7% margin</div></div>
+                    <div class="stat"><h4>Pending Shifts</h4><div class="sv" style="color:var(--orange)" id="aPend">0</div><div class="ss">Needs review</div></div>
+                    <div class="stat"><h4>Volume Dispensed</h4><div class="sv" id="aVol">0 L</div><div class="ss">Today</div></div>
+                </div>
+                <div class="panel" style="min-height:280px">
+                    <div class="phdr"><h3>Revenue Trend</h3></div>
+                    <div class="pbody" style="position:relative;min-height:240px">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ADMIN: SHIFTS ===== -->
+            <div id="admin-reviews" class="page scrollable">
+                <div class="panel f1">
+                    <div class="phdr">
+                        <h3>Shift Reports</h3>
+                        <button class="btn btn-p" onclick="toast('Synced','success')"><i class="fa-solid fa-sync"></i> Sync</button>
+                    </div>
+                    <div class="pbody np">
+                        <div class="tbl-wrap" style="overflow-x:auto">
+                            <table>
+                                <thead>
+                                    <tr><th>Date</th><th>Shift</th><th>Gasman</th><th class="tr">Gross</th><th class="tr">Deduct</th><th class="tr">Remit</th><th class="tc">Status</th><th class="tc">Action</th></tr>
+                                </thead>
+                                <tbody id="aShBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ADMIN: AUDIT ===== -->
+            <div id="admin-audit" class="page scrollable">
+                <div class="panel f1">
+                    <div class="search-bar">
+                        <div class="sfield"><span class="sl">Date</span><input type="date" id="auDate"></div>
+                        <button class="btn btn-p" onclick="filterAu()"><i class="fa-solid fa-search"></i> Search</button>
+                        <button class="btn btn-o" onclick="document.getElementById('auDate').value='';filterAu()">All</button>
+                    </div>
+                    <div class="pbody">
+                        <div class="total-banner"><h3>Audited Sales</h3><div class="tv">₱ <span id="auTotal">0.00</span></div></div>
+                        <div class="tbl-wrap" style="overflow-x:auto">
+                            <table>
+                                <thead><tr><th>Date</th><th>Time</th><th class="tc">Type</th><th>Desc</th><th class="tr">Details</th><th class="tr">Amount</th><th>Staff</th></tr></thead>
+                                <tbody id="auBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ADMIN: PUMPS ===== -->
+            <div id="admin-pumps" class="page scrollable">
+                <div class="panel">
+                    <div class="phdr">
+                        <h3>Pump Configuration</h3>
+                        <button class="btn btn-p" onclick="toast('Pushed','success')"><i class="fa-solid fa-upload"></i> Push</button>
+                    </div>
+                    <div class="info-bar"><strong>Warning:</strong> Editing meters resets staff terminals.</div>
+                    <div class="pbody np">
+                        <div class="tbl-wrap" style="overflow-x:auto">
+                            <table>
+                                <thead><tr><th>Pump</th><th>Type</th><th>Fuel</th><th class="tr">Cost/L</th><th class="tr">Sell/L</th><th class="tr">Margin</th><th class="tr">Start</th></tr></thead>
+                                <tbody id="aPCfg"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel f1">
+                    <div class="phdr"><h3>Meter Logs</h3></div>
+                    <div class="pbody np">
+                        <div class="tbl-wrap" style="overflow-x:auto">
+                            <table>
+                                <thead><tr><th class="blue">Date</th><th class="blue">Pump</th><th class="blue">Fuel</th><th class="blue tr">Start</th><th class="blue tr">Close</th><th class="blue tr">Calib</th><th class="blue tr">Net L</th><th class="blue tr">Total</th><th class="blue">Gasman</th></tr></thead>
+                                <tbody id="aPLogs"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ADMIN: INVENTORY ===== -->
+            <div id="admin-inventory" class="page scrollable">
+                <div class="panel f1">
+                    <div class="phdr">
+                        <h3>Pricing & Margins</h3>
+                        <button class="btn btn-s" onclick="toast('Saved','success')"><i class="fa-solid fa-save"></i> Save</button>
+                    </div>
+                    <div class="pbody np">
+                        <div class="tbl-wrap" style="overflow-x:auto">
+                            <table>
+                                <thead><tr><th>Brand</th><th>Product</th><th class="tr">Cost</th><th class="tr">Sell</th><th class="tr">Margin</th><th class="tc">Stock</th></tr></thead>
+                                <tbody id="aInvB"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ADMIN: PURCHASING ===== -->
+            <div id="admin-purchasing" class="page scrollable">
+                <div class="panel f1">
+                    <div class="phdr">
+                        <h3>Purchase Orders</h3>
+                        <button class="btn btn-p" onclick="toast('Coming soon','warning')"><i class="fa-solid fa-plus"></i> Add P.O.</button>
+                    </div>
+                    <div class="pbody np">
+                        <div class="tbl-wrap" style="overflow-x:auto">
+                            <table>
+                                <thead><tr><th class="blue">Date</th><th class="blue">Fuel</th><th class="blue tr">Liters</th><th class="blue tr">Price/L</th><th class="blue tr">Add</th><th class="blue tr">Total/L</th><th class="blue tr">Amount</th><th class="blue">Receiver</th><th class="blue">Gasman</th></tr></thead>
+                                <tbody id="aPOB"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ADMIN: EMPLOYEES ===== -->
+            <div id="admin-employees" class="page scrollable">
+                <div class="panel f1">
+                    <div class="phdr">
+                        <h3>Staff Management</h3>
+                        <button class="btn btn-p" onclick="toast('Coming soon','warning')"><i class="fa-solid fa-user-plus"></i> Add</button>
+                    </div>
+                    <div class="pbody np">
+                        <div class="tbl-wrap" style="overflow-x:auto">
+                            <table>
+                                <thead><tr><th>Name</th><th>Role</th><th>PIN</th><th class="tc">Status</th><th class="tc">Action</th></tr></thead>
+                                <tbody id="aEmpB"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL ==================== -->
+<div id="shiftModal" class="modal-ov">
+    <div class="modal">
+        <div class="mhdr">
+            <div>
+                <h3>Shift Audit</h3>
+                <div class="msub" id="mSub"></div>
+            </div>
+            <button class="btn btn-o btn-sm" onclick="closeModal()"><i class="fa-solid fa-times"></i></button>
+        </div>
+        <div class="mbody">
+            <div class="summary-strip">
+                <div><span>Fuel Sales</span><strong id="mF">₱0</strong></div>
+                <div><span>Item Sales</span><strong id="mI">₱0</strong></div>
+                <div><span>Deductions</span><strong style="color:var(--danger)" id="mD">₱0</strong></div>
+                <div><span>Cash Due</span><strong style="color:var(--success)" id="mN">₱0</strong></div>
+            </div>
+            <h4 class="sec-label">Fuel Dispensed</h4>
+            <div class="tbl-wrap">
+                <table style="margin-bottom:10px">
+                    <thead><tr><th>Pump</th><th>Fuel</th><th class="tr">Liters</th><th class="tr">Amount</th></tr></thead>
+                    <tbody id="mFB"></tbody>
+                </table>
+            </div>
+            <h4 class="sec-label">Items Sold</h4>
+            <div class="tbl-wrap">
+                <table style="margin-bottom:10px">
+                    <thead><tr><th>Brand</th><th>Desc</th><th class="tc">Qty</th><th class="tr">Total</th></tr></thead>
+                    <tbody id="mIB"></tbody>
+                </table>
+            </div>
+            <h4 class="sec-label">Deductions</h4>
+            <div class="tbl-wrap">
+                <table>
+                    <thead><tr><th>Type</th><th class="tr">Amount</th></tr></thead>
+                    <tbody id="mDB"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="mfoot">
+            <button class="btn btn-o" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-s" id="mAppr" onclick="approveShift()">
+                <i class="fa-solid fa-check"></i> Approve
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="toast-c" id="toastC"></div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+// ==================== DATA ====================
+const PUMPS = [
+    { pump:"Front", lb:"FRONT", tp:"Digital",     fuel:"Diesel",  pr:55.80, co:52,    st:1500 },
+    { pump:"Front", lb:"FRONT", tp:"Digital",     fuel:"Premium", pr:56.50, co:52.50, st:2000 },
+    { pump:"Front", lb:"FRONT", tp:"Digital",     fuel:"Regular", pr:55.80, co:52,    st:1000 },
+    { pump:"Back",  lb:"BACK",  tp:"Mechanical",  fuel:"Diesel",  pr:55.80, co:52,    st:800  },
+    { pump:"Back",  lb:"BACK",  tp:"Mechanical",  fuel:"Premium", pr:56.50, co:52.50, st:500  },
+    { pump:"Back",  lb:"BACK",  tp:"Mechanical",  fuel:"Regular", pr:55.80, co:52,    st:300  }
+];
+
+const PRODUCTS = {
+    "CALTEX":   [{ n:"TEXAMATIC 1L", p:290, s:25 }, { n:"HAVOLINE 20W-40 1L", p:240, s:30 }, { n:"HAVOLINE EZY 1L", p:239, s:28 }, { n:"DELO GEAR EP4 90 1L", p:288, s:15 }, { n:"SUPER DIESEL 1L", p:200, s:35 }],
+    "CASTROL":  [{ n:"ACTIV 4T 1L", p:278, s:40 }, { n:"ACTIV 4T 800ML", p:247, s:35 }, { n:"GO ESSENTIAL 1L", p:256, s:30 }, { n:"GO ESSENTIAL 800ML", p:226, s:25 }, { n:"GTX 1L", p:276, s:20 }],
+    "SHELL":    [{ n:"2T 200ML", p:50, s:50 }, { n:"2T 1L", p:216, s:32 }, { n:"AX3 ADVANCE 1L", p:262, s:28 }, { n:"AX5 ADVANCE 1L", p:280, s:22 }, { n:"COOLANT 1L", p:278, s:18 }, { n:"BRAKE FLUID 500ML", p:215, s:20 }],
+    "WHIZ":     [{ n:"BRAKE FLUID 900ML", p:240, s:25 }, { n:"BRAKE FLUID 270ML", p:79, s:45 }, { n:"BRAKE FLUID 150ML", p:50, s:60 }],
+    "PRYCEGAS": [{ n:"11KG SET", p:2600, s:8 }, { n:"11KG REFILL", p:1100, s:15 }, { n:"2.7KG KALAN SET", p:1300, s:6 }, { n:"2.7KG REFILL", p:370, s:12 }],
+    "PETRON":   [{ n:"11KG SET", p:2000, s:7 }, { n:"11KG REFILL", p:1110, s:14 }, { n:"2.7KG SET", p:1499, s:5 }],
+    "FIESTA":   [{ n:"11KG SET", p:2000, s:6 }, { n:"11KG REFILL", p:1120, s:12 }, { n:"2.7KG SET", p:1300, s:4 }, { n:"2.7KG REFILL", p:370, s:10 }],
+    "VS1":      [{ n:"PROTECTOR 120ML", p:145, s:30 }, { n:"PROTECTOR 250ML", p:216, s:25 }]
+};
+
+const IV = [
+    { b:"PRYCEGAS", i:"11KG SET",         c:2300, s:2600, st:5,  bg:"#fff8ee" },
+    { b:"PRYCEGAS", i:"11KG REFILL",      c:950,  s:1100, st:12, bg:"#fff8ee" },
+    { b:"PRYCEGAS", i:"2.7KG KALAN SET",  c:1100, s:1300, st:4,  bg:"#fff8ee" },
+    { b:"PRYCEGAS", i:"2.7KG REFILL",     c:300,  s:370,  st:10, bg:"#fff8ee" },
+    { b:"PETRON",   i:"11KG REFILL",      c:980,  s:1110, st:15, bg:"#f5f7f6" },
+    { b:"FIESTA",   i:"11KG REFILL",      c:980,  s:1120, st:14, bg:"#eef8f4" },
+    { b:"CALTEX",   i:"TEXAMATIC 1L",     c:240,  s:290,  st:20, bg:"#f8f8f8" },
+    { b:"CALTEX",   i:"HAVOLINE 1L",      c:190,  s:240,  st:18, bg:"#f8f8f8" },
+    { b:"CASTROL",  i:"ACTIV 4T 1L",      c:230,  s:278,  st:14, bg:"#fef5f8" },
+    { b:"CASTROL",  i:"GO ESSENTIAL 1L",   c:210,  s:256,  st:15, bg:"#fef5f8" },
+    { b:"SHELL",    i:"2T 200ML",         c:40,   s:50,   st:25, bg:"#fffce8" },
+    { b:"SHELL",    i:"2T 1L",            c:180,  s:216,  st:11, bg:"#fffce8" },
+    { b:"SHELL",    i:"COOLANT 1L",       c:230,  s:278,  st:10, bg:"#fffce8" },
+    { b:"WHIZ",     i:"BRAKE FLUID 900ML",c:200,  s:240,  st:5,  bg:"#f0f0f8" },
+    { b:"VS1",      i:"PROTECTOR 250ML",  c:170,  s:216,  st:8,  bg:"#f8f0f8" },
+    { b:"GUAPO",    i:"WASHER FLUID",     c:180,  s:230,  st:20, bg:"#eef8f4" }
+];
+
+const EMP = [
+    { n:"DODONG",      r:"Pump Attendant" },
+    { n:"KENNETH",     r:"Pump Attendant" },
+    { n:"FRANCIS",     r:"Pump Attendant" },
+    { n:"ROXAS",       r:"Pump Attendant" },
+    { n:"BRYAN BACOY", r:"Manager" }
+];
+
+const PO_DATA = [
+    { dt:"20-Jan-26", fu:"DIESEL", lt:200, pr:55.80, ad:0, rc:"BRYAN BACOY", gs:"DODONG" }
+];
+
+const pAudit = [
+    { date:'2026-02-24', time:'08:30 AM', cat:'Fuel', item:'Front Diesel',        det:'10.00 L', amt:558,  staff:'DODONG'  },
+    { date:'2026-02-25', time:'01:30 PM', cat:'Fuel', item:'Back Regular',        det:'37.54 L', amt:2095, staff:'KENNETH' },
+    { date:'2026-02-25', time:'02:00 PM', cat:'Item', item:'CASTROL ACTIV 4T 1L', det:'1 Qty',   amt:278,  staff:'KENNETH' }
+];
+
+let shifts = [{
+    id:1, date:"2026-02-25", shift:"12NN - 9PM", gm:"Kenneth", status:"Approved",
+    fuel:[{ pump:"Back", fuel:"Regular", liters:37.54, amount:2095, time:"01:30 PM" }],
+    items:[{ name:"CASTROL ACTIV 4T 1L", qty:1, price:278, total:278 }],
+    ded:{ expense:0, po:0, mdrrmo:0, moph:0, rndc:0, honbimbo:0 },
+    gf:2095, gi:278, td:0, rem:2373
+}];
+
+let sid = 2, role = 'staff', cart = [], selectedRole = 'staff';
+
+const MN = {
+    staff: [
+        { id:'staff-pos',     l:'GAS POS',       ic:'fa-cash-register',      t:'GAS POS System'  },
+        { id:'staff-pumps',   l:'Pump Readings',  ic:'fa-gauge-high',         t:'Pump Readings'   },
+        { id:'staff-history', l:'History',         ic:'fa-clock-rotate-left',  t:'Sales History'   }
+    ],
+    admin: [
+        { id:'admin-dashboard',  l:'Dashboard',  ic:'fa-chart-pie',      t:'Executive Dashboard' },
+        { id:'admin-reviews',    l:'Shifts',      ic:'fa-clock',          t:'Shift Management'    },
+        { id:'admin-audit',      l:'Audit',       ic:'fa-file-lines',     t:'Sales Audit'         },
+        { id:'admin-pumps',      l:'Pumps',       ic:'fa-gauge-high',     t:'Pump Control'        },
+        { id:'admin-inventory',  l:'Inventory',   ic:'fa-boxes-stacked',  t:'Pricing & Margins'   },
+        { id:'admin-purchasing', l:'P.O.',        ic:'fa-file-invoice',   t:'Purchase Orders'     },
+        { id:'admin-employees',  l:'Staff',       ic:'fa-users',          t:'Staff Management'    }
+    ]
+};
+
+// ==================== CLOCK ====================
+function tick() {
+    const d = new Date();
+    const e = document.getElementById('topDate');
+    if (e) e.innerText = d.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+}
+setInterval(tick, 1000);
+
+// ==================== LOGIN ====================
+function doLogin(r) {
+    if (!document.getElementById('loginPin').value) return toast('Enter PIN', 'error');
+    role = r;
+    const lp = document.getElementById('loginPage');
+    lp.style.opacity = '0';
+    setTimeout(() => {
+        lp.style.display = 'none';
+        document.getElementById('appShell').classList.add('show');
+        buildMenu();
+        tick();
+        toast(`Welcome, ${r === 'admin' ? 'Admin' : 'Staff'}`);
+    }, 350);
+}
+
+function logout() { location.reload(); }
+
+// ==================== SIDEBAR ====================
+function toggleSB() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOv').classList.toggle('show');
+}
+function closeSB() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOv').classList.remove('show');
+}
+
+function buildMenu() {
+    const mn = MN[role];
+    const sb = document.getElementById('sidebar');
+
+    sb.innerHTML = `
+        <div class="brand">
+            <h2>ECOGAZZ</h2>
+            <span>${role === 'admin' ? 'ADMIN CONSOLE' : 'STAFF TERMINAL'}</span>
+        </div>
+        <div class="menu" id="menuList"></div>
+        <div class="user-box">
+            <div class="avatar"><i class="fa-solid fa-${role === 'admin' ? 'user-tie' : 'user'}"></i></div>
+            <div class="uinfo">
+                <p>${role === 'admin' ? 'Admin' : 'Attendant'}</p>
+                <h4 id="currentUser">${role === 'admin' ? 'Bryan Bacoy' : 'DODONG'}</h4>
+            </div>
+            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+        </div>`;
+
+    const ml = document.getElementById('menuList');
+    mn.forEach((m, i) => {
+        const b = document.createElement('button');
+        b.className = 'nav-btn' + (i === 0 ? ' active' : '');
+        b.innerHTML = `<span>${m.l}</span><i class="fa-solid ${m.ic}"></i>`;
+        b.onclick = function() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(m.id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('pageTitle').innerText = m.t;
+            closeSB();
+        };
+        ml.appendChild(b);
+    });
+
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(mn[0].id).classList.add('active');
+    document.getElementById('pageTitle').innerText = mn[0].t;
+
+    if (role === 'staff') initStaff();
+    else initAdmin();
+}
+
+// ==================== STAFF INIT ====================
+function initStaff() {
+    document.getElementById('posDate').innerText = new Date().toISOString().split('T')[0];
+    buildFuel();
+    buildTabs();
+    buildPumpPage();
+    recalc();
+    filterHist();
+}
+
+// ==================== FUEL CARDS ====================
+function buildFuel() {
+    const fuels = [
+        { k:'diesel',  n:'DIESEL',  p:55.80 },
+        { k:'premium', n:'PREMIUM', p:56.50 },
+        { k:'regular', n:'REGULAR', p:55.80 }
+    ];
+    const g = document.getElementById('fuelGrid');
+    g.innerHTML = '';
+
+    fuels.forEach(f => {
+        const d = document.createElement('div');
+        d.className = 'fcard-mini';
+        d.innerHTML = `
+            <h4>${f.n}</h4>
+            <div class="fprice">₱${f.p.toFixed(2)}/L</div>
+            <select id="pu-${f.k}">
+                <option value="Front">Front</option>
+                <option value="Back">Back</option>
+            </select>
+            <div class="finput-row">
+                <input type="number" step="any" id="am-${f.k}" placeholder="₱ Amt" oninput="cF('${f.k}','a')">
+                <input type="number" step="any" id="li-${f.k}" placeholder="Liters" oninput="cF('${f.k}','l')">
+            </div>
+            <button class="btn-add-fuel" onclick="aF('${f.k}','${f.n}',${f.p})">
+                <i class="fa-solid fa-plus"></i> Add
+            </button>`;
+        g.appendChild(d);
+    });
+}
+
+function cF(t, s) {
+    const pr = { diesel:55.80, premium:56.50, regular:55.80 };
+    const a = document.getElementById('am-' + t);
+    const l = document.getElementById('li-' + t);
+    if (s === 'a') {
+        let v = parseFloat(a.value) || 0;
+        l.value = v ? (v / pr[t]).toFixed(2) : '';
+    } else {
+        let v = parseFloat(l.value) || 0;
+        a.value = v ? (v * pr[t]).toFixed(2) : '';
+    }
+}
+
+function aF(k, n, p) {
+    const pump = document.getElementById('pu-' + k).value;
+    const lit = parseFloat(document.getElementById('li-' + k).value);
+    const amt = parseFloat(document.getElementById('am-' + k).value);
+    if (!lit || lit <= 0) return toast('Enter valid amount', 'error');
+
+    cart.push({
+        id: Date.now(), cat: 'Fuel',
+        desc: `${pump} - ${n}`,
+        qty: `${lit.toFixed(2)} L`,
+        liters: lit, amount: amt,
+        pk: `${pump}-${n.charAt(0) + n.slice(1).toLowerCase()}`,
+        time: new Date()
+    });
+
+    document.getElementById('li-' + k).value = '';
+    document.getElementById('am-' + k).value = '';
+    toast(`+${lit.toFixed(2)}L ${n}`);
+    recalc();
+}
+
+// ==================== PRODUCTS ====================
+function buildTabs() {
+    const t = document.getElementById('brandTabs');
+    t.innerHTML = '';
+    Object.keys(PRODUCTS).forEach((b, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'btab' + (i === 0 ? ' active' : '');
+        btn.textContent = b;
+        btn.onclick = function() {
+            document.querySelectorAll('.btab').forEach(x => x.classList.remove('active'));
+            this.classList.add('active');
+            renderProds(b);
+        };
+        t.appendChild(btn);
+    });
+    renderProds(Object.keys(PRODUCTS)[0]);
+}
+
+function renderProds(brand) {
+    const g = document.getElementById('prodGrid');
+    g.innerHTML = '';
+    PRODUCTS[brand].forEach((p, i) => {
+        const d = document.createElement('div');
+        d.className = 'pcard';
+        d.innerHTML = `
+            <div class="pn">${p.n}</div>
+            <div class="pp">₱${p.p.toFixed(2)}</div>
+            <div class="ps">Stk: ${p.s}</div>
+            <div class="pact">
+                <input type="number" class="pq" id="pq-${brand}-${i}" value="1" min="1">
+                <button class="padd" id="pb-${brand}-${i}"><i class="fa-solid fa-plus"></i></button>
+            </div>`;
+        g.appendChild(d);
+
+        document.getElementById(`pb-${brand}-${i}`).onclick = () => {
+            const q = parseInt(document.getElementById(`pq-${brand}-${i}`).value) || 1;
+            cart.push({
+                id: Date.now(), cat: 'Item',
+                desc: `${brand} ${p.n}`,
+                qty: `${q}`, liters: 0,
+                amount: q * p.p, pk: null,
+                time: new Date()
+            });
+            document.getElementById(`pq-${brand}-${i}`).value = 1;
+            toast(`+${q}x ${p.n}`);
+            recalc();
+        };
+    });
+}
+
+// ==================== PUMP PAGE ====================
+function buildPumpPage() {
+    const g = document.getElementById('pumpGrid');
+    g.innerHTML = '';
+    ['Front', 'Back'].forEach(pump => {
+        const fuels = PUMPS.filter(p => p.pump === pump);
+        const d = document.createElement('div');
+        d.className = 'pump-card';
+        d.innerHTML = `
+            <h4><i class="fa-solid fa-gas-pump" style="color:var(--primary);margin-right:4px"></i>${pump.toUpperCase()} PUMP</h4>
+            <div class="pr-row pr-hdr">
+                <div>Fuel</div><div>Start</div><div>Close</div><div>Calib</div><div>Result</div>
+            </div>`;
+        fuels.forEach(f => {
+            const k = `${f.pump}-${f.fuel}`.toLowerCase();
+            d.innerHTML += `
+                <div class="pr-row">
+                    <div class="fw">${f.fuel}</div>
+                    <input type="number" step="any" id="ps-${k}" value="${f.st.toFixed(2)}">
+                    <input type="number" step="any" id="pe-${k}" value="${f.st.toFixed(2)}">
+                    <input type="number" step="any" class="calib" id="pc-${k}" value="0" oninput="recalc()">
+                    <span class="pr-result" id="pr-${k}">0.00</span>
+                </div>`;
+        });
+        g.appendChild(d);
+    });
+}
+
+// ==================== CART / RECALC ====================
+function recalc() {
+    const tb = document.getElementById('txBody');
+    let gr = 0, tl = 0;
+
+    if (!cart.length) {
+        tb.innerHTML = '<tr><td colspan="5" class="tc" style="padding:10px;color:var(--gray);font-size:.58rem">No transactions yet</td></tr>';
+    } else {
+        tb.innerHTML = '';
+        [...cart].reverse().forEach(it => {
+            gr += it.amount;
+            tl += it.liters;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="fw">${it.desc}</td>
+                <td class="tr">${it.qty}</td>
+                <td class="money">₱${(it.amount / (parseFloat(it.qty) || 1)).toFixed(2)}</td>
+                <td class="money">₱${it.amount.toFixed(2)}</td>
+                <td class="tc"><button class="btn btn-d btn-sm" data-id="${it.id}"><i class="fa-solid fa-times"></i></button></td>`;
+            tb.appendChild(tr);
+            tr.querySelector('button').onclick = function() {
+                cart = cart.filter(c => c.id !== parseInt(this.dataset.id));
+                recalc();
+            };
+        });
+    }
+
+    document.getElementById('txCount').textContent = `${cart.length} items`;
+    document.getElementById('totalL').textContent = `${tl.toFixed(1)} L`;
+    document.getElementById('grossT').textContent = `₱${gr.toFixed(2)}`;
+
+    // Update pump meters
+    let pt = {};
+    PUMPS.forEach(p => pt[`${p.pump}-${p.fuel}`] = { l: 0 });
+    cart.forEach(c => { if (c.pk && pt[c.pk]) pt[c.pk].l += c.liters; });
+
+    PUMPS.forEach(cfg => {
+        const key = `${cfg.pump}-${cfg.fuel}`;
+        const kl = key.toLowerCase();
+        const sold = pt[key].l;
+        const cal = parseFloat(document.getElementById(`pc-${kl}`)?.value) || 0;
+        const ce = document.getElementById(`pe-${kl}`);
+        const re = document.getElementById(`pr-${kl}`);
+        if (ce) ce.value = (cfg.st + sold + cal).toFixed(2);
+        if (re) re.innerText = (sold + cal).toFixed(2);
+    });
+
+    calcR();
+}
+
+function calcR() {
+    const g = parseFloat(document.getElementById('grossT').textContent.replace(/[₱,]/g, '')) || 0;
+    let d = 0;
+    ['d-exp', 'd-po', 'd-md', 'd-mo', 'd-rn', 'd-hb'].forEach(id => {
+        d += (parseFloat(document.getElementById(id)?.value) || 0);
+    });
+    document.getElementById('netR').textContent = `₱${(g - d).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 })}`;
+}
+
+function clearCart() {
+    if (cart.length && confirm('Clear all?')) {
+        cart = [];
+        ['d-exp', 'd-po', 'd-md', 'd-mo', 'd-rn', 'd-hb'].forEach(id => {
+            const e = document.getElementById(id);
+            if (e) e.value = 0;
+        });
+        PUMPS.forEach(cfg => {
+            const e = document.getElementById(`pc-${cfg.pump}-${cfg.fuel}`.toLowerCase());
+            if (e) e.value = 0;
+        });
+        recalc();
+        toast('Cleared', 'error');
+    }
+}
+
+function submitShift() {
+    if (!cart.length) return toast('Nothing to submit', 'error');
+
+    let gf = 0, gi = 0;
+    const fT = [], iT = [];
+
+    cart.forEach(c => {
+        if (c.cat === 'Fuel') {
+            gf += c.amount;
+            fT.push({
+                pump: c.pk.split('-')[0],
+                fuel: c.pk.split('-')[1],
+                liters: c.liters,
+                amount: c.amount,
+                time: c.time.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
+            });
+        } else {
+            gi += c.amount;
+            iT.push({
+                name: c.desc,
+                qty: parseInt(c.qty),
+                price: c.amount / parseInt(c.qty),
+                total: c.amount
+            });
+        }
+    });
+
+    let dd = {}, td = 0;
+    [['expense','d-exp'], ['po','d-po'], ['mdrrmo','d-md'], ['moph','d-mo'], ['rndc','d-rn'], ['honbimbo','d-hb']].forEach(([k, id]) => {
+        const v = parseFloat(document.getElementById(id)?.value) || 0;
+        dd[k] = v;
+        td += v;
+    });
+
+    shifts.push({
+        id: sid++,
+        date: document.getElementById('posDate').innerText,
+        shift: document.getElementById('shiftSched').value,
+        gm: document.getElementById('gasmanSel').value,
+        status: "Pending",
+        fuel: fT, items: iT, ded: dd,
+        gf, gi, td, rem: gf + gi - td
+    });
+
+    cart = [];
+    ['d-exp', 'd-po', 'd-md', 'd-mo', 'd-rn', 'd-hb'].forEach(id => {
+        const e = document.getElementById(id);
+        if (e) e.value = 0;
+    });
+    PUMPS.forEach(cfg => {
+        const e = document.getElementById(`pc-${cfg.pump}-${cfg.fuel}`.toLowerCase());
+        if (e) e.value = 0;
+    });
+
+    recalc();
+    filterHist();
+    toast('Shift submitted!');
+}
+
+// ==================== HISTORY ====================
+function filterHist() {
+    const sel = document.getElementById('histDate')?.value || '';
+    const tb = document.getElementById('histBody');
+    if (!tb) return;
+    tb.innerHTML = '';
+    let total = 0;
+
+    const staff = document.getElementById('gasmanSel')?.value || '';
+    const cur = cart.map(c => ({
+        date: document.getElementById('posDate')?.innerText || '',
+        time: c.time.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }),
+        cat: c.cat, item: c.desc, det: c.qty, amt: c.amount, staff
+    }));
+
+    const all = [
+        ...pAudit.map(d => ({ date:d.date, time:d.time, cat:d.cat, item:d.item, det:d.det, amt:d.amt, staff:d.staff })),
+        ...cur
+    ];
+
+    let f = sel ? all.filter(d => d.date === sel) : all;
+    f.sort((a, b) => b.date.localeCompare(a.date));
+
+    if (!f.length) {
+        tb.innerHTML = '<tr><td colspan="7" class="tc" style="padding:14px;color:var(--gray)">No records</td></tr>';
+    } else {
+        f.forEach(r => {
+            total += r.amt;
+            const bg = r.cat === 'Fuel' ? 'badge-fuel' : 'badge-item';
+            tb.innerHTML += `<tr>
+                <td>${r.date}</td><td>${r.time}</td>
+                <td class="tc"><span class="badge ${bg}">${r.cat}</span></td>
+                <td class="fw">${r.item}</td>
+                <td class="tr">${r.det}</td>
+                <td class="money">₱${r.amt.toLocaleString('en-US', { minimumFractionDigits:2 })}</td>
+                <td>${r.staff}</td>
+            </tr>`;
+        });
+    }
+    document.getElementById('histTotal').textContent = total.toLocaleString('en-US', { minimumFractionDigits:2 });
+}
+
+function resetHist() {
+    document.getElementById('histDate').value = '';
+    filterHist();
+}
+
+// ==================== ADMIN INIT ====================
+function initAdmin() {
+    rDash(); rShifts(); filterAu(); rPCfg(); rPLogs(); rInv(); rPO(); rEmp(); rChart();
+}
+
+function fm(n) {
+    return n.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+
+function rDash() {
+    let rv = 0, vol = 0, pn = 0;
+    shifts.forEach(s => {
+        rv += s.gf + s.gi;
+        s.fuel.forEach(f => vol += f.liters);
+        if (s.status === 'Pending') pn++;
+    });
+    pAudit.forEach(d => rv += d.amt);
+
+    document.getElementById('aRev').textContent = `₱${fm(rv)}`;
+    document.getElementById('aProf').textContent = `₱${fm(rv * 0.07)}`;
+    document.getElementById('aPend').textContent = `${pn} Shift${pn !== 1 ? 's' : ''}`;
+    document.getElementById('aVol').textContent = `${vol.toFixed(1)} L`;
+}
+
+function rShifts() {
+    const tb = document.getElementById('aShBody');
+    tb.innerHTML = '';
+
+    if (!shifts.length) {
+        tb.innerHTML = '<tr><td colspan="8" class="tc" style="padding:14px;color:var(--gray)">No shifts</td></tr>';
+        return;
+    }
+
+    [...shifts].reverse().forEach(s => {
+        const g = s.gf + s.gi;
+        const bc = s.status === 'Pending' ? 'badge-pend' : 'badge-ok';
+        const bl = s.status === 'Pending' ? 'Review' : 'Posted';
+        tb.innerHTML += `<tr>
+            <td>${s.date}</td><td>${s.shift}</td><td>${s.gm}</td>
+            <td class="money">₱${fm(g)}</td>
+            <td class="money" style="color:var(--danger)">₱${fm(s.td)}</td>
+            <td class="money fw">₱${fm(s.rem)}</td>
+            <td class="tc"><span class="badge ${bc}">${bl}</span></td>
+            <td class="tc"><button class="btn ${s.status === 'Pending' ? 'btn-p' : 'btn-o'} btn-sm" onclick="openModal(${s.id})">${s.status === 'Pending' ? 'Review' : 'View'}</button></td>
+        </tr>`;
+    });
+}
+
+function filterAu() {
+    const sel = document.getElementById('auDate')?.value || '';
+    const tb = document.getElementById('auBody');
+    if (!tb) return;
+    tb.innerHTML = '';
+    let total = 0;
+
+    let all = [...pAudit.map(d => ({ date:d.date, time:d.time, cat:d.cat, item:d.item, det:d.det, amt:d.amt, staff:d.staff }))];
+
+    shifts.forEach(s => {
+        s.fuel.forEach(f => all.push({
+            date:s.date, time:f.time || '—', cat:'Fuel',
+            item:`${f.pump} ${f.fuel}`, det:`${f.liters.toFixed(2)} L`,
+            amt:f.amount, staff:s.gm
+        }));
+        s.items.forEach(i => all.push({
+            date:s.date, time:'—', cat:'Item',
+            item:i.name, det:`${i.qty} Qty`,
+            amt:i.total, staff:s.gm
+        }));
+    });
+
+    let f = sel ? all.filter(d => d.date === sel) : all;
+    f.sort((a, b) => b.date.localeCompare(a.date));
+
+    if (!f.length) {
+        tb.innerHTML = '<tr><td colspan="7" class="tc" style="padding:14px;color:var(--gray)">No records</td></tr>';
+    } else {
+        f.forEach(r => {
+            total += r.amt;
+            const bg = r.cat === 'Fuel' ? 'badge-fuel' : 'badge-item';
+            tb.innerHTML += `<tr>
+                <td>${r.date}</td><td>${r.time}</td>
+                <td class="tc"><span class="badge ${bg}">${r.cat}</span></td>
+                <td class="fw">${r.item}</td><td class="tr">${r.det}</td>
+                <td class="money">₱${fm(r.amt)}</td><td>${r.staff}</td>
+            </tr>`;
+        });
+    }
+    document.getElementById('auTotal').textContent = fm(total);
+}
+
+function rPCfg() {
+    const tb = document.getElementById('aPCfg');
+    tb.innerHTML = '';
+    PUMPS.forEach(c => {
+        const m = c.pr - c.co;
+        tb.innerHTML += `<tr>
+            <td>${c.lb}</td><td>${c.tp}</td><td>${c.fuel}</td>
+            <td class="tr"><input type="number" step="any" class="ainput ci" value="${c.co.toFixed(2)}" oninput="cM(this)"></td>
+            <td class="tr"><input type="number" step="any" class="ainput si" value="${c.pr.toFixed(2)}" style="font-weight:600" oninput="cM(this)"></td>
+            <td class="money mv ${m < 3 ? 'ml' : 'mg'}">₱${m.toFixed(2)}</td>
+            <td class="tr"><input type="number" step="any" class="ainput" value="${c.st.toFixed(2)}"></td>
+        </tr>`;
+    });
+}
+
+function rPLogs() {
+    const tb = document.getElementById('aPLogs');
+    tb.innerHTML = '';
+
+    shifts.forEach(s => {
+        let gr = {};
+        s.fuel.forEach(f => {
+            const k = `${f.pump}-${f.fuel}`;
+            if (!gr[k]) gr[k] = { l:0, a:0 };
+            gr[k].l += f.liters;
+            gr[k].a += f.amount;
+        });
+
+        Object.keys(gr).forEach(k => {
+            const [p, f] = k.split('-');
+            const cfg = PUMPS.find(c => c.pump === p && c.fuel === f);
+            tb.innerHTML += `<tr>
+                <td>${s.date} | ${s.shift}</td>
+                <td>${p.toUpperCase()} (${cfg?.tp || '—'})</td>
+                <td class="fw">${f}</td>
+                <td class="tr">${(cfg?.st || 0).toFixed(2)}</td>
+                <td class="tr">${((cfg?.st || 0) + gr[k].l).toFixed(2)}</td>
+                <td class="tr" style="color:var(--danger)">0.00</td>
+                <td class="tr fw" style="color:var(--primary)">${gr[k].l.toFixed(2)} L</td>
+                <td class="money">₱${fm(gr[k].a)}</td>
+                <td>${s.gm}</td>
+            </tr>`;
+        });
+    });
+
+    if (!tb.innerHTML) {
+        tb.innerHTML = '<tr><td colspan="9" class="tc" style="padding:14px;color:var(--gray)">No logs</td></tr>';
+    }
+}
+
+function rInv() {
+    const tb = document.getElementById('aInvB');
+    tb.innerHTML = '';
+    IV.forEach(it => {
+        const m = it.s - it.c;
+        tb.innerHTML += `<tr style="background:${it.bg}">
+            <td class="fw">${it.b}</td><td>${it.i}</td>
+            <td class="tr"><input type="number" step="any" class="ainput ci" value="${it.c.toFixed(2)}" oninput="cM(this)"></td>
+            <td class="tr"><input type="number" step="any" class="ainput si" value="${it.s.toFixed(2)}" oninput="cM(this)"></td>
+            <td class="tr money mv ${m < 30 ? 'ml' : 'mg'}">₱${m.toFixed(2)}</td>
+            <td class="tc fw">${it.st}</td>
+        </tr>`;
+    });
+}
+
+function rPO() {
+    const tb = document.getElementById('aPOB');
+    tb.innerHTML = '';
+    PO_DATA.forEach(p => {
+        const tl = p.pr + p.ad;
+        const ta = p.lt * tl;
+        tb.innerHTML += `<tr>
+            <td>${p.dt}</td><td class="fw">${p.fu}</td><td class="tr">${p.lt}</td>
+            <td class="money">₱${p.pr.toFixed(2)}</td>
+            <td class="money" style="color:var(--danger)">₱${p.ad.toFixed(2)}</td>
+            <td class="money" style="color:var(--danger)">₱${tl.toFixed(2)}</td>
+            <td class="money fw" style="color:var(--danger)">₱${fm(ta)}</td>
+            <td>${p.rc}</td><td>${p.gs}</td>
+        </tr>`;
+    });
+}
+
+function rEmp() {
+    const tb = document.getElementById('aEmpB');
+    tb.innerHTML = '';
+    EMP.forEach(e => {
+        tb.innerHTML += `<tr>
+            <td>${e.n}</td><td>${e.r}</td><td>****</td>
+            <td class="tc"><span class="badge badge-ok">Active</span></td>
+            <td class="tc"><button class="btn btn-o btn-sm" onclick="toast('Coming soon','warning')">Edit</button></td>
+        </tr>`;
+    });
+}
+
+function cM(el) {
+    const r = el.closest('tr');
+    const c = parseFloat(r.querySelector('.ci')?.value) || 0;
+    const s = parseFloat(r.querySelector('.si')?.value) || 0;
+    const m = s - c;
+    const mv = r.querySelector('.mv');
+    if (mv) {
+        mv.textContent = `₱${m.toFixed(2)}`;
+        mv.classList.remove('mg', 'ml');
+        mv.classList.add(m < 30 ? 'ml' : 'mg');
+    }
+}
+
+// ==================== MODAL ====================
+function openModal(id) {
+    const s = shifts.find(x => x.id === id);
+    if (!s) return;
+
+    document.getElementById('mSub').textContent = `${s.gm} | ${s.date} | ${s.shift}`;
+    document.getElementById('mF').textContent = `₱${fm(s.gf)}`;
+    document.getElementById('mI').textContent = `₱${fm(s.gi)}`;
+    document.getElementById('mD').textContent = `₱${fm(s.td)}`;
+    document.getElementById('mN').textContent = `₱${fm(s.rem)}`;
+
+    // Fuel
+    let fb = document.getElementById('mFB');
+    fb.innerHTML = '';
+    s.fuel.forEach(f => {
+        fb.innerHTML += `<tr>
+            <td>${f.pump} Pump</td><td>${f.fuel}</td>
+            <td class="tr">${f.liters.toFixed(2)} L</td>
+            <td class="money">₱${fm(f.amount)}</td>
+        </tr>`;
+    });
+    if (!s.fuel.length) fb.innerHTML = '<tr><td colspan="4" class="tc" style="color:var(--gray)">None</td></tr>';
+
+    // Items
+    let ib = document.getElementById('mIB');
+    ib.innerHTML = '';
+    s.items.forEach(i => {
+        const p = i.name.split(' ');
+        ib.innerHTML += `<tr>
+            <td>${p[0]}</td><td>${p.slice(1).join(' ')}</td>
+            <td class="tc">${i.qty}</td>
+            <td class="money">₱${fm(i.total)}</td>
+        </tr>`;
+    });
+    if (!s.items.length) ib.innerHTML = '<tr><td colspan="4" class="tc" style="color:var(--gray)">None</td></tr>';
+
+    // Deductions
+    let db = document.getElementById('mDB');
+    db.innerHTML = '';
+    let hd = false;
+    Object.keys(s.ded).forEach(k => {
+        if (s.ded[k] > 0) {
+            hd = true;
+            db.innerHTML += `<tr>
+                <td>${k.toUpperCase()}</td>
+                <td class="money" style="color:var(--danger)">₱${fm(s.ded[k])}</td>
+            </tr>`;
+        }
+    });
+    if (!hd) db.innerHTML = '<tr><td colspan="2" class="tc" style="color:var(--gray)">None</td></tr>';
+
+    const ab = document.getElementById('mAppr');
+    ab.style.display = s.status === 'Pending' ? 'inline-flex' : 'none';
+    ab.setAttribute('data-id', id);
+
+    document.getElementById('shiftModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('shiftModal').classList.remove('active');
+}
+
+function approveShift() {
+    const id = parseInt(document.getElementById('mAppr').getAttribute('data-id'));
+    const s = shifts.find(x => x.id === id);
+    if (s) {
+        s.status = 'Approved';
+        toast('Approved!');
+        rShifts();
+        rDash();
+        rPLogs();
+        filterAu();
+    }
+    closeModal();
+}
+
+// ==================== CHART ====================
+function rChart() {
+    const cv = document.getElementById('salesChart');
+    if (!cv) return;
+    if (window._ch) window._ch.destroy();
+
+    window._ch = new Chart(cv.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [
+                {
+                    label: 'Sales (₱)',
+                    data: [125000, 145000, 138000, 158000],
+                    borderColor: '#52c49a',
+                    backgroundColor: 'rgba(82,196,154,.1)',
+                    fill: true, tension: .4, borderWidth: 2,
+                    pointRadius: 3, pointBackgroundColor: '#52c49a'
+                },
+                {
+                    label: 'Profit (₱)',
+                    data: [12500, 14500, 13800, 15800],
+                    borderColor: '#f6b26b',
+                    backgroundColor: 'rgba(246,178,107,.1)',
+                    fill: true, tension: .4, borderWidth: 2,
+                    pointRadius: 3, pointBackgroundColor: '#f6b26b'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        font: { family: 'Poppins', size: 10, weight: '600' },
+                        usePointStyle: true
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#f0f3f1' },
+                    ticks: { font: { family: 'Poppins', size: 9 } }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { family: 'Poppins', size: 9 } }
+                }
+            }
+        }
+    });
+}
+
+// ==================== TOAST ====================
+function toast(m, t = 'success') {
+    const c = document.getElementById('toastC');
+    const d = document.createElement('div');
+    d.className = `toast ${t}`;
+    const icon = t === 'success' ? 'fa-check-circle' : t === 'error' ? 'fa-circle-exclamation' : 'fa-triangle-exclamation';
+    d.innerHTML = `<i class="fa-solid ${icon}"></i> ${m}`;
+    c.appendChild(d);
+    setTimeout(() => {
+        d.style.transition = 'opacity .3s';
+        d.style.opacity = '0';
+        setTimeout(() => d.remove(), 300);
+    }, 3000);
+}
+</script>
+</body>
+</html>

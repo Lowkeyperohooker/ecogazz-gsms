@@ -2,418 +2,2554 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ecogazz Kimaya POS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS GREYHOUND | Philippine Gas Station Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Base Reset & Lock to Viewport */
-        body { font-family: sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --primary: #e31b23;
+            --primary-dark: #b1141b;
+            --secondary: #ffc107;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            background: #f1f5f9;
+            height: 100vh;
+            overflow: hidden;
+            font-size: 14px;
+        }
+
+        /* Login Page */
+        #login-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header .logo {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .login-header h1 {
+            font-size: 24px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .login-header p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .login-form input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .login-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .login-option {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .login-option.admin {
+            background: var(--dark);
+            color: white;
+        }
+
+        .login-option.staff {
+            background: var(--primary);
+            color: white;
+        }
+
+        .login-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Main App */
+        #app {
+            display: none;
+            height: 100vh;
+            overflow: hidden;
+        }
+
         /* Top Navigation */
-        .top-bar { background: #333; color: white; padding: 0 15px; height: 50px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; flex-shrink: 0; }
-        .role-selector { display: flex; align-items: center; gap: 10px; }
-        .role-selector select { padding: 5px; font-size: 0.9em; border-radius: 4px; font-weight: bold; }
-        
-        /* Admin Controls Visibility */
-        .admin-controls { display: none; gap: 5px; }
-        body.role-admin .admin-controls { display: flex; }
-        .btn-top { background: #00529b; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; }
+        .top-nav {
+            background: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            height: 60px;
+        }
 
-        /* Main Layout */
-        .container { display: flex; flex: 1; flex-direction: column; gap: 10px; padding: 10px; box-sizing: border-box; overflow: hidden; }
-        @media (min-width: 768px) { .container { flex-direction: row; } }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-        /* Panels */
-        .panel { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; box-sizing: border-box; height: 100%; }
-        .panel-left { flex: 2; }
-        .panel-right { flex: 1; }
-        h2 { margin: 0 0 10px 0; color: #333; border-bottom: 2px solid #00529b; padding-bottom: 5px; font-size: 1.2em; flex-shrink: 0; }
+        .nav-brand .logo {
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+        }
 
-        /* Fuel Grid */
-        .fuel-grid { display: flex; gap: 10px; margin-bottom: 10px; flex: 1; min-height: 0; }
-        .fuel-card { flex: 1; border: 2px solid #ddd; border-radius: 5px; text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.2s; background: #fff; padding: 5px; }
-        .fuel-card:hover { border-color: #00529b; }
-        .fuel-card.active { border-color: #00529b; background-color: #e7f3ff; }
-        .fuel-card strong { font-size: 0.9em; }
-        .price { font-size: 1.1em; font-weight: bold; color: #d32f2f; margin-top: 5px; }
+        .nav-brand span {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--dark);
+        }
 
-        /* Inputs */
-        .input-row { display: flex; gap: 10px; margin-bottom: 10px; flex-shrink: 0; }
-        .input-group { flex: 1; display: flex; flex-direction: column; }
-        label { margin-bottom: 3px; font-weight: bold; font-size: 0.85em; }
-        input[type="number"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em; }
+        .nav-brand small {
+            color: var(--gray);
+            font-size: 12px;
+            margin-left: 5px;
+        }
 
-        /* Presets */
-        .preset-row { display: flex; gap: 5px; margin-bottom: 10px; flex-shrink: 0; }
-        .btn-preset { flex: 1; padding: 10px 0; font-size: 0.85em; font-weight: bold; background: #e0e0e0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; color: #333; text-align: center; transition: 0.1s; }
-        .btn-preset:hover { background: #d0d0d0; }
+        .nav-info {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
 
-        /* Buttons */
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 4px; font-size: 1em; font-weight: bold; cursor: pointer; flex-shrink: 0; }
-        .btn-primary { background-color: #00529b; color: white; margin-bottom: 5px; }
-        .btn-secondary { background-color: #28a745; color: white; }
-        .btn-danger { background-color: #d32f2f; color: white; }
-        .btn-cancel { background-color: #ccc; color: black; }
+        .datetime {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
 
-        /* Receipt */
-        .receipt-wrapper { flex: 1; background: #fffde7; padding: 10px; border: 1px dashed #999; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 10px; }
-        .receipt-content { font-family: monospace; font-size: 0.85em; flex: 1; }
-        .receipt-header { text-align: center; margin-bottom: 10px; font-weight: bold; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 3px; }
-        .total-row { border-top: 1px dashed #000; margin-top: 5px; padding-top: 5px; font-weight: bold; font-size: 1.1em; }
+        .date {
+            font-weight: 600;
+            color: var(--dark);
+        }
 
-        /* Modals */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; display: flex; flex-direction: column; max-height: 90vh; }
-        .modal-content.wide { max-width: 700px; }
-        .modal-content h3 { margin-top: 0; border-bottom: 1px solid #ccc; padding-bottom: 10px; flex-shrink: 0; }
-        .price-edit-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .price-edit-group input { width: 100px; padding: 8px; }
-        
-        /* Modal Actions */
-        .modal-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; flex-shrink: 0; }
-        .modal-actions-full { display: flex; gap: 10px; margin-top: 15px; flex-shrink: 0; }
+        .time {
+            color: var(--gray);
+            font-size: 12px;
+        }
 
-        /* Data Table */
-        .table-container { overflow-y: auto; flex: 1; margin-bottom: 15px; border: 1px solid #ddd; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background: #f4f4f4; position: sticky; top: 0; }
-        .summary-box { background: #e7f3ff; padding: 10px; border-radius: 4px; font-weight: bold; font-size: 0.9em; display: flex; justify-content: space-between; flex-shrink: 0; }
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-badge {
+            background: #f1f5f9;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            margin: 5px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--gray);
+            transition: all 0.3s;
+        }
+
+        .menu-item i {
+            width: 20px;
+        }
+
+        .menu-item:hover {
+            background: #f1f5f9;
+            color: var(--dark);
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f1f5f9;
+        }
+
+        /* Page Styles */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* POS Page */
+        .pos-container {
+            display: flex;
+            gap: 20px;
+            height: 100%;
+        }
+
+        /* Left Panel - Products */
+        .pos-left {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Shift Info Card */
+        .shift-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .shift-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .shift-title {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .shift-badge {
+            background: var(--success);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .shift-details {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .shift-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .shift-item label {
+            font-size: 11px;
+            color: var(--gray);
+            text-transform: uppercase;
+        }
+
+        .shift-item select, .shift-item input {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* Pump Readings */
+        .pump-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .pump-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .pump-title {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .reading-type {
+            display: flex;
+            gap: 10px;
+        }
+
+        .reading-type label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+        }
+
+        .pump-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .pump-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .pump-table th {
+            text-align: left;
+            font-size: 11px;
+            color: var(--gray);
+            padding: 8px 5px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .pump-table td {
+            padding: 8px 5px;
+        }
+
+        .pump-table input {
+            width: 70px;
+            padding: 6px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+
+        .result-badge {
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* Fuel Products */
+        .fuel-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .fuel-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .fuel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .fuel-name {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--dark);
+        }
+
+        .fuel-price {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .fuel-stock {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .fuel-stock span:first-child {
+            color: var(--gray);
+        }
+
+        .fuel-stock span:last-child {
+            font-weight: 700;
+        }
+
+        .fuel-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .fuel-qty-btn {
+            width: 35px;
+            height: 35px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .fuel-qty-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .fuel-qty {
+            flex: 1;
+            text-align: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .fuel-add {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .fuel-add:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Products Tab */
+        .products-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .products-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .product-tab {
+            padding: 8px 16px;
+            border: none;
+            background: #f1f5f9;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .product-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .product-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .product-price {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .product-stock {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .product-qty {
+            width: 60px;
+            padding: 6px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+
+        .product-add {
+            flex: 1;
+            padding: 6px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Right Panel - Cart */
+        .pos-right {
+            flex: 1;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-title {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .cart-count {
+            background: var(--primary);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .cart-item-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .cart-item-info p {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .cart-item-total {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .cart-item-remove {
+            color: var(--danger);
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .cart-totals {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .grand-total {
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+            border-top: 2px dashed #e2e8f0;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .deductions {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .deduction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .deduction-item input {
+            width: 100px;
+            padding: 6px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            text-align: right;
+        }
+
+        .remittance {
+            background: var(--success);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .remittance small {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .remittance h3 {
+            font-size: 24px;
+            margin: 5px 0;
+        }
+
+        .cart-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .cart-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .cart-btn.clear {
+            background: #f1f5f9;
+            color: var(--gray);
+        }
+
+        .cart-btn.submit {
+            background: var(--primary);
+            color: white;
+        }
+
+        .cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.blue { background: #e0f2fe; color: #0284c7; }
+        .stat-icon.green { background: #dcfce7; color: #16a34a; }
+        .stat-icon.yellow { background: #fef9c3; color: #ca8a04; }
+        .stat-icon.red { background: #fee2e2; color: #dc2626; }
+
+        .stat-info h3 {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .stat-info .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+        }
+
+        .recent-activities {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Shift Management */
+        .shift-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .shift-table-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            overflow-x: auto;
+        }
+
+        .shift-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .shift-table th {
+            text-align: left;
+            padding: 12px;
+            background: #f8fafc;
+            color: var(--gray);
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .shift-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-approved { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+
+        /* Inventory */
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            padding: 5px;
+            width: 250px;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .inventory-category {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .category-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .inventory-list {
+            list-style: none;
+        }
+
+        .inventory-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .stock-low {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .stock-good {
+            color: var(--success);
+        }
+
+        /* Purchase Orders */
+        .po-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .po-table {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .po-table th {
+            text-align: left;
+            padding: 12px;
+            background: #f8fafc;
+        }
+
+        .po-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* Reports */
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        /* Settings */
+        .settings-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .settings-group {
+            margin-bottom: 20px;
+        }
+
+        .settings-group h4 {
+            margin-bottom: 10px;
+            color: var(--gray);
+        }
+
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: white;
+            color: var(--dark);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast i {
+            font-size: 20px;
+        }
+
+        .toast.success i {
+            color: var(--success);
+        }
+
+        .toast.error i {
+            color: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 500px;
+            max-width: 90%;
+            padding: 30px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .pos-container {
+                flex-direction: column;
+            }
+            
+            .fuel-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .inventory-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .fuel-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .shift-details {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .inventory-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
-<body class="role-staff">
-
-<div class="top-bar">
-    <div><strong>ECOGAZZ POS</strong> | Kimaya</div>
-    <div class="role-selector">
-        <div class="admin-controls">
-            <button class="btn-top" onclick="openSalesModal()">Sales Log</button>
-            <button class="btn-top" onclick="openPriceModal()">Prices</button>
-        </div>
-        <select id="userSelect" onchange="toggleUser()">
-            <option value="Kenneth" data-role="staff">Gasman: Kenneth</option>
-            <option value="Dodong" data-role="staff">Gasman: Dodong</option>
-            <option value="Francis" data-role="staff">Gasman: Francis</option>
-            <option value="Admin" data-role="admin">Manager (Admin)</option>
-        </select>
-    </div>
-</div>
-
-<div class="container">
-    <div class="panel panel-left">
-        <h2>Pump Selection</h2>
-        
-        <div class="fuel-grid">
-            <div class="fuel-card" onclick="selectFuel('Diesel', 'priceDiesel', this)">
-                <strong>DIESEL</strong>
-                <div class="price">PHP <span id="priceDiesel">55.80</span></div>
+<body>
+    <!-- Login Page -->
+    <div id="login-page">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo">⛽</div>
+                <h1>POS GREYHOUND</h1>
+                <p>Philippine Gas Station Management System</p>
             </div>
-            <div class="fuel-card" onclick="selectFuel('Regular', 'priceRegular', this)">
-                <strong>REGULAR</strong>
-                <div class="price">PHP <span id="priceRegular">55.80</span></div>
-            </div>
-            <div class="fuel-card" onclick="selectFuel('Premium', 'pricePremium', this)">
-                <strong>PREMIUM</strong>
-                <div class="price">PHP <span id="pricePremium">56.50</span></div>
-            </div>
-        </div>
-
-        <div class="input-row">
-            <div class="input-group">
-                <label>Amount (PHP)</label>
-                <input type="number" id="inputAmount" placeholder="0.00" oninput="calculateLiters()">
-            </div>
-            <div class="input-group">
-                <label>Liters (L)</label>
-                <input type="number" id="inputLiters" placeholder="0.000" oninput="calculateAmount()">
-            </div>
-        </div>
-
-        <div class="preset-row">
-            <button class="btn-preset" onclick="setPreset(100)">PHP 100</button>
-            <button class="btn-preset" onclick="setPreset(500)">PHP 500</button>
-            <button class="btn-preset" onclick="setPreset(1000)">PHP 1000</button>
-            <button class="btn-preset" onclick="setPreset('FULL')">Full Tank</button>
-        </div>
-
-        <button class="btn btn-primary" onclick="processTransaction()">Authorize Pump</button>
-    </div>
-
-    <div class="panel panel-right">
-        <h2>Transaction Receipt</h2>
-        <div class="receipt-wrapper">
-            <div id="receiptOutput" class="receipt-content">
-                <div class="receipt-header">
-                    ECOGAZZ GASOLINE STATION<br>
-                    Kimaya, Magsaysay, Mis. Or.<br>
-                    TIN: 000-000-000-000
-                </div>
-                <div style="text-align:center; margin-top:20px; color:#666;">
-                    Awaiting transaction...
+            <div class="login-form">
+                <input type="text" id="username" placeholder="Username" value="admin">
+                <input type="password" id="password" placeholder="Password" value="1234">
+                <div class="login-options">
+                    <button class="login-option admin" onclick="login('admin')">
+                        <i class="fas fa-shield-alt"></i> Admin
+                    </button>
+                    <button class="login-option staff" onclick="login('staff')">
+                        <i class="fas fa-user"></i> Staff
+                    </button>
                 </div>
             </div>
         </div>
-        <button class="btn btn-secondary" onclick="window.print()">Print Receipt</button>
     </div>
-</div>
 
-<div id="priceModal" class="modal">
-    <div class="modal-content">
-        <h3>Update Fuel Prices</h3>
-        <div class="price-edit-group">
-            <label>Diesel (PHP):</label>
-            <input type="number" id="editDiesel" value="55.80" step="0.01">
-        </div>
-        <div class="price-edit-group">
-            <label>Regular (PHP):</label>
-            <input type="number" id="editRegular" value="55.80" step="0.01">
-        </div>
-        <div class="price-edit-group">
-            <label>Premium (PHP):</label>
-            <input type="number" id="editPremium" value="56.50" step="0.01">
-        </div>
-        <div class="modal-actions-full">
-            <button class="btn btn-primary" onclick="updatePrices()">Save Prices</button>
-            <button class="btn btn-cancel" onclick="closeModals()">Cancel</button>
-        </div>
-    </div>
-</div>
-
-<div id="salesModal" class="modal">
-    <div class="modal-content wide">
-        <h3>Daily Sales Log</h3>
-        
-        <div class="table-container">
-            <table id="salesTable">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Fuel</th>
-                        <th>Price/L</th>
-                        <th>Vol (L)</th>
-                        <th>Total (PHP)</th>
-                        <th>Gasman</th>
-                    </tr>
-                </thead>
-                <tbody id="salesTableBody">
-                    </tbody>
-            </table>
-        </div>
-
-        <div class="summary-box">
-            <div>Total Vol: <span id="totalVolume">0.000</span> L</div>
-            <div>Total Sales: PHP <span id="totalRevenue">0.00</span></div>
-        </div>
-
-        <div class="modal-actions-grid">
-            <button class="btn btn-secondary" onclick="exportToCSV()">Export to CSV</button>
-            <button class="btn btn-danger" onclick="clearLog()">Clear Shift Log</button>
-        </div>
-        <button class="btn btn-cancel" style="margin-top: 10px;" onclick="closeModals()">Close Dashboard</button>
-    </div>
-</div>
-
-<script>
-    let selectedFuel = "";
-    let currentPricePerLiter = 0;
-    let transactionLog = []; 
-
-    // User & Role Management
-    function toggleUser() {
-        const select = document.getElementById('userSelect');
-        const selectedOption = select.options[select.selectedIndex];
-        const role = selectedOption.getAttribute('data-role');
-        
-        document.body.className = `role-${role}`;
-        resetPump();
-        closeModals();
-    }
-
-    // Modal Management
-    function openPriceModal() { document.getElementById('priceModal').style.display = 'flex'; }
-    function openSalesModal() { document.getElementById('salesModal').style.display = 'flex'; renderSalesTable(); }
-    function closeModals() { 
-        document.getElementById('priceModal').style.display = 'none'; 
-        document.getElementById('salesModal').style.display = 'none'; 
-    }
-
-    // Admin Feature: Update Prices
-    function updatePrices() {
-        const newDiesel = document.getElementById('editDiesel').value;
-        const newRegular = document.getElementById('editRegular').value;
-        const newPremium = document.getElementById('editPremium').value;
-
-        document.getElementById('priceDiesel').innerText = parseFloat(newDiesel).toFixed(2);
-        document.getElementById('priceRegular').innerText = parseFloat(newRegular).toFixed(2);
-        document.getElementById('pricePremium').innerText = parseFloat(newPremium).toFixed(2);
-        
-        closeModals();
-        resetPump();
-    }
-
-    // Core POS Logic
-    function selectFuel(name, priceElementId, element) {
-        selectedFuel = name;
-        currentPricePerLiter = parseFloat(document.getElementById(priceElementId).innerText);
-        
-        document.querySelectorAll('.fuel-card').forEach(card => card.classList.remove('active'));
-        element.classList.add('active');
-        calculateLiters();
-    }
-
-    function calculateLiters() {
-        const amount = document.getElementById('inputAmount').value;
-        if (currentPricePerLiter > 0 && amount > 0) {
-            document.getElementById('inputLiters').value = (amount / currentPricePerLiter).toFixed(3);
-        }
-    }
-
-    function calculateAmount() {
-        const liters = document.getElementById('inputLiters').value;
-        if (currentPricePerLiter > 0 && liters > 0) {
-            document.getElementById('inputAmount').value = (liters * currentPricePerLiter).toFixed(2);
-        }
-    }
-
-    function setPreset(value) {
-        if (!selectedFuel) { alert("Please select a fuel type first."); return; }
-        if (value === 'FULL') {
-            document.getElementById('inputLiters').value = 40; 
-            calculateAmount();
-        } else {
-            document.getElementById('inputAmount').value = value;
-            calculateLiters();
-        }
-    }
-
-    function resetPump() {
-        selectedFuel = "";
-        currentPricePerLiter = 0;
-        document.getElementById('inputAmount').value = "";
-        document.getElementById('inputLiters').value = "";
-        document.querySelectorAll('.fuel-card').forEach(card => card.classList.remove('active'));
-    }
-
-    function processTransaction() {
-        if (!selectedFuel) { alert("Please select fuel type."); return; }
-
-        const amount = parseFloat(document.getElementById('inputAmount').value);
-        const liters = parseFloat(document.getElementById('inputLiters').value);
-        
-        if (isNaN(amount) || amount <= 0) { alert("Please enter a valid amount or liter volume."); return; }
-
-        const dateObj = new Date();
-        const dateStr = dateObj.toLocaleDateString();
-        const timeStr = dateObj.toLocaleTimeString();
-        const activeGasman = document.getElementById('userSelect').value;
-
-        // Log the transaction
-        transactionLog.push({
-            date: dateStr,
-            time: timeStr,
-            fuel: selectedFuel,
-            pricePerLiter: currentPricePerLiter,
-            liters: liters,
-            amount: amount,
-            gasman: activeGasman
-        });
-
-        // Generate Receipt
-        const receiptHTML = `
-            <div class="receipt-header">
-                ECOGAZZ GASOLINE STATION<br>
-                Kimaya, Magsaysay, Mis. Or.<br>
-                TIN: 000-000-000-000
+    <!-- Main App -->
+    <div id="app">
+        <!-- Top Navigation -->
+        <div class="top-nav">
+            <div class="nav-brand">
+                <div class="logo">PG</div>
+                <div>
+                    <span>POS GREYHOUND</span>
+                    <small>Kimaya Station</small>
+                </div>
             </div>
-            <div class="row"><span>Date:</span> <span>${dateStr}</span></div>
-            <div class="row"><span>Time:</span> <span>${timeStr}</span></div>
-            <div class="row"><span>Gasman:</span> <span>${activeGasman.toUpperCase()}</span></div>
-            <div class="row" style="margin-top:10px;"><span>Fuel:</span> <span>${selectedFuel}</span></div>
-            <div class="row"><span>Price/L:</span> <span>PHP ${currentPricePerLiter.toFixed(2)}</span></div>
-            <div class="row"><span>Volume:</span> <span>${liters.toFixed(3)} L</span></div>
-            <div class="total-row">
-                <div class="row"><span>TOTAL:</span> <span>PHP ${amount.toFixed(2)}</span></div>
+            <div class="nav-info">
+                <div class="datetime">
+                    <span class="date" id="currentDate"></span>
+                    <span class="time" id="currentTime"></span>
+                </div>
+                <div class="user-menu">
+                    <span class="user-badge" id="userRole">Admin</span>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
             </div>
-        `;
+        </div>
 
-        document.getElementById('receiptOutput').innerHTML = receiptHTML;
-        resetPump();
-    }
+        <!-- Main Container -->
+        <div class="main-container">
+            <!-- Sidebar -->
+            <div class="sidebar" id="adminSidebar">
+                <div class="menu-item active" onclick="showPage('pos-page', 'POS Terminal')">
+                    <i class="fas fa-cash-register"></i> POS Terminal
+                </div>
+                <div class="menu-item" onclick="showPage('dashboard-page', 'Dashboard')">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </div>
+                <div class="menu-item" onclick="showPage('shifts-page', 'Shift Management')">
+                    <i class="fas fa-clock"></i> Shift Management
+                </div>
+                <div class="menu-item" onclick="showPage('inventory-page', 'Inventory')">
+                    <i class="fas fa-boxes"></i> Inventory
+                </div>
+                <div class="menu-item" onclick="showPage('purchases-page', 'Purchase Orders')">
+                    <i class="fas fa-file-invoice"></i> Purchase Orders
+                </div>
+                <div class="menu-item" onclick="showPage('reports-page', 'Reports')">
+                    <i class="fas fa-file-alt"></i> Reports
+                </div>
+                <div class="menu-item" onclick="showPage('settings-page', 'Settings')">
+                    <i class="fas fa-cog"></i> Settings
+                </div>
+            </div>
 
-    // Render Data Table Function
-    function renderSalesTable() {
-        const tbody = document.getElementById('salesTableBody');
-        tbody.innerHTML = '';
-        
-        let totalVol = 0;
-        let totalRev = 0;
+            <!-- Content Area -->
+            <div class="content">
+                <!-- POS Page -->
+                <div id="pos-page" class="page active">
+                    <div class="pos-container">
+                        <!-- Left Panel -->
+                        <div class="pos-left">
+                            <!-- Shift Info -->
+                            <div class="shift-card">
+                                <div class="shift-header">
+                                    <span class="shift-title">Shift Information</span>
+                                    <span class="shift-badge">Active Shift</span>
+                                </div>
+                                <div class="shift-details">
+                                    <div class="shift-item">
+                                        <label>Date</label>
+                                        <input type="date" id="shiftDate" class="form-control" readonly>
+                                    </div>
+                                    <div class="shift-item">
+                                        <label>Shift</label>
+                                        <select id="shiftSelect">
+                                            <option value="3AM-12NN">3AM - 12NN</option>
+                                            <option value="12NN-9PM" selected>12NN - 9PM</option>
+                                        </select>
+                                    </div>
+                                    <div class="shift-item">
+                                        <label>Gas Man</label>
+                                        <select id="gasmanSelect">
+                                            <option>DODONG</option>
+                                            <option>KENNETH</option>
+                                            <option>FRANCIS</option>
+                                            <option>ROXAS</option>
+                                            <option>JUN</option>
+                                        </select>
+                                    </div>
+                                    <div class="shift-item">
+                                        <label>Reading Type</label>
+                                        <select id="readingType">
+                                            <option value="digital">Digital</option>
+                                            <option value="mechanical">Mechanical</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
 
-        transactionLog.forEach(tx => {
-            totalVol += tx.liters;
-            totalRev += tx.amount;
+                            <!-- Pump Readings -->
+                            <div class="pump-card">
+                                <div class="pump-header">
+                                    <span class="pump-title">Pump Readings (Liters)</span>
+                                </div>
+                                <div class="pump-grid">
+                                    <!-- Front Pump -->
+                                    <div>
+                                        <h4 style="margin-bottom: 10px;">FRONT PUMP</h4>
+                                        <table class="pump-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Fuel</th>
+                                                    <th>Start</th>
+                                                    <th>Close</th>
+                                                    <th>Calib</th>
+                                                    <th>Result</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Diesel</td>
+                                                    <td><input type="number" class="pump-start" data-pump="front-diesel" value="1250.5"></td>
+                                                    <td><input type="number" class="pump-close" data-pump="front-diesel" value="1380.3"></td>
+                                                    <td><input type="number" class="pump-calib" data-pump="front-diesel" value="0"></td>
+                                                    <td><span class="result-badge" id="result-front-diesel">129.8</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Premium</td>
+                                                    <td><input type="number" class="pump-start" data-pump="front-premium" value="980.2"></td>
+                                                    <td><input type="number" class="pump-close" data-pump="front-premium" value="1085.4"></td>
+                                                    <td><input type="number" class="pump-calib" data-pump="front-premium" value="0"></td>
+                                                    <td><span class="result-badge" id="result-front-premium">105.2</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Regular</td>
+                                                    <td><input type="number" class="pump-start" data-pump="front-regular" value="756.3"></td>
+                                                    <td><input type="number" class="pump-close" data-pump="front-regular" value="828.1"></td>
+                                                    <td><input type="number" class="pump-calib" data-pump="front-regular" value="0"></td>
+                                                    <td><span class="result-badge" id="result-front-regular">71.8</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- Back Pump -->
+                                    <div>
+                                        <h4 style="margin-bottom: 10px;">BACK PUMP</h4>
+                                        <table class="pump-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Fuel</th>
+                                                    <th>Start</th>
+                                                    <th>Close</th>
+                                                    <th>Calib</th>
+                                                    <th>Result</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Diesel</td>
+                                                    <td><input type="number" class="pump-start" data-pump="back-diesel" value="850.2"></td>
+                                                    <td><input type="number" class="pump-close" data-pump="back-diesel" value="962.5"></td>
+                                                    <td><input type="number" class="pump-calib" data-pump="back-diesel" value="0"></td>
+                                                    <td><span class="result-badge" id="result-back-diesel">112.3</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Premium</td>
+                                                    <td><input type="number" class="pump-start" data-pump="back-premium" value="620.4"></td>
+                                                    <td><input type="number" class="pump-close" data-pump="back-premium" value="715.9"></td>
+                                                    <td><input type="number" class="pump-calib" data-pump="back-premium" value="0"></td>
+                                                    <td><span class="result-badge" id="result-back-premium">95.5</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Regular</td>
+                                                    <td><input type="number" class="pump-start" data-pump="back-regular" value="420.8"></td>
+                                                    <td><input type="number" class="pump-close" data-pump="back-regular" value="478.2"></td>
+                                                    <td><input type="number" class="pump-calib" data-pump="back-regular" value="0"></td>
+                                                    <td><span class="result-badge" id="result-back-regular">57.4</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
 
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${tx.date}</td>
-                <td>${tx.time}</td>
-                <td>${tx.fuel}</td>
-                <td>${tx.pricePerLiter.toFixed(2)}</td>
-                <td>${tx.liters.toFixed(3)}</td>
-                <td>${tx.amount.toFixed(2)}</td>
-                <td>${tx.gasman.toUpperCase()}</td>
+                            <!-- Fuel Products -->
+                            <div class="fuel-grid">
+                                <!-- Diesel -->
+                                <div class="fuel-card">
+                                    <div class="fuel-header">
+                                        <span class="fuel-name">DIESEL</span>
+                                        <span class="fuel-price">₱55.80</span>
+                                    </div>
+                                    <div class="fuel-stock">
+                                        <span>Available</span>
+                                        <span id="dieselStock">2,850 L</span>
+                                    </div>
+                                    <div class="fuel-controls">
+                                        <button class="fuel-qty-btn" onclick="adjustQty('diesel', -10)">-10</button>
+                                        <button class="fuel-qty-btn" onclick="adjustQty('diesel', -1)">-1</button>
+                                        <span class="fuel-qty" id="dieselQty">10</span>
+                                        <button class="fuel-qty-btn" onclick="adjustQty('diesel', 1)">+1</button>
+                                        <button class="fuel-qty-btn" onclick="adjustQty('diesel', 10)">+10</button>
+                                    </div>
+                                    <button class="fuel-add" onclick="addFuelSale('DIESEL', 55.80)">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                </div>
+                                <!-- Premium -->
+                                <div class="fuel-card">
+                                    <div class="fuel-header">
+                                        <span class="fuel-name">PREMIUM</span>
+                                        <span class="fuel-price">₱56.50</span>
+                                    </div>
+                                    <div class="fuel-stock">
+                                        <span>Available</span>
+                                        <span id="premiumStock">2,150 L</span>
+                                    </div>
+                                    <div class="fuel-controls">
+                                        <button class="fuel-qty-btn" onclick="adjustQty('premium', -10)">-10</button>
+                                        <button class="fuel-qty-btn" onclick="adjustQty('premium', -1)">-1</button>
+                                        <span class="fuel-qty" id="premiumQty">10</span>
+                                        <button class="fuel-qty-btn" onclick="adjustQty('premium', 1)">+1</button>
+                                        <button class="fuel-qty-btn" onclick="adjustQty('premium', 10)">+10</button>
+                                    </div>
+                                    <button class="fuel-add" onclick="addFuelSale('PREMIUM', 56.50)">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                </div>
+                                <!-- Regular -->
+                                <div class="fuel-card">
+                                    <div class="fuel-header">
+                                        <span class="fuel-name">REGULAR</span>
+                                        <span class="fuel-price">₱55.80</span>
+                                    </div>
+                                    <div class="fuel-stock">
+                                        <span>Available</span>
+                                        <span id="regularStock">1,850 L</span>
+                                    </div>
+                                    <div class="fuel-controls">
+                                        <button class="fuel-qty-btn" onclick="adjustQty('regular', -10)">-10</button>
+                                        <button class="fuel-qty-btn" onclick="adjustQty('regular', -1)">-1</button>
+                                        <span class="fuel-qty" id="regularQty">10</span>
+                                        <button class="fuel-qty-btn" onclick="adjustQty('regular', 1)">+1</button>
+                                        <button class="fuel-qty-btn" onclick="adjustQty('regular', 10)">+10</button>
+                                    </div>
+                                    <button class="fuel-add" onclick="addFuelSale('REGULAR', 55.80)">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Oil & LPG Products -->
+                            <div class="products-section">
+                                <div class="products-tabs" id="productTabs">
+                                    <button class="product-tab active" onclick="showProducts('caltex')">CALTEX</button>
+                                    <button class="product-tab" onclick="showProducts('castrol')">CASTROL</button>
+                                    <button class="product-tab" onclick="showProducts('shell')">SHELL</button>
+                                    <button class="product-tab" onclick="showProducts('whiz')">WHIZ</button>
+                                    <button class="product-tab" onclick="showProducts('prycegas')">PRYCEGAS</button>
+                                    <button class="product-tab" onclick="showProducts('petron')">PETRON</button>
+                                    <button class="product-tab" onclick="showProducts('fiesta')">FIESTA</button>
+                                    <button class="product-tab" onclick="showProducts('vs1')">VS1</button>
+                                </div>
+                                <div class="products-grid" id="productsGrid"></div>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel - Cart -->
+                        <div class="pos-right">
+                            <div class="cart-header">
+                                <span class="cart-title">Current Transaction</span>
+                                <span class="cart-count" id="cartCount">0</span>
+                            </div>
+                            
+                            <div class="cart-items" id="cartItems"></div>
+
+                            <div class="cart-totals">
+                                <div class="total-row">
+                                    <span>Subtotal</span>
+                                    <span id="subtotal">₱0.00</span>
+                                </div>
+                                <div class="total-row">
+                                    <span>Total Liters</span>
+                                    <span id="totalLiters">0 L</span>
+                                </div>
+                                <div class="grand-total">
+                                    <span>Gross Sales</span>
+                                    <span id="grossTotal">₱0.00</span>
+                                </div>
+                            </div>
+
+                            <div class="deductions">
+                                <h4 style="margin-bottom: 10px;">Deductions</h4>
+                                <div class="deduction-item">
+                                    <span>Expense</span>
+                                    <input type="number" id="expense" value="0" oninput="calculateRemittance()">
+                                </div>
+                                <div class="deduction-item">
+                                    <span>P.O</span>
+                                    <input type="number" id="po" value="0" oninput="calculateRemittance()">
+                                </div>
+                                <div class="deduction-item">
+                                    <span>MDRRMO</span>
+                                    <input type="number" id="mdrrmo" value="0" oninput="calculateRemittance()">
+                                </div>
+                                <div class="deduction-item">
+                                    <span>MOPH</span>
+                                    <input type="number" id="moph" value="0" oninput="calculateRemittance()">
+                                </div>
+                                <div class="deduction-item">
+                                    <span>RNDC</span>
+                                    <input type="number" id="rndc" value="0" oninput="calculateRemittance()">
+                                </div>
+                                <div class="deduction-item">
+                                    <span>HON. BIMBO</span>
+                                    <input type="number" id="honBimbo" value="0" oninput="calculateRemittance()">
+                                </div>
+                            </div>
+
+                            <div class="remittance" id="remittanceBox">
+                                <small>Expected Remittance</small>
+                                <h3 id="remittance">₱0.00</h3>
+                            </div>
+
+                            <div class="cart-actions">
+                                <button class="cart-btn clear" onclick="clearCart()">
+                                    <i class="fas fa-trash"></i> Clear
+                                </button>
+                                <button class="cart-btn submit" onclick="submitShift()">
+                                    <i class="fas fa-paper-plane"></i> Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page">
+                    <div class="dashboard-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue">
+                                <i class="fas fa-peso-sign"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Today's Sales</h3>
+                                <div class="value" id="todaySales">₱45,280.50</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green">
+                                <i class="fas fa-gas-pump"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Total Volume</h3>
+                                <div class="value" id="totalVolume">812.5 L</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon yellow">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Pending Shifts</h3>
+                                <div class="value" id="pendingShifts">3</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Low Stock Items</h3>
+                                <div class="value" id="lowStock">5</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="salesChart" height="100"></canvas>
+                    </div>
+
+                    <div class="recent-activities">
+                        <h3 style="margin-bottom: 15px;">Recent Activities</h3>
+                        <table class="shift-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Gas Man</th>
+                                    <th>Transaction</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentActivities"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Shift Management Page -->
+                <div id="shifts-page" class="page">
+                    <div class="shift-filters">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search shifts..." id="shiftSearch">
+                        </div>
+                        <select id="shiftFilter" class="shift-item" style="width: 150px;">
+                            <option value="all">All Shifts</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                        </select>
+                    </div>
+
+                    <div class="shift-table-container">
+                        <table class="shift-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Shift</th>
+                                    <th>Gas Man</th>
+                                    <th>Gross Sales</th>
+                                    <th>Deductions</th>
+                                    <th>Remittance</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="shiftsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Inventory Page -->
+                <div id="inventory-page" class="page">
+                    <div class="inventory-header">
+                        <h2>Inventory Management</h2>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search products..." id="inventorySearch" onkeyup="filterInventory()">
+                        </div>
+                    </div>
+
+                    <div class="inventory-grid">
+                        <div class="inventory-category">
+                            <h3 class="category-title">Fuels</h3>
+                            <ul class="inventory-list" id="fuelInventory"></ul>
+                        </div>
+                        <div class="inventory-category">
+                            <h3 class="category-title">Engine Oils</h3>
+                            <ul class="inventory-list" id="oilInventory"></ul>
+                        </div>
+                        <div class="inventory-category">
+                            <h3 class="category-title">LPG Products</h3>
+                            <ul class="inventory-list" id="lpgInventory"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchase Orders Page -->
+                <div id="purchases-page" class="page">
+                    <div class="po-header">
+                        <h2>Purchase Orders</h2>
+                        <button class="btn-primary" onclick="showNewPOModal()">
+                            <i class="fas fa-plus"></i> New PO
+                        </button>
+                    </div>
+
+                    <table class="po-table">
+                        <thead>
+                            <tr>
+                                <th>PO #</th>
+                                <th>Date</th>
+                                <th>Supplier</th>
+                                <th>Items</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="poTable"></tbody>
+                    </table>
+                </div>
+
+                <!-- Reports Page -->
+                <div id="reports-page" class="page">
+                    <div class="reports-grid">
+                        <div class="report-card">
+                            <div class="report-header">
+                                <h3>Daily Sales Report</h3>
+                                <button class="btn-primary" style="padding: 8px 16px;" onclick="generateReport('daily')">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
+                            <canvas id="dailyReportChart" height="150"></canvas>
+                        </div>
+                        <div class="report-card">
+                            <div class="report-header">
+                                <h3>Monthly Summary</h3>
+                                <button class="btn-primary" style="padding: 8px 16px;" onclick="generateReport('monthly')">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
+                            <canvas id="monthlyReportChart" height="150"></canvas>
+                        </div>
+                        <div class="report-card">
+                            <div class="report-header">
+                                <h3>Top Products</h3>
+                                <button class="btn-primary" style="padding: 8px 16px;" onclick="generateReport('products')">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
+                            <div id="topProducts"></div>
+                        </div>
+                        <div class="report-card">
+                            <div class="report-header">
+                                <h3>Staff Performance</h3>
+                                <button class="btn-primary" style="padding: 8px 16px;" onclick="generateReport('staff')">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
+                            <div id="staffPerformance"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div id="settings-page" class="page">
+                    <div class="settings-container">
+                        <div class="settings-card">
+                            <h3 style="margin-bottom: 20px;">General Settings</h3>
+                            <div class="settings-group">
+                                <h4>Station Information</h4>
+                                <div class="settings-row">
+                                    <span>Station Name</span>
+                                    <input type="text" value="Kimaya Station" id="stationName">
+                                </div>
+                                <div class="settings-row">
+                                    <span>Address</span>
+                                    <input type="text" value="Consuelo, Kimaya, Magsaysay" id="stationAddress">
+                                </div>
+                            </div>
+                            <div class="settings-group">
+                                <h4>Fuel Prices</h4>
+                                <div class="settings-row">
+                                    <span>Diesel (₱/L)</span>
+                                    <input type="number" value="55.80" id="dieselPrice" step="0.01">
+                                </div>
+                                <div class="settings-row">
+                                    <span>Premium (₱/L)</span>
+                                    <input type="number" value="56.50" id="premiumPrice" step="0.01">
+                                </div>
+                                <div class="settings-row">
+                                    <span>Regular (₱/L)</span>
+                                    <input type="number" value="55.80" id="regularPrice" step="0.01">
+                                </div>
+                            </div>
+                            <button class="btn-primary" onclick="saveSettings()" style="margin-top: 20px;">
+                                <i class="fas fa-save"></i> Save Settings
+                            </button>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3 style="margin-bottom: 20px;">User Management</h3>
+                            <div class="settings-group">
+                                <h4>Staff Accounts</h4>
+                                <div id="staffList"></div>
+                                <button class="btn-primary" style="margin-top: 10px; width: 100%;" onclick="addStaff()">
+                                    <i class="fas fa-user-plus"></i> Add Staff
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Shift Summary Modal -->
+    <div class="modal" id="shiftModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Shift Summary</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="shiftSummary"></div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="cart-btn clear" style="flex:1;" onclick="closeModal()">Cancel</button>
+                <button class="cart-btn submit" style="flex:1;" onclick="confirmShift()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New PO Modal -->
+    <div class="modal" id="poModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>New Purchase Order</h3>
+                <button class="modal-close" onclick="closePOModal()">&times;</button>
+            </div>
+            <div id="poForm"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== GLOBAL DATA ====================
+        const PRICES = {
+            DIESEL: 55.80,
+            PREMIUM: 56.50,
+            REGULAR: 55.80
+        };
+
+        const PRODUCTS = {
+            caltex: [
+                { name: 'TEXAMATIC 1L', price: 290, stock: 25 },
+                { name: 'MARFAK GREASE 5KG', price: 200, stock: 10 },
+                { name: 'HAVOLINE 20W-40 1L', price: 240, stock: 30 },
+                { name: 'HAVOLINE EZY 20W-40 1L', price: 239, stock: 28 },
+                { name: 'HAVOLINE EZY 20W-40 800ML', price: 198, stock: 22 },
+                { name: 'SUPER DIESEL 1L', price: 200, stock: 35 },
+                { name: 'DELO GEAR EP4 90 1L', price: 288, stock: 15 },
+                { name: 'DELO GEAR EP4 140 1L', price: 300, stock: 12 },
+                { name: 'GREASE 5KG', price: 450, stock: 8 }
+            ],
+            castrol: [
+                { name: 'GO ESSENTIAL 1L', price: 256, stock: 30 },
+                { name: 'GO ESSENTIAL 800ML', price: 226, stock: 25 },
+                { name: 'ACTIV 4T 1L', price: 278, stock: 40 },
+                { name: 'ACTIV 4T 800ML', price: 247, stock: 35 },
+                { name: 'GTX 1L', price: 276, stock: 20 },
+                { name: 'TURBOMAX 1L', price: 276, stock: 18 }
+            ],
+            shell: [
+                { name: '2T 200ML', price: 50, stock: 50 },
+                { name: '2T TRIPLE 1L', price: 216, stock: 32 },
+                { name: 'AX3 ADVANCE 1L', price: 262, stock: 28 },
+                { name: 'AX3 ADVANCE 800ML', price: 216, stock: 24 },
+                { name: 'AX5 ADVANCE 1L', price: 280, stock: 22 },
+                { name: 'COOLANT 1L', price: 278, stock: 18 },
+                { name: 'BRAKE FLUID 500ML', price: 215, stock: 20 },
+                { name: 'MTF SPIRAX 1L', price: 290, stock: 15 },
+                { name: 'AX7 SCOOTER 800ML', price: 330, stock: 12 }
+            ],
+            whiz: [
+                { name: 'BRAKE FLUID 900ML', price: 240, stock: 25 },
+                { name: 'BRAKE FLUID 270ML', price: 79, stock: 45 },
+                { name: 'BRAKE FLUID 150ML', price: 50, stock: 60 }
+            ],
+            prycegas: [
+                { name: '11KG SET WITH CONTENT', price: 2600, stock: 8 },
+                { name: '11KG REFILL', price: 1100, stock: 15 },
+                { name: '2.7KG SET POWER KALAN', price: 1300, stock: 6 },
+                { name: '2.7KG POWER KALAN REFILL', price: 370, stock: 12 },
+                { name: 'BURNER', price: 650, stock: 10 }
+            ],
+            petron: [
+                { name: '11KG SET WITH CONTENT', price: 2000, stock: 7 },
+                { name: '11KG REFILL', price: 1110, stock: 14 },
+                { name: '2.7KG SET WITH CONTENT', price: 1499, stock: 5 }
+            ],
+            fiesta: [
+                { name: '11KG SET WITH CONTENT', price: 2000, stock: 6 },
+                { name: '11KG REFILL', price: 1120, stock: 12 },
+                { name: '2.7KG SET WITH CONTENT', price: 1300, stock: 4 },
+                { name: '2.7KG REFILL', price: 370, stock: 10 }
+            ],
+            vs1: [
+                { name: 'PROTECTOR 120ML', price: 145, stock: 30 },
+                { name: 'PROTECTOR 250ML', price: 216, stock: 25 }
+            ]
+        };
+
+        // Sample Data
+        let shifts = [
+            { date: '2026-01-15', shift: '12NN-9PM', gasman: 'DODONG', gross: 12450, deductions: 450, remittance: 12000, status: 'pending' },
+            { date: '2026-01-15', shift: '3AM-12NN', gasman: 'KENNETH', gross: 16000, deductions: 0, remittance: 16000, status: 'approved' },
+            { date: '2026-01-14', shift: '12NN-9PM', gasman: 'FRANCIS', gross: 11200, deductions: 200, remittance: 11000, status: 'approved' }
+        ];
+
+        let purchaseOrders = [
+            { id: 'PO-2026-001', date: '2026-01-10', supplier: 'CALTEX', items: 3, total: 45000, status: 'delivered' },
+            { id: 'PO-2026-002', date: '2026-01-12', supplier: 'SHELL', items: 5, total: 67000, status: 'pending' }
+        ];
+
+        let recentActivities = [
+            { time: '09:45 AM', gasman: 'DODONG', transaction: 'Fuel Sale', amount: 1250 },
+            { time: '10:30 AM', gasman: 'KENNETH', transaction: 'LPG Refill', amount: 1100 },
+            { time: '11:15 AM', gasman: 'FRANCIS', transaction: 'Oil Change', amount: 890 }
+        ];
+
+        // State
+        let cart = [];
+        let fuelQtys = { diesel: 10, premium: 10, regular: 10 };
+        let currentUser = null;
+        let pendingShifts = 3;
+
+        // ==================== INITIALIZATION ====================
+        window.onload = function() {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('shiftDate').value = today;
+            
+            // Load default products
+            showProducts('caltex');
+            
+            // Attach pump listeners
+            attachPumpListeners();
+            
+            // Initial calculations
+            updatePumpResults();
+            updateCart();
+            
+            // Load other pages
+            loadDashboard();
+            loadShiftsTable();
+            loadInventory();
+            loadPOTable();
+            loadReports();
+            loadSettings();
+            
+            // Initialize charts
+            initCharts();
+        };
+
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDate').innerText = now.toLocaleDateString('en-PH', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('currentTime').innerText = now.toLocaleTimeString('en-PH');
+        }
+
+        // ==================== AUTHENTICATION ====================
+        function login(role) {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showToast('Please enter username and password', 'error');
+                return;
+            }
+            
+            currentUser = { role, name: username };
+            
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('userRole').innerText = role === 'admin' ? 'Admin' : 'Staff';
+            
+            showToast(`Welcome, ${username}!`, 'success');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                document.getElementById('login-page').style.display = 'flex';
+                document.getElementById('app').style.display = 'none';
+                currentUser = null;
+            }
+        }
+
+        // ==================== PAGE NAVIGATION ====================
+        function showPage(pageId, title) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        // ==================== PUMP READINGS ====================
+        function attachPumpListeners() {
+            document.querySelectorAll('.pump-start, .pump-close, .pump-calib').forEach(input => {
+                input.addEventListener('input', function() {
+                    const pump = this.dataset.pump;
+                    updateSinglePumpResult(pump);
+                });
+            });
+        }
+
+        function updateSinglePumpResult(pump) {
+            const row = document.querySelector(`[data-pump="${pump}"]`).closest('tr');
+            const start = parseFloat(row.querySelector('.pump-start').value) || 0;
+            const close = parseFloat(row.querySelector('.pump-close').value) || 0;
+            const calib = parseFloat(row.querySelector('.pump-calib').value) || 0;
+            const result = close - start - calib;
+            
+            document.getElementById(`result-${pump}`).innerText = result.toFixed(1);
+        }
+
+        function updatePumpResults() {
+            document.querySelectorAll('[data-pump]').forEach(input => {
+                const pump = input.dataset.pump;
+                updateSinglePumpResult(pump);
+            });
+        }
+
+        // ==================== PRODUCT DISPLAY ====================
+        function showProducts(brand) {
+            document.querySelectorAll('.product-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            
+            PRODUCTS[brand].forEach(product => {
+                const div = document.createElement('div');
+                div.className = 'product-item';
+                div.innerHTML = `
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">₱${product.price.toFixed(2)}</div>
+                    <div class="product-stock">Stock: ${product.stock}</div>
+                    <div class="product-actions">
+                        <input type="number" class="product-qty" id="qty-${product.name.replace(/\s/g, '')}" value="1" min="1" max="${product.stock}">
+                        <button class="product-add" onclick="addProductSale('${product.name}', ${product.price}, '${brand}')">
+                            <i class="fas fa-plus"></i> Add
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        // ==================== CART MANAGEMENT ====================
+        function adjustQty(type, delta) {
+            fuelQtys[type] = Math.max(1, fuelQtys[type] + delta);
+            document.getElementById(`${type}Qty`).innerText = fuelQtys[type];
+        }
+
+        function addFuelSale(fuel, price) {
+            const type = fuel.toLowerCase();
+            const qty = fuelQtys[type];
+            const amount = qty * price;
+            
+            cart.push({
+                id: Date.now() + Math.random(),
+                item: `${fuel} Fuel`,
+                qty: qty,
+                unit: 'L',
+                price: price,
+                total: amount,
+                type: 'fuel'
+            });
+            
+            // Update stock display
+            const stockEl = document.getElementById(`${type}Stock`);
+            let currentStock = parseFloat(stockEl.innerText.replace(/[^0-9.-]+/g, '')) || 0;
+            stockEl.innerText = (currentStock - qty).toFixed(1) + ' L';
+            
+            updateCart();
+            showToast(`Added ${qty}L ${fuel}`, 'success');
+        }
+
+        function addProductSale(name, price, brand) {
+            const qtyInput = document.getElementById(`qty-${name.replace(/\s/g, '')}`);
+            const qty = parseInt(qtyInput.value) || 1;
+            
+            cart.push({
+                id: Date.now() + Math.random(),
+                item: `${brand.toUpperCase()} - ${name}`,
+                qty: qty,
+                unit: 'pc',
+                price: price,
+                total: qty * price,
+                type: 'product'
+            });
+            
+            updateCart();
+            showToast(`Added ${name}`, 'success');
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartDiv = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const subtotalSpan = document.getElementById('subtotal');
+            const grossTotalSpan = document.getElementById('grossTotal');
+            const totalLitersSpan = document.getElementById('totalLiters');
+            
+            cartDiv.innerHTML = '';
+            let subtotal = 0;
+            let totalLiters = 0;
+            
+            cart.forEach(item => {
+                subtotal += item.total;
+                if (item.type === 'fuel') totalLiters += item.qty;
+                
+                cartDiv.innerHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <h4>${item.item}</h4>
+                            <p>${item.qty} ${item.unit} x ₱${item.price.toFixed(2)}</p>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span class="cart-item-total">₱${item.total.toFixed(2)}</span>
+                            <i class="fas fa-times cart-item-remove" onclick="removeFromCart(${item.id})"></i>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (cart.length === 0) {
+                cartDiv.innerHTML = '<div style="text-align: center; color: var(--gray); padding: 20px;">No items in cart</div>';
+            }
+            
+            cartCount.innerText = cart.length;
+            subtotalSpan.innerText = `₱${subtotal.toFixed(2)}`;
+            grossTotalSpan.innerText = `₱${subtotal.toFixed(2)}`;
+            totalLitersSpan.innerText = totalLiters.toFixed(1) + ' L';
+            
+            calculateRemittance();
+        }
+
+        function calculateRemittance() {
+            const gross = parseFloat(document.getElementById('grossTotal').innerText.replace('₱', '')) || 0;
+            const deductions = [
+                'expense', 'po', 'mdrrmo', 'moph', 'rndc', 'honBimbo'
+            ].reduce((sum, id) => {
+                return sum + (parseFloat(document.getElementById(id).value) || 0);
+            }, 0);
+            
+            const remittance = gross - deductions;
+            document.getElementById('remittance').innerText = `₱${remittance.toFixed(2)}`;
+            
+            // Change color based on value
+            const remittanceBox = document.getElementById('remittanceBox');
+            if (remittance < 0) {
+                remittanceBox.style.background = 'var(--danger)';
+            } else {
+                remittanceBox.style.background = 'var(--success)';
+            }
+        }
+
+        function clearCart() {
+            if (cart.length === 0) {
+                showToast('Cart is already empty', 'error');
+                return;
+            }
+            
+            if (confirm('Clear all items from cart?')) {
+                cart = [];
+                updateCart();
+                
+                // Reset deduction inputs
+                document.querySelectorAll('.deductions input').forEach(input => {
+                    input.value = 0;
+                });
+                
+                showToast('Cart cleared', 'success');
+            }
+        }
+
+        // ==================== SHIFT MANAGEMENT ====================
+        function submitShift() {
+            if (cart.length === 0) {
+                showToast('No items to submit', 'error');
+                return;
+            }
+            
+            // Show summary modal
+            const shiftModal = document.getElementById('shiftModal');
+            const shiftSummary = document.getElementById('shiftSummary');
+            
+            const gasman = document.getElementById('gasmanSelect').value;
+            const shift = document.getElementById('shiftSelect').value;
+            const date = document.getElementById('shiftDate').value;
+            const gross = document.getElementById('grossTotal').innerText;
+            const remittance = document.getElementById('remittance').innerText;
+            
+            let deductions = 0;
+            document.querySelectorAll('.deductions input').forEach(input => {
+                deductions += parseFloat(input.value) || 0;
+            });
+            
+            shiftSummary.innerHTML = `
+                <div class="summary-item"><span>Gas Man:</span> <strong>${gasman}</strong></div>
+                <div class="summary-item"><span>Shift:</span> <strong>${shift}</strong></div>
+                <div class="summary-item"><span>Date:</span> <strong>${date}</strong></div>
+                <div class="summary-item"><span>Total Items:</span> <strong>${cart.length}</strong></div>
+                <div class="summary-item"><span>Gross Sales:</span> <strong>${gross}</strong></div>
+                <div class="summary-item"><span>Total Deductions:</span> <strong>₱${deductions.toFixed(2)}</strong></div>
+                <div class="summary-item" style="border-bottom: none;"><span>Remittance:</span> <strong style="color: var(--success);">${remittance}</strong></div>
             `;
-            tbody.appendChild(tr);
-        });
-
-        document.getElementById('totalVolume').innerText = totalVol.toFixed(3);
-        document.getElementById('totalRevenue').innerText = totalRev.toFixed(2);
-    }
-
-    // Export to CSV Function
-    function exportToCSV() {
-        if (transactionLog.length === 0) {
-            alert("No transactions to export.");
-            return;
+            
+            shiftModal.classList.add('active');
         }
 
-        let csvContent = "Date,Time,Fuel Type,Price per Liter,Liters,Total Amount,Gasman\n";
-        
-        transactionLog.forEach(tx => {
-            let row = `${tx.date},${tx.time},${tx.fuel},${tx.pricePerLiter.toFixed(2)},${tx.liters.toFixed(3)},${tx.amount.toFixed(2)},${tx.gasman.toUpperCase()}`;
-            csvContent += row + "\n";
-        });
-
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        
-        const currentDate = new Date().toISOString().slice(0, 10);
-        link.setAttribute("href", url);
-        link.setAttribute("download", `Ecogazz_Pump_Log_${currentDate}.csv`);
-        link.style.visibility = 'hidden';
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    // Clear Log Function
-    function clearLog() {
-        if (transactionLog.length === 0) {
-            alert("The log is already empty.");
-            return;
+        function confirmShift() {
+            // Add to shifts
+            const gasman = document.getElementById('gasmanSelect').value;
+            const shift = document.getElementById('shiftSelect').value;
+            const date = document.getElementById('shiftDate').value;
+            const gross = parseFloat(document.getElementById('grossTotal').innerText.replace('₱', ''));
+            const deductions = parseFloat(document.getElementById('remittance').innerText.replace('₱', ''));
+            const remittance = gross - deductions;
+            
+            shifts.unshift({
+                date: date,
+                shift: shift,
+                gasman: gasman,
+                gross: gross,
+                deductions: deductions,
+                remittance: remittance,
+                status: 'pending'
+            });
+            
+            pendingShifts++;
+            document.getElementById('pendingShifts').innerText = pendingShifts;
+            
+            showToast('Shift submitted successfully!', 'success');
+            closeModal();
+            clearCart();
+            loadShiftsTable();
         }
 
-        const confirmClear = confirm("Are you sure you want to clear the shift log? Please ensure you have exported the data to CSV first. This action cannot be undone.");
-        
-        if (confirmClear) {
-            transactionLog = [];
-            renderSalesTable();
-            alert("Shift log cleared successfully.");
+        function closeModal() {
+            document.getElementById('shiftModal').classList.remove('active');
         }
-    }
-</script>
 
+        // ==================== DASHBOARD ====================
+        function loadDashboard() {
+            const activities = document.getElementById('recentActivities');
+            activities.innerHTML = '';
+            
+            recentActivities.forEach(act => {
+                activities.innerHTML += `
+                    <tr>
+                        <td>${act.time}</td>
+                        <td>${act.gasman}</td>
+                        <td>${act.transaction}</td>
+                        <td>₱${act.amount.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function initCharts() {
+            // Sales Chart
+            const ctx = document.getElementById('salesChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Sales (₱)',
+                            data: [45280, 48900, 42300, 46700, 51200, 58900, 62400],
+                            borderColor: '#e31b23',
+                            backgroundColor: 'rgba(227, 27, 35, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+
+            // Daily Report Chart
+            const dailyCtx = document.getElementById('dailyReportChart');
+            if (dailyCtx) {
+                new Chart(dailyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        datasets: [{
+                            label: 'Sales',
+                            data: [285000, 312000, 298000, 345000],
+                            backgroundColor: '#e31b23'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // Monthly Report Chart
+            const monthlyCtx = document.getElementById('monthlyReportChart');
+            if (monthlyCtx) {
+                new Chart(monthlyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Monthly Sales',
+                            data: [1250000, 1450000, 1380000, 1580000, 1620000, 1750000],
+                            borderColor: '#e31b23'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        // ==================== SHIFTS TABLE ====================
+        function loadShiftsTable() {
+            const table = document.getElementById('shiftsTable');
+            table.innerHTML = '';
+            
+            shifts.forEach(shift => {
+                const statusClass = `status-${shift.status}`;
+                table.innerHTML += `
+                    <tr>
+                        <td>${shift.date}</td>
+                        <td>${shift.shift}</td>
+                        <td>${shift.gasman}</td>
+                        <td>₱${shift.gross.toFixed(2)}</td>
+                        <td>₱${shift.deductions.toFixed(2)}</td>
+                        <td>₱${shift.remittance.toFixed(2)}</td>
+                        <td><span class="status-badge ${statusClass}">${shift.status}</span></td>
+                        <td>
+                            <button class="btn-primary" style="padding: 5px 10px; font-size: 12px;" onclick="viewShift('${shift.date}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function filterShifts() {
+            const search = document.getElementById('shiftSearch').value.toLowerCase();
+            const filter = document.getElementById('shiftFilter').value;
+            
+            // Filter logic here
+            showToast('Filtering shifts...', 'success');
+        }
+
+        function viewShift(date) {
+            showToast(`Viewing shift from ${date}`, 'success');
+        }
+
+        // ==================== INVENTORY ====================
+        function loadInventory() {
+            // Fuel Inventory
+            const fuelList = document.getElementById('fuelInventory');
+            fuelList.innerHTML = `
+                <li><span>Diesel</span> <span class="stock-good">2,850 L</span></li>
+                <li><span>Premium</span> <span class="stock-good">2,150 L</span></li>
+                <li><span>Regular</span> <span class="stock-good">1,850 L</span></li>
+            `;
+
+            // Oil Inventory
+            const oilList = document.getElementById('oilInventory');
+            oilList.innerHTML = '';
+            ['CASTROL', 'SHELL', 'CALTEX', 'WHIZ'].forEach(brand => {
+                oilList.innerHTML += `<li><span>${brand}</span> <span class="stock-good">45 pcs</span></li>`;
+            });
+
+            // LPG Inventory
+            const lpgList = document.getElementById('lpgInventory');
+            lpgList.innerHTML = `
+                <li><span>PRYCEGAS 11kg</span> <span class="stock-good">15 pcs</span></li>
+                <li><span>PETRON 11kg</span> <span class="stock-good">12 pcs</span></li>
+                <li><span>FIESTA 11kg</span> <span class="stock-low">4 pcs</span></li>
+            `;
+        }
+
+        function filterInventory() {
+            const search = document.getElementById('inventorySearch').value.toLowerCase();
+            showToast(`Searching for: ${search}`, 'success');
+        }
+
+        // ==================== PURCHASE ORDERS ====================
+        function loadPOTable() {
+            const table = document.getElementById('poTable');
+            table.innerHTML = '';
+            
+            purchaseOrders.forEach(po => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${po.id}</td>
+                        <td>${po.date}</td>
+                        <td>${po.supplier}</td>
+                        <td>${po.items}</td>
+                        <td>₱${po.total.toFixed(2)}</td>
+                        <td><span class="status-badge status-${po.status}">${po.status}</span></td>
+                        <td>
+                            <button class="btn-primary" style="padding: 5px 10px; font-size: 12px;" onclick="viewPO('${po.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function showNewPOModal() {
+            const modal = document.getElementById('poModal');
+            const form = document.getElementById('poForm');
+            
+            form.innerHTML = `
+                <div class="settings-group">
+                    <div class="settings-row">
+                        <span>Supplier</span>
+                        <select id="poSupplier">
+                            <option>CALTEX</option>
+                            <option>SHELL</option>
+                            <option>PETRON</option>
+                            <option>PRYCEGAS</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <span>Product</span>
+                        <select id="poProduct">
+                            <option>Diesel</option>
+                            <option>Premium</option>
+                            <option>Regular</option>
+                            <option>Engine Oil</option>
+                            <option>LPG</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <span>Quantity</span>
+                        <input type="number" id="poQty" value="100">
+                    </div>
+                    <div class="settings-row">
+                        <span>Unit Price</span>
+                        <input type="number" id="poPrice" value="55.80" step="0.01">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="cart-btn clear" style="flex:1;" onclick="closePOModal()">Cancel</button>
+                    <button class="cart-btn submit" style="flex:1;" onclick="createPO()">Create PO</button>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function closePOModal() {
+            document.getElementById('poModal').classList.remove('active');
+        }
+
+        function createPO() {
+            const supplier = document.getElementById('poSupplier').value;
+            const product = document.getElementById('poProduct').value;
+            const qty = document.getElementById('poQty').value;
+            const price = document.getElementById('poPrice').value;
+            
+            purchaseOrders.unshift({
+                id: `PO-2026-${String(purchaseOrders.length + 1).padStart(3, '0')}`,
+                date: new Date().toISOString().split('T')[0],
+                supplier: supplier,
+                items: 1,
+                total: qty * price,
+                status: 'pending'
+            });
+            
+            showToast('Purchase Order created successfully!', 'success');
+            closePOModal();
+            loadPOTable();
+        }
+
+        function viewPO(id) {
+            showToast(`Viewing PO: ${id}`, 'success');
+        }
+
+        // ==================== REPORTS ====================
+        function loadReports() {
+            // Top Products
+            const topProducts = document.getElementById('topProducts');
+            topProducts.innerHTML = `
+                <ul class="inventory-list">
+                    <li><span>Diesel</span> <span>₱1,245,000</span></li>
+                    <li><span>Premium</span> <span>₱987,500</span></li>
+                    <li><span>Regular</span> <span>₱654,300</span></li>
+                    <li><span>LPG 11kg</span> <span>₱234,000</span></li>
+                    <li><span>Engine Oil</span> <span>₱156,700</span></li>
+                </ul>
+            `;
+
+            // Staff Performance
+            const staffPerf = document.getElementById('staffPerformance');
+            staffPerf.innerHTML = `
+                <ul class="inventory-list">
+                    <li><span>DODONG</span> <span>₱325,000</span></li>
+                    <li><span>KENNETH</span> <span>₱298,000</span></li>
+                    <li><span>FRANCIS</span> <span>₱276,500</span></li>
+                    <li><span>ROXAS</span> <span>₱245,800</span></li>
+                </ul>
+            `;
+        }
+
+        function generateReport(type) {
+            showToast(`Generating ${type} report...`, 'success');
+        }
+
+        // ==================== SETTINGS ====================
+        function loadSettings() {
+            const staffList = document.getElementById('staffList');
+            staffList.innerHTML = `
+                <ul class="inventory-list">
+                    <li><span>DODONG</span> <span>Active</span></li>
+                    <li><span>KENNETH</span> <span>Active</span></li>
+                    <li><span>FRANCIS</span> <span>Active</span></li>
+                    <li><span>ROXAS</span> <span>Active</span></li>
+                </ul>
+            `;
+        }
+
+        function saveSettings() {
+            showToast('Settings saved successfully!', 'success');
+        }
+
+        function addStaff() {
+            showToast('Add staff functionality', 'success');
+        }
+
+        // ==================== UTILITIES ====================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
 </body>
 </html>

@@ -10,14 +10,13 @@ return new class extends Migration
     {
         Schema::create('shifts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users'); // The Gasman on duty
-            $table->foreignId('manager_id')->nullable()->constrained('users'); // Manager who approves
-            $table->dateTime('start_time');
-            $table->dateTime('end_time')->nullable();
-            $table->enum('status', ['Open', 'Closed'])->default('Open');
-            $table->decimal('total_expenses', 10, 2)->default(0);
-            $table->decimal('cash_remitted', 10, 2)->default(0);
-            $table->decimal('over_short_variance', 10, 2)->default(0); // Calculated at closing
+            $table->foreignId('user_id')->constrained('users');
+            $table->date('shift_date');
+            $table->string('schedule'); // e.g., '3AM - 12NN'
+            $table->decimal('gross_sales', 10, 2)->default(0);
+            $table->decimal('total_deductions', 10, 2)->default(0);
+            $table->decimal('net_remittance', 10, 2)->default(0);
+            $table->string('status')->default('Pending'); // Pending, Approved
             $table->timestamps();
         });
     }

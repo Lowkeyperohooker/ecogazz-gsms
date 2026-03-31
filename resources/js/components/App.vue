@@ -47,6 +47,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import axios from 'axios'; // <-- Added Axios import
 
 // Global Shell Components
 import LoginScreen from './LoginScreen.vue';
@@ -114,9 +115,21 @@ const handleLogin = (selectedRole) => {
     activePage.value = selectedRole === 'admin' ? 'admin-dashboard' : 'staff-pos';
 };
 
-const handleLogout = () => {
-    isLoggedIn.value = false;
-    role.value = '';
-    activePage.value = '';
+// <-- Updated Logout Logic using Axios -->
+const handleLogout = async () => {
+    try {
+        // Tell Laravel to destroy the token in the database
+        await axios.post('/api/logout');
+    } catch (error) {
+        console.error("Error logging out:", error);
+    } finally {
+        // Clear frontend state regardless of API success/failure
+        localStorage.removeItem('auth_token');
+        delete axios.defaults.headers.common['Authorization'];
+        
+        isLoggedIn.value = false;
+        role.value = '';
+        activePage.value = '';
+    }
 };
 </script>

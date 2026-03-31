@@ -5,16 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FuelPrice extends Model
+class FuelConfig extends Model
 {
     use HasFactory;
-    protected $fillable = ['fuel_type', 'price', 'effective_date'];
-    
-    // Helper to get current price
-    public static function getCurrentPrice($fuelType) {
-        return self::where('fuel_type', $fuelType)
-                   ->orderBy('effective_date', 'desc')
-                   ->first()
-                   ->price ?? 0;
+
+    protected $fillable = [
+        'pump_id',
+        'fuel_type',
+        'cost_price',
+        'selling_price',
+        'current_meter',
+    ];
+
+    // A FuelConfig belongs to a specific Pump (e.g., Front or Back)
+    public function pump()
+    {
+        return $this->belongsTo(Pump::class);
+    }
+
+    // A FuelConfig has many Pump Readings
+    public function pumpReadings()
+    {
+        return $this->hasMany(PumpReading::class);
     }
 }

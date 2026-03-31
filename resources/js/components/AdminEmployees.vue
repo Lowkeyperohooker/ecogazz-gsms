@@ -1,8 +1,9 @@
 <template>
-    <div class="flex flex-col bg-card rounded-xl shadow-sm border border-light overflow-hidden h-full">
+    <div class="flex flex-col bg-card rounded-xl shadow-sm border border-light overflow-hidden h-full relative">
         <div class="flex justify-between items-center p-[12px_16px] border-b border-light shrink-0">
             <h3 class="text-[0.85rem] font-bold">Staff Management</h3>
-            <button @click="addStaff" class="px-3 py-1.5 bg-linear-to-br from-primary to-primary-hover text-white rounded-lg font-bold text-xs flex items-center gap-1.5 transition-transform hover:-translate-y-px shadow-sm">
+            
+            <button @click="showAddModal = true" class="px-3 py-1.5 bg-linear-to-br from-primary to-primary-hover text-white rounded-lg font-bold text-xs flex items-center gap-1.5 transition-transform hover:-translate-y-px shadow-sm">
                 <i class="fa-solid fa-user-plus"></i> Add
             </button>
         </div>
@@ -20,8 +21,8 @@
                 </thead>
                 <tbody>
                     <tr v-for="emp in employees" :key="emp.id" class="border-b border-light hover:bg-[#f8faf9] transition-colors">
-                        <td class="p-2 text-xs font-bold">{{ emp.n }}</td>
-                        <td class="p-2 text-xs">{{ emp.r }}</td>
+                        <td class="p-2 text-xs font-bold">{{ emp.n || emp.name }}</td>
+                        <td class="p-2 text-xs">{{ emp.r || emp.role }}</td>
                         <td class="p-2 text-xs text-gray tracking-[2px]">● ● ● ●</td>
                         <td class="p-2 text-center">
                             <span class="px-2 py-0.5 rounded-full text-[0.52rem] font-bold uppercase tracking-wide bg-primary-light text-primary">
@@ -37,25 +38,45 @@
                 </tbody>
             </table>
         </div>
+
+        <AddStaffModal 
+            v-if="showAddModal" 
+            @close="showAddModal = false" 
+            @saved="handleRecordSaved" 
+        />
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import AddStaffModal from './AddStaffModal.vue';
 
-const employees = ref([
-    { id: 1, n: "DODONG", r: "Pump Attendant" },
-    { id: 2, n: "KENNETH", r: "Pump Attendant" },
-    { id: 3, n: "FRANCIS", r: "Pump Attendant" },
-    { id: 4, n: "ROXAS", r: "Pump Attendant" },
-    { id: 5, n: "BRYAN BACOY", r: "Manager" }
-]);
+const showAddModal = ref(false);
+const employees = ref([]);
 
-const addStaff = () => {
-    alert('Add staff feature coming soon!');
+// Fetch users from Laravel
+const fetchEmployees = async () => {
+    try {
+        // Fetch users (You may want to create a specific endpoint for this, e.g., /api/users)
+        const response = await axios.get('/api/users');
+        employees.value = response.data.data || response.data;
+    } catch (error) {
+        console.error("Error fetching employees:", error);
+    }
+};
+
+const handleRecordSaved = (newRecord) => {
+    showAddModal.value = false;
+    // Add new user to the UI without reloading
+    employees.value.push(newRecord);
 };
 
 const editStaff = (emp) => {
-    alert(`Editing ${emp.n}... feature coming soon!`);
+    alert(`Editing ${emp.name}... feature coming soon!`);
 };
+
+onMounted(() => {
+    fetchEmployees();
+});
 </script>

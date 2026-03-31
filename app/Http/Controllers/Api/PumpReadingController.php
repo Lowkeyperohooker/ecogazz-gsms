@@ -5,34 +5,40 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PumpReading;
-use App\Models\Shift;
-use App\Models\Pump;
-use App\Models\FuelPrice;
+use App\Models\FuelConfig; // Make sure you have this model from the ERD!
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PumpReadingController extends Controller
 {
     /**
-     * Get the latest closing readings for all pumps to pre-fill the "Starting Reading" form.
+     * Get the latest closing readings for all pump nozzles.
+     * This formats the data perfectly for the StaffPumps.vue component.
      */
-    public function getLatestReadings()
+    public function index()
     {
-        $pumps = Pump::all();
+        // Fetch all fuel configurations along with their parent pump
+        $fuelConfigs = FuelConfig::with('pump')->get();
         $latestReadings = [];
 
-        foreach ($pumps as $pump) {
-            // Find the last recorded reading for this pump
-            $lastReading = PumpReading::where('pump_id', $pump->id)
+        foreach ($fuelConfigs as $config) {
+            // Find the last recorded reading for this specific nozzle (e.g., Front Diesel)
+            $lastReading = PumpReading::where('fuel_config_id', $config->id)
                 ->orderBy('created_at', 'desc')
                 ->first();
 
+            // Start meter is either the last recorded close meter, or the base meter in the config table
+            $startMeter = $lastReading ? $lastReading->close_meter : $config->current_meter;
+
             $latestReadings[] = [
-                'pump_id' => $pump->id,
-                'pump_name' => $pump->name,
-                'pump_type' => $pump->type,
-                // Default to 0 if no history exists (new system)
-                'suggested_start_reading' => $lastReading ? $lastReading->closing_reading : 0 
+                'id'    => $config->id,
+                'pump'  => $config->pump->label, // e.g., 'Front'
+                'type'  => $config->pump->type,  // e.g., 'Digital'
+                'name'  => $config->fuel_type,   // e.g., 'Diesel'
+                'price' => $config->selling_price,
+                'start' => (float) $startMeter,
+                'sold'  => 0, // Default value for Vue UI inputs
+                'calib' => 0  // Default value for Vue UI inputs
             ];
         }
 
@@ -47,47 +53,50 @@ class PumpReadingController extends Controller
     {
         // 1. Validation & Sanitation
         $validated = $request->validate([
-            'shift_id' => 'required|exists:shifts,id',
-            'pump_id' => 'required|exists:pumps,id',
-            'fuel_type' => 'required|in:Diesel,Premium,Regular',
-            'starting_reading' => 'required|numeric|min:0',
-            'closing_reading' => [
+            'shift_id'       => 'required|exists:shifts,id',
+            'fuel_config_id' => 'required|exists:fuel_configs,id',
+            'start_meter'    => 'required|numeric|min:0',
+            'close_meter'    => [
                 'required', 
                 'numeric', 
                 // Custom rule: Closing must be >= Starting
                 function ($attribute, $value, $fail) use ($request) {
-                    if ($value < $request->starting_reading) {
-                        $fail("Sanitation Error: Closing reading ($value) cannot be lower than starting reading ({$request->starting_reading}). Please check for typos.");
+                    if ($value < $request->start_meter) {
+                        $fail("Sanitation Error: Closing reading ($value) cannot be lower than starting reading ({$request->start_meter}). Please check for typos.");
                     }
                 },
             ],
-            'calibration' => 'nullable|numeric|min:0',
+            'calibration'    => 'nullable|numeric|min:0',
         ]);
 
         // 2. Perform Calculations
         $calibration = $validated['calibration'] ?? 0;
-        $netLiters = ($validated['closing_reading'] - $validated['starting_reading']) - $calibration;
+        $litersSold = ($validated['close_meter'] - $validated['start_meter']) - $calibration;
         
-        // Fetch current price
-        $currentPrice = FuelPrice::getCurrentPrice($validated['fuel_type']);
-        $totalAmount = $netLiters * $currentPrice;
+        // Fetch current price for this specific nozzle
+        $config = FuelConfig::findOrFail($validated['fuel_config_id']);
+        $totalAmount = $litersSold * $config->selling_price;
 
         // 3. Save to Database
         $reading = PumpReading::create([
-            'shift_id' => $validated['shift_id'],
-            'pump_id' => $validated['pump_id'],
-            'fuel_type' => $validated['fuel_type'],
-            'starting_reading' => $validated['starting_reading'],
-            'closing_reading' => $validated['closing_reading'],
-            'calibration' => $calibration,
-            'net_liters' => $netLiters,
-            'price_per_liter' => $currentPrice,
-            'total_amount' => $totalAmount,
+            'shift_id'       => $validated['shift_id'],
+            'fuel_config_id' => $validated['fuel_config_id'],
+            'start_meter'    => $validated['start_meter'],
+            'close_meter'    => $validated['close_meter'],
+            'calibration'    => $calibration,
+            'liters_sold'    => $litersSold,
+            'total_amount'   => $totalAmount,
+        ]);
+
+        // 4. Update the Master Meter
+        // Automatically save the new closing meter to the FuelConfig so the next shift starts here
+        $config->update([
+            'current_meter' => $validated['close_meter']
         ]);
 
         return response()->json([
             'message' => 'Pump reading saved successfully.',
-            'data' => $reading
+            'data'    => $reading
         ], 201);
     }
 }

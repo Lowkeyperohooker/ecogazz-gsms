@@ -5,17 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens; // 1. THIS IMPORT IS CRITICAL
+use Laravel\Sanctum\HasApiTokens; // 1. ADD THIS IMPORT
 
 class User extends Authenticatable
 {
-    // 2. ADD 'HasApiTokens' INSIDE THIS USE STATEMENT
+    // 2. ADD 'HasApiTokens' HERE
     use HasApiTokens, HasFactory, Notifiable; 
 
-    /**
-     * The attributes that are mass assignable.
-     * 3. ADD YOUR NEW COLUMNS HERE
-     */
     protected $fillable = [
         'name',
         'role',
@@ -23,17 +19,11 @@ class User extends Authenticatable
         'is_active',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     */
     protected $hidden = [
-        'pin', // Hide the PIN from JSON responses for security
+        'pin',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     */
     protected function casts(): array
     {
         return [

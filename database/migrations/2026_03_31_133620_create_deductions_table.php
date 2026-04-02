@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('deductions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('shift_id')->constrained()->cascadeOnDelete(); // <-- MUST HAVE THIS
+            $table->string('category');
+            $table->decimal('amount', 10, 2);
             $table->timestamps();
         });
     }

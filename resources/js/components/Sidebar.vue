@@ -36,17 +36,19 @@
         </div>
 
         <div class="flex items-center gap-2 p-[12px_8px_4px] border-t border-light mt-1.5">
-            <div class="w-8.5 h-8.5 bg-linear-to-br from-[#fce4b3] to-warning rounded-full flex items-center justify-center text-[#d19a22] text-[0.85rem] shrink-0 font-bold shadow-[0_2px_8px_rgba(245,166,35,0.2)]">
-                {{ role === 'admin' ? 'B' : 'D' }}
+            <div class="w-8.5 h-8.5 bg-linear-to-br from-[#fce4b3] to-warning rounded-full flex items-center justify-center text-[#d19a22] text-[0.85rem] shrink-0 font-bold shadow-[0_2px_8px_rgba(245,166,35,0.2)] uppercase">
+                {{ userName ? userName.charAt(0) : (role === 'admin' ? 'A' : 'S') }}
             </div>
+            
             <div class="flex-1 overflow-hidden">
-                <p class="text-[0.55rem] text-gray font-medium truncate">
-                    {{ role === 'admin' ? 'Admin' : 'Attendant' }}
+                <p class="text-[0.55rem] text-gray font-medium truncate uppercase tracking-[0.5px]">
+                    {{ role === 'admin' ? 'Admin' : 'Gasman' }}
                 </p>
                 <h4 class="text-[0.72rem] font-bold text-dark truncate">
-                    {{ role === 'admin' ? 'Bryan Bacoy' : 'DODONG' }}
+                    {{ userName || 'Staff' }}
                 </h4>
             </div>
+            
             <button @click="$emit('logout')" class="text-danger cursor-pointer p-1.5 bg-transparent border-none text-[0.85rem] transition-all rounded-lg hover:bg-danger/10 hover:scale-110">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i>
             </button>
@@ -59,7 +61,8 @@ import { computed } from 'vue';
 
 const props = defineProps({
     role: String,
-    activePage: String
+    activePage: String,
+    userName: String // <-- Added this to accept the login name from App.vue
 });
 
 const emit = defineEmits(['navigate', 'logout']);

@@ -6,13 +6,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ShiftController;
 use App\Http\Controllers\Api\PumpReadingController;
+use App\Http\Controllers\Api\PumpController; // <--- 1. ADDED THIS IMPORT
 
 // These were generated in the main Controllers folder
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
-
-// ... your routes below stay exactly the same ...
 
 // Public Routes
 Route::post('/login', [AuthController::class, 'login']);
@@ -35,6 +34,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products/bulk-update', [ProductController::class, 'bulkUpdate']);
     
     // Pumps
+    Route::get('/pumps', [PumpController::class, 'index']); 
+    Route::post('/pumps/update-configs', [PumpController::class, 'updateConfigs']);
+    Route::post('/pumps/save-readings', [\App\Http\Controllers\Api\PumpController::class, 'saveReadings']);
     Route::get('/pumps/latest-readings', [PumpReadingController::class, 'index']);
-    // You can add a route here later to update pump configs (AdminPumps.vue)
 });

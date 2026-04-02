@@ -4,12 +4,14 @@
 
         <div v-else class="flex w-full h-screen bg-card overflow-hidden">
             
-            <Sidebar 
-                :role="role" 
-                :activePage="activePage" 
-                @navigate="activePage = $event" 
-                @logout="handleLogout"
-            />
+        <Sidebar 
+            v-if="isLoggedIn" 
+            :role="role" 
+            :activePage="activePage" 
+            :userName="userName" 
+            @navigate="activePage = $event" 
+            @logout="handleLogout"
+        />
 
             <div class="flex-1 flex flex-col bg-bg overflow-hidden min-w-0">
                 
@@ -71,6 +73,7 @@ import AdminEmployees from './AdminEmployees.vue';
 const isLoggedIn = ref(false);
 const role = ref('');
 const activePage = ref('');
+const userName = ref(''); 
 const currentTime = ref('');
 const currentDate = ref('');
 
@@ -109,10 +112,11 @@ onUnmounted(() => {
 });
 
 // Authentication Actions
-const handleLogin = (selectedRole) => {
-    role.value = selectedRole;
+const handleLogin = (payload) => {
+    role.value = payload.role;
+    userName.value = payload.name; 
     isLoggedIn.value = true;
-    activePage.value = selectedRole === 'admin' ? 'admin-dashboard' : 'staff-pos';
+    activePage.value = payload.role === 'admin' ? 'admin-dashboard' : 'staff-pos';
 };
 
 // <-- Updated Logout Logic using Axios -->
@@ -130,6 +134,7 @@ const handleLogout = async () => {
         isLoggedIn.value = false;
         role.value = '';
         activePage.value = '';
+        userName.value = '';
     }
 };
 </script>

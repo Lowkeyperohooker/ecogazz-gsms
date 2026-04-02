@@ -24,10 +24,12 @@
                     <label class="text-xs font-bold text-gray uppercase tracking-wide mb-1.5">Role</label>
                     <select 
                         v-model="form.role" 
-                        class="p-2.5 border-2 border-light rounded-lg text-sm font-bold text-dark transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 bg-card cursor-pointer"
+                        class="w-full p-2.5 border border-light rounded-lg text-sm bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                        required
                     >
-                        <option value="Pump Attendant">Pump Attendant</option>
-                        <option value="Manager">Manager</option>
+                        <option value="" disabled>Select a role...</option>
+                        <option value="admin">admin</option>
+                        <option value="gasman">gasman</option>
                     </select>
                 </div>
 

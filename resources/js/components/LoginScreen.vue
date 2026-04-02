@@ -1,4 +1,5 @@
 <template>
+    
     <div class="fixed inset-0 bg-linear-to-br from-dark via-[#2d4a3e] to-dark flex justify-center items-center z-9000 p-5">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(61,187,145,0.15)_0%,transparent_60%),radial-gradient(circle_at_70%_70%,rgba(91,124,250,0.1)_0%,transparent_50%)]"></div>
         
@@ -23,7 +24,7 @@
                     <i class="fa-solid fa-shield-halved"></i> Admin
                 </button>
                 <button @click="attemptLogin('staff')" :disabled="isLoggingIn" class="flex-1 p-3.5 rounded-xl text-[0.85rem] font-bold flex justify-center items-center gap-2 transition-all hover:-translate-y-0.5 shadow-md bg-linear-to-br from-primary to-primary-hover text-white active:translate-y-0 disabled:opacity-70">
-                    <i class="fa-solid fa-user"></i> Staff
+                    <i class="fa-solid fa-user"></i> Gasman
                 </button>
             </div>
         </div>
@@ -62,7 +63,10 @@ const attemptLogin = async (requestedRole) => {
             return;
         }
 
-        emit('login', role);
+        emit('login', { 
+            role: role, 
+            name: user.name 
+        });
 
     } catch (error) {
         console.error(error);

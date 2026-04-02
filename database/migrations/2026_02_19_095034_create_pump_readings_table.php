@@ -10,16 +10,16 @@ return new class extends Migration
     {
         Schema::create('pump_readings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('shift_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('fuel_config_id')->constrained()->cascadeOnDelete(); // NEW
-            $table->decimal('start_meter', 12, 2); // Changed from starting_reading
-            $table->decimal('close_meter', 12, 2); // Changed from closing_reading
+            $table->foreignId('shift_id')->constrained()->cascadeOnDelete(); // <-- MUST HAVE THIS
+            $table->foreignId('fuel_config_id')->constrained()->cascadeOnDelete();
+            $table->decimal('start_meter', 10, 2)->default(0);
+            $table->decimal('close_meter', 10, 2)->default(0);
+            $table->decimal('liters_sold', 10, 2)->default(0);
+            $table->decimal('total_amount', 10, 2)->default(0);
             $table->decimal('calibration', 10, 2)->default(0);
-            $table->decimal('liters_sold', 10, 2);
-            $table->decimal('total_amount', 12, 2);
             $table->timestamps();
         });
-    }
+}
 
     public function down(): void
     {

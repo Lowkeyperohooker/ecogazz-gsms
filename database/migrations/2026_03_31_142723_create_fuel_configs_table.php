@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('fuel_configs', function (Blueprint $table) {
             $table->id();
+            
+            // THIS IS THE MISSING LINE:
+            $table->foreignId('pump_id')->constrained('pumps')->cascadeOnDelete(); 
+            
+            $table->string('fuel_type'); // e.g., 'Diesel', 'Premium', 'Regular'
+            $table->decimal('cost_price', 8, 2);
+            $table->decimal('selling_price', 8, 2);
+            $table->decimal('current_meter', 12, 2)->default(0); 
             $table->timestamps();
         });
     }

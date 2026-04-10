@@ -2,35 +2,64 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Product;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    /**
+     * Fetch all inventory items ordered by Brand.
+     */
     public function index()
     {
-        return response()->json(Product::all());
+        $products = Product::orderBy('brand')->orderBy('name')->get();
+        return response()->json($products);
     }
 
+    /**
+     * Handle rapid inline table edits for cost, sell, and stock quantities.
+     */
     public function bulkUpdate(Request $request)
     {
-        $request->validate([
-            'products' => 'required|array',
-            'products.*.id' => 'required|exists:products,id',
-            'products.*.cost_price' => 'required|numeric',
-            'products.*.selling_price' => 'required|numeric',
-        ]);
+        $products = $request->input('products');
 
-        DB::transaction(function () use ($request) {
-            foreach ($request->products as $item) {
-                Product::where('id', $item['id'])->update([
-                    'cost_price' => $item['cost_price'],
-                    'selling_price' => $item['selling_price'],
+        if (!$products) {
+            return response()->json(['message' => 'No data provided'], 400);
+        }
+
+        foreach ($products as $productData) {
+            $product = Product::find($productData['id']);
+            
+            if ($product) {
+                $product->update([
+                    'cost_price' => $productData['cost_price'],
+                    'selling_price' => $productData['selling_price'],
+                    'stock_quantity' => $productData['stock_quantity']
                 ]);
             }
-        });
+        }
 
-        return response()->json(['message' => 'Inventory successfully updated!']);
+        return response()->json(['message' => 'Inventory updated successfully!']);
+    }
+
+    /**
+     * Create a brand new product from the Admin Modal.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'brand' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'cost_price' => 'required|numeric',
+            'selling_price' => 'required|numeric',
+            'stock_quantity' => 'required|integer',
+        ]);
+
+        $product = Product::create($validated);
+
+        return response()->json([
+            'message' => 'Product successfully added.',
+            'product' => $product
+        ], 201);
     }
 }

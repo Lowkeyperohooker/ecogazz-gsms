@@ -31,17 +31,17 @@
                     <tr v-for="s in reversedShifts" :key="s.id" class="border-b border-light hover:bg-[#f8faf9] transition-colors">
                         <td class="p-2 text-xs whitespace-nowrap">{{ s.shift_date || s.date }}</td>
                         <td class="p-2 text-xs whitespace-nowrap">{{ s.schedule || s.shift }}</td>
-                        <td class="p-2 text-xs whitespace-nowrap">{{ s.user?.name || s.gasman || s.gm }}</td>
-                        <td class="p-2 text-xs text-right font-bold font-mono">₱{{ parseFloat(s.gross_sales || s.gf + s.gi).toLocaleString() }}</td>
-                        <td class="p-2 text-xs text-right font-bold font-mono text-danger">₱{{ parseFloat(s.total_deductions || s.td).toLocaleString() }}</td>
-                        <td class="p-2 text-xs text-right font-bold font-mono text-dark">₱{{ parseFloat(s.net_remittance || s.rem).toLocaleString() }}</td>
+                        <td class="p-2 text-xs whitespace-nowrap font-bold text-dark">{{ s.user?.name || s.gasman || s.gm }}</td>
+                        <td class="p-2 text-xs text-right font-bold font-mono">₱{{ parseFloat(s.gross_sales || 0).toLocaleString() }}</td>
+                        <td class="p-2 text-xs text-right font-bold font-mono text-danger">₱{{ parseFloat(s.total_deductions || 0).toLocaleString() }}</td>
+                        <td class="p-2 text-xs text-right font-bold font-mono text-success">₱{{ parseFloat(s.net_remittance || 0).toLocaleString() }}</td>
                         <td class="p-2 text-center">
-                            <span :class="['px-2 py-0.5 rounded-full text-[0.52rem] font-bold uppercase tracking-wide', s.status === 'Pending' ? 'bg-[#fef8ec] text-[#d4880f]' : 'bg-primary-light text-primary']">
-                                {{ s.status }}
+                            <span :class="['px-2 py-0.5 rounded-full text-[0.52rem] font-bold uppercase tracking-wide', s.status === 'Pending' ? 'bg-[#fef8ec] text-[#d4880f] border border-[#f0d9a8]' : 'bg-success/10 text-success border border-success/20']">
+                                <i :class="s.status === 'Pending' ? 'fa-solid fa-clock mr-0.5' : 'fa-solid fa-check mr-0.5'"></i> {{ s.status }}
                             </span>
                         </td>
                         <td class="p-2 text-center">
-                            <button @click="openModal(s)" :class="['px-2 py-1 rounded-md font-bold text-[0.58rem] transition-transform hover:-translate-y-px', s.status === 'Pending' ? 'bg-linear-to-br from-primary to-primary-hover text-white shadow-sm' : 'bg-card border-2 border-light text-dark']">
+                            <button @click="openModal(s)" :class="['px-3 py-1.5 rounded-md font-bold text-[0.65rem] transition-transform hover:-translate-y-px', s.status === 'Pending' ? 'bg-linear-to-br from-primary to-primary-hover text-white shadow-[0_2px_8px_rgba(61,187,145,0.3)]' : 'bg-card border border-light text-dark hover:bg-light']">
                                 {{ s.status === 'Pending' ? 'Review' : 'View' }}
                             </button>
                         </td>
@@ -51,51 +51,87 @@
         </div>
 
         <div v-if="selectedShift" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-8000 flex justify-center items-center p-4">
-            <div class="bg-card w-full max-w-175 rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] flex flex-col max-h-[85vh] animate-[scaleIn_0.3s_ease-out]">
+            <div class="bg-card w-full max-w-187.5 rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.1)] flex flex-col max-h-[90vh] animate-[scaleIn_0.3s_ease-out]">
                 
-                <div class="p-[16px_20px] border-b border-light flex justify-between items-start shrink-0">
+                <div class="p-[16px_20px] border-b border-light flex justify-between items-start shrink-0 bg-[#fcfdfd] rounded-t-[18px]">
                     <div>
-                        <h3 class="text-base font-extrabold">Shift Audit</h3>
-                        <div class="text-[0.65rem] text-gray mt-0.5 font-medium">{{ selectedShift.user?.name || selectedShift.gm }} | {{ selectedShift.shift_date || selectedShift.date }} | {{ selectedShift.schedule || selectedShift.shift }}</div>
+                        <h3 class="text-base font-extrabold flex items-center gap-2">
+                            Shift Audit
+                            <span v-if="selectedShift.status === 'Approved'" class="text-success text-[0.75rem] bg-success/10 px-2 py-0.5 rounded-full"><i class="fa-solid fa-check-circle"></i> Approved</span>
+                        </h3>
+                        <div class="text-[0.65rem] text-gray mt-0.5 font-bold uppercase tracking-[0.5px]">
+                            {{ selectedShift.user?.name || selectedShift.gasman }} | {{ selectedShift.shift_date }} | {{ selectedShift.schedule }}
+                        </div>
                     </div>
-                    <button @click="selectedShift = null" class="w-7 h-7 rounded-lg border-2 border-light text-dark flex items-center justify-center hover:bg-light transition-colors">
+                    <button @click="selectedShift = null" class="w-7 h-7 rounded-lg border-2 border-light text-dark flex items-center justify-center hover:bg-danger hover:text-white hover:border-danger transition-colors">
                         <i class="fa-solid fa-times"></i>
                     </button>
                 </div>
 
-                <div class="p-[16px_20px] overflow-y-auto flex-1">
-                    <div class="bg-primary-light p-3 rounded-lg flex justify-between mb-3.5 border border-[#c8e8da]">
-                        <div class="text-center flex-1"><span class="block text-[0.52rem] text-primary uppercase font-bold mb-1 tracking-wide">Gross Sales</span><strong class="text-[0.88rem] font-extrabold">₱{{ parseFloat(selectedShift.gross_sales || 0).toLocaleString() }}</strong></div>
-                        <div class="text-center flex-1"><span class="block text-[0.52rem] text-primary uppercase font-bold mb-1 tracking-wide">Deductions</span><strong class="text-[0.88rem] font-extrabold text-danger">₱{{ parseFloat(selectedShift.total_deductions || 0).toLocaleString() }}</strong></div>
-                        <div class="text-center flex-1"><span class="block text-[0.52rem] text-primary uppercase font-bold mb-1 tracking-wide">Cash Due</span><strong class="text-[0.88rem] font-extrabold text-success">₱{{ parseFloat(selectedShift.net_remittance || 0).toLocaleString() }}</strong></div>
+                <div class="p-[16px_20px] overflow-y-auto flex-1 no-scrollbar">
+                    
+                    <div class="bg-primary-light/30 p-3 rounded-xl flex justify-between mb-4 border border-primary/20 shadow-sm">
+                        <div class="text-center flex-1"><span class="block text-[0.55rem] text-gray uppercase font-bold mb-1 tracking-wide">Gross Sales</span><strong class="text-[0.95rem] font-extrabold font-mono">₱{{ parseFloat(selectedShift.gross_sales || 0).toLocaleString() }}</strong></div>
+                        <div class="text-center flex-1 border-l border-primary/20"><span class="block text-[0.55rem] text-gray uppercase font-bold mb-1 tracking-wide">Deductions</span><strong class="text-[0.95rem] font-extrabold text-danger font-mono">-₱{{ parseFloat(selectedShift.total_deductions || 0).toLocaleString() }}</strong></div>
+                        <div class="text-center flex-1 border-l border-primary/20 bg-primary-light/50 rounded-r-lg"><span class="block text-[0.55rem] text-primary uppercase font-bold mb-1 tracking-wide">Expected Cash</span><strong class="text-[1.1rem] font-black text-success font-mono">₱{{ parseFloat(selectedShift.net_remittance || 0).toLocaleString() }}</strong></div>
                     </div>
 
-                    <h4 class="text-[0.72rem] font-bold border-b-2 border-light pb-1 mb-2">Fuel Dispensed</h4>
-                    <table class="w-full text-xs mb-3">
-                        <tr v-for="(f, i) in (selectedShift.pumpReadings || selectedShift.fuel)" :key="i" class="border-b border-light/50">
-                            <td class="py-1">{{ f.pump || 'Pump' }}</td>
-                            <td class="py-1">{{ f.fuel_type || f.fuel }}</td>
-                            <td class="py-1 text-right">{{ parseFloat(f.liters_sold || f.liters).toFixed(2) }} L</td>
-                            <td class="py-1 text-right font-bold">₱{{ parseFloat(f.total_amount || f.amount).toLocaleString() }}</td>
-                        </tr>
-                        <tr v-if="!(selectedShift.pumpReadings || selectedShift.fuel)?.length"><td colspan="4" class="text-center py-2 text-gray">None</td></tr>
+                    <h4 class="text-[0.72rem] font-bold text-gray uppercase tracking-[0.5px] border-b-2 border-light pb-1 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-gas-pump"></i> Fuel & Meter Breakdown</h4>
+                    <table class="w-full text-left text-xs mb-4">
+                        <thead class="text-[0.6rem] text-gray uppercase tracking-[0.5px]">
+                            <tr>
+                                <th class="py-1">Pump/Fuel</th>
+                                <th class="py-1 text-right">Start</th>
+                                <th class="py-1 text-right">Calib</th>
+                                <th class="py-1 text-right">Close</th>
+                                <th class="py-1 text-right text-blue">Sold (L)</th>
+                                <th class="py-1 text-right text-success">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(f, i) in (selectedShift.pump_readings || selectedShift.pumpReadings || [])" :key="i" class="border-b border-light/50 hover:bg-[#f8faf9]">
+                                <td class="py-1.5 font-bold text-dark">{{ f.fuel_config?.pump?.name || 'Pump' }} — {{ f.fuel_config?.fuel_type || 'Fuel' }}</td>
+                                <td class="py-1.5 text-right font-mono">{{ parseFloat(f.start_meter || 0).toFixed(2) }}</td>
+                                <td class="py-1.5 text-right font-mono text-warning">{{ parseFloat(f.calibration || 0).toFixed(2) }}</td>
+                                <td class="py-1.5 text-right font-mono font-bold">{{ parseFloat(f.close_meter || 0).toFixed(2) }}</td>
+                                <td class="py-1.5 text-right font-mono font-bold text-blue">{{ parseFloat(f.liters_sold || 0).toFixed(2) }}</td>
+                                <td class="py-1.5 text-right font-mono font-bold text-success">₱{{ parseFloat(f.total_amount || 0).toLocaleString() }}</td>
+                            </tr>
+                            <tr v-if="!(selectedShift.pump_readings || selectedShift.pumpReadings)?.length"><td colspan="6" class="text-center py-3 text-gray italic">No fuel transactions.</td></tr>
+                        </tbody>
                     </table>
 
-                    <h4 class="text-[0.72rem] font-bold border-b-2 border-light pb-1 mb-2">Items Sold</h4>
-                    <table class="w-full text-xs mb-3">
-                        <tr v-for="(it, i) in (selectedShift.itemSales || selectedShift.items)" :key="i" class="border-b border-light/50">
-                            <td class="py-1">{{ it.product_name || it.name }}</td>
-                            <td class="py-1 text-center">{{ it.quantity || it.qty }}</td>
-                            <td class="py-1 text-right font-bold">₱{{ parseFloat(it.total_amount || it.total).toLocaleString() }}</td>
-                        </tr>
-                        <tr v-if="!(selectedShift.itemSales || selectedShift.items)?.length"><td colspan="3" class="text-center py-2 text-gray">None</td></tr>
-                    </table>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="text-[0.72rem] font-bold text-gray uppercase tracking-[0.5px] border-b-2 border-light pb-1 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-box"></i> Items Sold</h4>
+                            <table class="w-full text-xs">
+                                <tr v-for="(it, i) in (selectedShift.item_sales || selectedShift.itemSales || [])" :key="i" class="border-b border-light/50">
+                                    <td class="py-1.5 font-bold text-dark">{{ it.product?.name || it.product_name }}</td>
+                                    <td class="py-1.5 text-center text-gray">x{{ it.quantity || it.qty }}</td>
+                                    <td class="py-1.5 text-right font-bold text-success font-mono">₱{{ parseFloat(it.total_amount || it.amount).toLocaleString() }}</td>
+                                </tr>
+                                <tr v-if="!(selectedShift.item_sales || selectedShift.itemSales)?.length"><td colspan="3" class="text-center py-3 text-gray italic">None</td></tr>
+                            </table>
+                        </div>
+
+                        <div>
+                            <h4 class="text-[0.72rem] font-bold text-gray uppercase tracking-[0.5px] border-b-2 border-light pb-1 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-file-invoice-dollar"></i> Deductions</h4>
+                            <table class="w-full text-xs">
+                                <tr v-for="(ded, i) in (selectedShift.deductions || [])" :key="i" class="border-b border-light/50">
+                                    <td class="py-1.5 font-bold text-dark uppercase">{{ ded.category }}</td>
+                                    <td class="py-1.5 text-right font-bold text-danger font-mono">-₱{{ parseFloat(ded.amount).toLocaleString() }}</td>
+                                </tr>
+                                <tr v-if="!(selectedShift.deductions)?.length"><td colspan="2" class="text-center py-3 text-gray italic">None</td></tr>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="p-[12px_20px] border-t border-light flex justify-end gap-2 shrink-0">
-                    <button @click="selectedShift = null" class="px-4 py-2 bg-card border-2 border-light rounded-lg text-xs font-bold text-dark hover:bg-light transition-colors">Cancel</button>
-                    <button v-if="selectedShift.status === 'Pending'" @click="approveShift" class="px-4 py-2 bg-linear-to-br from-success to-primary-hover text-white rounded-lg text-xs font-bold flex items-center gap-1.5 hover:-translate-y-px transition-transform shadow-sm">
-                        <i class="fa-solid fa-check"></i> Approve
+                <div class="p-[12px_20px] border-t border-light flex justify-end gap-2 shrink-0 bg-light rounded-b-[18px]">
+                    <button @click="selectedShift = null" class="px-5 py-2 bg-white border border-light rounded-lg text-[0.7rem] font-bold text-gray hover:text-dark hover:border-gray transition-colors shadow-sm">Close</button>
+                    <button v-if="selectedShift.status === 'Pending'" @click="approveShift" class="px-5 py-2 bg-linear-to-br from-success to-primary-hover text-white rounded-lg text-[0.75rem] font-bold flex items-center gap-1.5 hover:-translate-y-px transition-transform shadow-[0_4px_12px_rgba(61,187,145,0.3)]">
+                        <i class="fa-solid fa-check-double"></i> Approve Remittance
                     </button>
                 </div>
             </div>
@@ -117,7 +153,8 @@ const fetchShifts = async () => {
     try {
         isLoading.value = true;
         const response = await axios.get('/api/shifts');
-        shifts.value = response.data.data || response.data; 
+        // Supports nested pagination structures if Laravel uses them
+        shifts.value = response.data.data || response.data || []; 
     } catch (error) {
         console.error("Error fetching shifts:", error);
     } finally {
@@ -136,6 +173,8 @@ const openModal = (shift) => {
 const approveShift = async () => {
     if(!selectedShift.value) return;
     
+    if(!confirm('Are you sure you want to approve this remittance? This cannot be undone.')) return;
+    
     try {
         await axios.put(`/api/shifts/${selectedShift.value.id}`, {
             status: 'Approved'
@@ -143,7 +182,6 @@ const approveShift = async () => {
         
         selectedShift.value.status = 'Approved';
         alert('Shift Approved Successfully!');
-        selectedShift.value = null;
         
     } catch (error) {
         alert('Failed to approve shift.');
@@ -155,3 +193,12 @@ onMounted(() => {
     fetchShifts();
 });
 </script>
+
+<style scoped>
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+</style>

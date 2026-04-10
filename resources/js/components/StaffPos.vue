@@ -26,25 +26,18 @@
         <div class="flex-1 flex flex-col md:flex-row gap-2 overflow-hidden min-h-0">
             <div class="flex-[1.1] flex flex-col gap-1.5 overflow-hidden min-w-0">
                 
-                <div class="flex flex-wrap gap-3 bg-card p-[8px_14px] rounded-lg border border-light shadow-[0_2px_8px_rgba(0,0,0,0.04)] shrink-0 items-center">
+                <div class="flex flex-wrap gap-4 bg-card p-[10px_16px] rounded-lg border border-light shadow-[0_2px_8px_rgba(0,0,0,0.04)] shrink-0 items-center">
                     <div class="flex flex-col">
-                        <span class="text-[0.55rem] text-gray uppercase font-bold tracking-[0.5px]">Date</span>
+                        <span class="text-[0.55rem] text-gray uppercase font-bold tracking-[0.5px] mb-0.5">Date</span>
                         <span class="text-[0.75rem] font-bold">{{ today }}</span>
                     </div>
-                    <div class="flex flex-col">
-                        <span class="text-[0.55rem] text-gray uppercase font-bold tracking-[0.5px]">Schedule</span>
-                        <select v-model="shift.schedule" class="border-none bg-transparent font-bold text-[0.72rem] text-dark cursor-pointer p-0 focus:outline-none">
-                            <option>3AM - 12NN</option>
-                            <option>12NN - 9PM</option>
-                        </select>
+                    <div class="flex flex-col border-l border-light pl-4">
+                        <span class="text-[0.55rem] text-gray uppercase font-bold tracking-[0.5px] mb-0.5">Schedule</span>
+                        <span class="text-[0.75rem] font-bold text-primary">{{ shift.schedule || 'Loading...' }}</span>
                     </div>
-                    <div class="flex flex-col">
-                        <span class="text-[0.55rem] text-gray uppercase font-bold tracking-[0.5px]">Gasman</span>
-                        <select v-model="shift.gasman" class="border-none bg-transparent font-bold text-[0.72rem] text-dark cursor-pointer p-0 focus:outline-none">
-                            <option>DODONG</option>
-                            <option>FRANCIS</option>
-                            <option>KENNETH</option>
-                        </select>
+                    <div class="flex flex-col border-l border-light pl-4">
+                        <span class="text-[0.55rem] text-gray uppercase font-bold tracking-[0.5px] mb-0.5">Gasman</span>
+                        <span class="text-[0.75rem] font-bold text-blue uppercase">{{ shift.gasman || 'Loading...' }}</span>
                     </div>
                 </div>
 
@@ -63,7 +56,7 @@
                                 selectedPump?.id === pump.id ? 'border-primary bg-primary-light shadow-[0_4px_15px_rgba(61,187,145,0.15)]' : 'border-light bg-card hover:border-primary hover:bg-primary-light'
                             ]"
                         >
-                            <i :class="['fa-solid text-[1.2rem] text-primary', pump.type === 'Digital' ? 'fa-display' : 'fa-gauge']"></i>
+                            <i :class="['fa-solid text-[1.2rem]', pump.type === 'Digital' ? 'fa-display text-primary' : 'fa-gauge text-primary']"></i>
                             <span class="text-[0.7rem] font-bold text-dark tracking-[0.5px] uppercase leading-tight">{{ pump.name }}</span>
                             <span class="text-[0.5rem] font-bold text-gray uppercase tracking-[0.5px]">{{ pump.type }}</span>
                         </button>
@@ -99,14 +92,18 @@
                             </button>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2 mb-2.5">
+                        <div class="grid grid-cols-3 gap-2 mb-2.5">
                             <div class="flex flex-col">
                                 <label class="text-[0.55rem] font-bold text-gray uppercase tracking-[0.5px] mb-0.75">Amount (₱)</label>
-                                <input type="number" v-model="fuelAmount" @input="calcFromAmount" placeholder="0.00" class="p-[10px_12px] border-2 border-light rounded-lg text-[0.9rem] font-bold text-right transition-all focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15">
+                                <input type="number" v-model="fuelAmount" @input="calcFromAmount" placeholder="0.00" class="p-[8px_10px] border-2 border-light rounded-lg text-[0.8rem] font-bold text-right transition-all focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15">
                             </div>
                             <div class="flex flex-col">
                                 <label class="text-[0.55rem] font-bold text-gray uppercase tracking-[0.5px] mb-0.75">Liters (L)</label>
-                                <input type="number" v-model="fuelLiters" @input="calcFromLiters" placeholder="0.00" class="p-[10px_12px] border-2 border-light rounded-lg text-[0.9rem] font-bold text-right transition-all focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15">
+                                <input type="number" v-model="fuelLiters" @input="calcFromLiters" placeholder="0.00" class="p-[8px_10px] border-2 border-light rounded-lg text-[0.8rem] font-bold text-right transition-all focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15">
+                            </div>
+                            <div class="flex flex-col">
+                                <label class="text-[0.55rem] font-bold text-warning uppercase tracking-[0.5px] mb-0.75">Calib (L)</label>
+                                <input type="number" v-model="fuelCalibration" placeholder="0.00" class="p-[8px_10px] border-2 border-warning/30 rounded-lg text-[0.8rem] font-bold text-right transition-all focus:outline-none focus:border-warning focus:ring-4 focus:ring-warning/15">
                             </div>
                         </div>
 
@@ -179,9 +176,9 @@
                             </thead>
                             <tbody>
                                 <tr v-for="item in reversedCart" :key="item.id" class="hover:bg-[#f8faf9] transition-colors border-b border-light">
-                                    <td :class="['p-[5px_8px] text-[0.65rem] font-bold whitespace-nowrap border-l-4', item.cat === 'Fuel' ? 'border-primary' : 'border-blue']">
-                                        <span :class="['inline-flex px-1.25 py-px rounded-lg text-[0.45rem] font-bold mr-1', item.cat === 'Fuel' ? 'bg-primary-light text-primary' : 'bg-[#eef2ff] text-blue']">
-                                            {{ item.cat === 'Fuel' ? '⛽' : '📦' }}
+                                    <td :class="['p-[5px_8px] text-[0.65rem] font-bold whitespace-nowrap border-l-4', item.cat === 'Fuel' ? 'border-primary' : (item.cat === 'Calib' ? 'border-warning' : 'border-blue')]">
+                                        <span :class="['inline-flex px-1.25 py-px rounded-lg text-[0.45rem] font-bold mr-1', item.cat === 'Fuel' ? 'bg-primary-light text-primary' : (item.cat === 'Calib' ? 'bg-warning/20 text-warning' : 'bg-[#eef2ff] text-blue')]">
+                                            <i :class="item.cat === 'Item' ? 'fa-solid fa-box' : (item.cat === 'Calib' ? 'fa-solid fa-scale-balanced' : 'fa-solid fa-gas-pump')"></i>
                                         </span>
                                         {{ item.desc }}
                                     </td>
@@ -197,14 +194,18 @@
                         </table>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2 my-1.5 shrink-0">
+                    <div class="grid grid-cols-3 gap-2 my-1.5 shrink-0">
                         <div class="bg-linear-to-br from-primary-light to-[#d4f2e5] border border-[#b8e5d0] p-[8px_10px] rounded-lg text-center">
-                            <div class="text-[0.5rem] text-gray uppercase font-bold tracking-[0.5px]">Gross Sales</div>
-                            <div class="text-[0.9rem] font-extrabold text-success">₱{{ grossSales.toFixed(2) }}</div>
+                            <div class="text-[0.48rem] text-gray uppercase font-bold tracking-[0.5px]">Gross Sales</div>
+                            <div class="text-[0.8rem] font-extrabold text-success">₱{{ grossSales.toFixed(2) }}</div>
                         </div>
-                        <div class="bg-light p-[8px_10px] rounded-lg text-center">
-                            <div class="text-[0.5rem] text-gray uppercase font-bold tracking-[0.5px]">Total Liters</div>
-                            <div class="text-[0.9rem] font-extrabold text-blue">{{ totalLiters.toFixed(2) }} L</div>
+                        <div class="bg-light border border-[#e5e7eb] p-[8px_10px] rounded-lg text-center">
+                            <div class="text-[0.48rem] text-gray uppercase font-bold tracking-[0.5px]">Liters Sold</div>
+                            <div class="text-[0.8rem] font-extrabold text-blue">{{ totalLiters.toFixed(2) }} L</div>
+                        </div>
+                        <div class="bg-[#fef0f0] border border-[#fad4d4] p-[8px_10px] rounded-lg text-center">
+                            <div class="text-[0.48rem] text-gray uppercase font-bold tracking-[0.5px]">Calibration</div>
+                            <div class="text-[0.8rem] font-extrabold text-danger">{{ totalCalibrationLiters.toFixed(2) }} L</div>
                         </div>
                     </div>
 
@@ -251,45 +252,50 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import axios from 'axios';
 
-// General State
 const activeMode = ref('fuel');
 const today = new Date().toISOString().split('T')[0];
-const shift = reactive({ schedule: '3AM - 12NN', gasman: 'DODONG' });
+const shift = reactive({ schedule: '', gasman: '' });
 const isSubmitting = ref(false);
 const isLoadingData = ref(true);
 
-// API Data Storage
 const dbPumps = ref([]);
 const products = ref({});
 const currentBrand = ref('');
 const searchQuery = ref('');
 
-// Form Selections
 const selectedPump = ref(null);
 const selectedFuel = ref(null);
 const fuelAmount = ref('');
 const fuelLiters = ref('');
+const fuelCalibration = ref('');
 
-// Cart State
 const cart = ref([]);
+const manualOverrides = reactive({}); 
+
 const reversedCart = computed(() => [...cart.value].reverse());
-const fuelCartCount = computed(() => cart.value.filter(i => i.cat === 'Fuel').length);
+const fuelCartCount = computed(() => cart.value.filter(i => i.cat === 'Fuel' || i.cat === 'Calib').length);
 const prodCartCount = computed(() => cart.value.filter(i => i.cat === 'Item').length);
 
 const showDeductions = ref(false);
 const deductions = reactive({ exp: 0, po: 0, md: 0, mo: 0, rn: 0, hb: 0 });
 
 const grossSales = computed(() => cart.value.reduce((sum, item) => sum + item.amount, 0));
-const totalLiters = computed(() => cart.value.reduce((sum, item) => sum + item.liters, 0));
+const totalLiters = computed(() => cart.value.filter(c => c.cat === 'Fuel').reduce((sum, item) => sum + item.liters, 0));
+const totalCalibrationLiters = computed(() => cart.value.filter(c => c.cat === 'Calib').reduce((sum, item) => sum + item.liters, 0));
+
 const totalDeductions = computed(() => Object.values(deductions).reduce((sum, val) => sum + (parseFloat(val) || 0), 0));
 const netRemittance = computed(() => grossSales.value - totalDeductions.value);
 
-// === LOCAL STORAGE PERSISTENCE ===
 watch(cart, (newVal) => localStorage.setItem('gas_pos_cart', JSON.stringify(newVal)), { deep: true });
 watch(deductions, (newVal) => localStorage.setItem('gas_pos_deductions', JSON.stringify(newVal)), { deep: true });
-watch(shift, (newVal) => localStorage.setItem('gas_pos_shift', JSON.stringify(newVal)), { deep: true });
 
-// Color helper for dynamically generating Pump/Fuel UI
+const handleStorageChange = (e) => {
+    if (e.key === 'gas_pos_overrides') {
+        Object.keys(manualOverrides).forEach(k => delete manualOverrides[k]);
+        Object.assign(manualOverrides, JSON.parse(e.newValue || '{}'));
+    }
+};
+
 const getBgClass = (fuelType) => {
     if (!fuelType) return '';
     const type = fuelType.toLowerCase();
@@ -298,7 +304,39 @@ const getBgClass = (fuelType) => {
     return 'bg-linear-to-br from-blue to-[#4a6ae8]';
 };
 
-// Main Data Fetcher
+// Auto-Fetch Logged-In User & Shift Time
+const initShiftDetails = async () => {
+    const hour = new Date().getHours();
+    if (hour >= 3 && hour < 12) {
+        shift.schedule = '3AM - 12NN';
+    } else {
+        shift.schedule = '12NN - 9PM';
+    }
+
+    try {
+        const response = await axios.get('/api/user');
+        if (response.data && response.data.name) {
+            shift.gasman = response.data.name.toUpperCase();
+        } else if (response.data && response.data.data && response.data.data.name) {
+            shift.gasman = response.data.data.name.toUpperCase();
+        } else {
+            throw new Error("Name not found");
+        }
+    } catch (error) {
+        const savedUser = localStorage.getItem('user'); 
+        if (savedUser) {
+            try {
+                const parsedUser = JSON.parse(savedUser);
+                shift.gasman = (parsedUser.name || 'STAFF').toUpperCase();
+            } catch (e) {
+                shift.gasman = 'STAFF';
+            }
+        } else {
+            shift.gasman = 'STAFF'; 
+        }
+    }
+};
+
 const fetchPosData = async () => {
     try {
         const [pumpsRes, prodsRes] = await Promise.all([
@@ -306,14 +344,11 @@ const fetchPosData = async () => {
             axios.get('/api/products')
         ]);
 
-        // === BUG FIX: Combine Name AND Type here! ===
         const uniquePumps = [];
         const seenPumps = new Set();
-        const rawPumps = pumpsRes.data || [];
         
-        rawPumps.forEach(pump => {
-            const uniqueKey = `${pump.name}-${pump.type}`; // Unique ID for each button
-
+        (pumpsRes.data || []).forEach(pump => {
+            const uniqueKey = `${pump.name}-${pump.type}`;
             if (!seenPumps.has(uniqueKey)) {
                 seenPumps.add(uniqueKey);
                 uniquePumps.push(pump);
@@ -321,22 +356,13 @@ const fetchPosData = async () => {
         });
 
         dbPumps.value = uniquePumps;
-        if (dbPumps.value.length > 0) {
-            selectedPump.value = dbPumps.value[0];
-        }
+        if (dbPumps.value.length > 0) selectedPump.value = dbPumps.value[0];
 
-        const prodArray = prodsRes.data.data || prodsRes.data || [];
         const grouped = {};
-        prodArray.forEach(p => {
+        (prodsRes.data.data || prodsRes.data || []).forEach(p => {
             const brand = p.brand || 'OTHER';
             if (!grouped[brand]) grouped[brand] = [];
-            grouped[brand].push({
-                id: p.id,
-                n: p.name,
-                p: parseFloat(p.selling_price),
-                s: p.stock_quantity,
-                addQty: 1
-            });
+            grouped[brand].push({ id: p.id, n: p.name, p: parseFloat(p.selling_price), s: p.stock_quantity, addQty: 1 });
         });
         products.value = grouped;
         currentBrand.value = Object.keys(grouped)[0] || '';
@@ -350,13 +376,10 @@ const fetchPosData = async () => {
 
 const filteredProducts = computed(() => {
     let items = products.value[currentBrand.value] || [];
-    if (searchQuery.value) {
-        items = items.filter(p => p.n.toLowerCase().includes(searchQuery.value.toLowerCase()));
-    }
+    if (searchQuery.value) items = items.filter(p => p.n.toLowerCase().includes(searchQuery.value.toLowerCase()));
     return items;
 });
 
-// Fuel Calculations
 const selectPump = (pump) => {
     selectedPump.value = pump;
     selectedFuel.value = null;
@@ -365,6 +388,7 @@ const selectFuel = (config) => {
     selectedFuel.value = config;
     fuelAmount.value = '';
     fuelLiters.value = '';
+    fuelCalibration.value = '';
 };
 const setAmount = (amt) => {
     fuelAmount.value = amt;
@@ -383,27 +407,60 @@ const calcFromLiters = () => {
     fuelAmount.value = v && price ? (v * price).toFixed(2) : '';
 };
 
-// Cart Actions
 const addFuelToCart = () => {
     if (!selectedFuel.value) return alert('Select fuel');
+    
     const lit = parseFloat(fuelLiters.value) || 0;
     const amt = parseFloat(fuelAmount.value) || 0;
-    if (lit <= 0) return;
+    const calib = parseFloat(fuelCalibration.value) || 0;
 
-    cart.value.push({
-        id: Date.now(), cat: 'Fuel',
-        desc: `${selectedPump.value.name} (${selectedPump.value.type}) — ${selectedFuel.value.fuel_type}`,
-        qty: `${lit.toFixed(2)} L`, liters: lit, amount: amt
-    });
-    fuelAmount.value = ''; fuelLiters.value = '';
+    if (lit <= 0 && calib <= 0) return alert('Enter amount or calibration.');
+
+    if (lit > 0) {
+        cart.value.push({
+            id: Date.now(), 
+            cat: 'Fuel',
+            config_id: selectedFuel.value.id,
+            desc: `${selectedPump.value.name} (${selectedPump.value.type}) — ${selectedFuel.value.fuel_type}`,
+            qty: `${lit.toFixed(2)} L`, 
+            liters: lit, 
+            amount: amt
+        });
+    }
+
+    if (calib > 0) {
+        cart.value.push({
+            id: Date.now() + 1, 
+            cat: 'Calib',
+            config_id: selectedFuel.value.id,
+            desc: `${selectedPump.value.name} (${selectedPump.value.type}) — ${selectedFuel.value.fuel_type} (CALIB)`,
+            qty: `${calib.toFixed(2)} L`, 
+            liters: calib, 
+            amount: 0 
+        });
+    }
+
+    fuelAmount.value = ''; 
+    fuelLiters.value = '';
+    fuelCalibration.value = '';
 };
 
 const addProductToCart = (prod) => {
     const q = prod.addQty || 1;
+    
+    // Optional: Prevent adding if stock is 0
+    if (q > prod.s) {
+        return alert(`Not enough stock! Only ${prod.s} available.`);
+    }
+
     cart.value.push({
-        id: Date.now(), cat: 'Item',
+        id: Date.now(), 
+        cat: 'Item',
+        product_id: prod.id, // <--- THIS IS THE FIX FOR THE 500 ERROR!
         desc: `${currentBrand.value} ${prod.n}`,
-        qty: `${q}`, liters: 0, amount: q * prod.p
+        qty: `${q}`, 
+        liters: 0, 
+        amount: q * prod.p
     });
     prod.addQty = 1;
 };
@@ -416,19 +473,48 @@ const clearCart = () => {
     if(confirm('Clear all transactions?')) {
         cart.value = [];
         Object.keys(deductions).forEach(k => deductions[k] = 0);
+        Object.keys(manualOverrides).forEach(k => delete manualOverrides[k]);
+        
         localStorage.removeItem('gas_pos_cart');
         localStorage.removeItem('gas_pos_deductions');
+        localStorage.removeItem('gas_pos_overrides');
     }
 };
 
 const submitShift = async () => {
-    if (!cart.value.length) {
-        alert('Cannot submit an empty shift. Please add transactions first.');
+    if (!cart.value.length && Object.keys(manualOverrides).length === 0) {
+        alert('Cannot submit an empty shift. Please add transactions, calibrations, or manual meter overrides.');
         return;
     }
 
     try {
         isSubmitting.value = true;
+        const fuelSalesPayload = [];
+        
+        dbPumps.value.forEach(pump => {
+            pump.fuel_configs.forEach(config => {
+                const fuelItems = cart.value.filter(c => c.cat === 'Fuel' && c.config_id === config.id);
+                const calibItems = cart.value.filter(c => c.cat === 'Calib' && c.config_id === config.id);
+
+                const totalSoldLiters = fuelItems.reduce((sum, i) => sum + i.liters, 0);
+                const totalSoldAmount = fuelItems.reduce((sum, i) => sum + i.amount, 0);
+                const totalCalibLiters = calibItems.reduce((sum, i) => sum + i.liters, 0);
+                const override = manualOverrides[config.id]; 
+
+                if (totalSoldLiters > 0 || totalCalibLiters > 0 || override) {
+                    fuelSalesPayload.push({
+                        config_id: config.id,
+                        pump: pump.name,
+                        fuel_type: config.fuel_type,
+                        liters: totalSoldLiters,
+                        amount: totalSoldAmount,
+                        calibration: totalCalibLiters,
+                        override_meter: override ? parseFloat(override) : null
+                    });
+                }
+            });
+        });
+
         const payload = {
             date: today,
             schedule: shift.schedule,
@@ -436,29 +522,32 @@ const submitShift = async () => {
             gross_sales: grossSales.value,
             total_deductions: totalDeductions.value,
             net_remittance: netRemittance.value,
-            fuel_sales: cart.value.filter(c => c.cat === 'Fuel').map(f => ({
-                pump: f.desc.split(' — ')[0],
-                fuel_type: f.desc.split(' — ')[1],
-                liters: f.liters,
-                amount: f.amount
-            })),
+            fuel_sales: fuelSalesPayload,
+            
+            // <--- PAYLOAD FIX APPLIED HERE --->
             item_sales: cart.value.filter(c => c.cat === 'Item').map(i => ({
+                product_id: i.product_id, // Sent to backend to map correctly
                 product_name: i.desc,
                 quantity: parseInt(i.qty),
                 amount: i.amount
             })),
+            
             deductions: deductions
         };
 
-        const response = await axios.post('/api/shifts', payload);
+        await axios.post('/api/shifts', payload);
         alert('Shift Submitted Successfully!');
         
-        // Clear memory after successful submit
         cart.value = [];
         Object.keys(deductions).forEach(k => deductions[k] = 0);
+        Object.keys(manualOverrides).forEach(k => delete manualOverrides[k]);
+        
         localStorage.removeItem('gas_pos_cart');
         localStorage.removeItem('gas_pos_deductions');
-        localStorage.removeItem('gas_pos_shift');
+        localStorage.removeItem('gas_pos_overrides');
+        
+        // Refresh product stock on screen after success
+        fetchPosData();
         
     } catch (error) {
         console.error('Failed to submit shift:', error);
@@ -470,16 +559,16 @@ const submitShift = async () => {
 
 onMounted(() => {
     fetchPosData();
+    initShiftDetails();
 
-    // Recover data from Local Storage on page load
     const savedCart = localStorage.getItem('gas_pos_cart');
     if (savedCart) cart.value = JSON.parse(savedCart);
-
     const savedDeds = localStorage.getItem('gas_pos_deductions');
     if (savedDeds) Object.assign(deductions, JSON.parse(savedDeds));
+    const savedOverrides = localStorage.getItem('gas_pos_overrides');
+    if (savedOverrides) Object.assign(manualOverrides, JSON.parse(savedOverrides));
 
-    const savedShift = localStorage.getItem('gas_pos_shift');
-    if (savedShift) Object.assign(shift, JSON.parse(savedShift));
+    window.addEventListener('storage', handleStorageChange);
 });
 </script>
 

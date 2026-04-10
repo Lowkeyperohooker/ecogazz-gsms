@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\DB;
 class ShiftController extends Controller
 {
     /**
-     * THIS WAS MISSING! 
      * Fetches all shifts for the Admin Dashboard
      */
     public function index()
@@ -63,6 +62,7 @@ class ShiftController extends Controller
             $user = User::where('name', 'LIKE', '%' . $validated['gasman'] . '%')->first();
             $userId = $user ? $user->id : auth()->id();
 
+            // 1. Create the Shift
             $shift = Shift::create([
                 'user_id' => $userId,
                 'shift_date' => $validated['date'],
@@ -73,28 +73,41 @@ class ShiftController extends Controller
                 'status' => 'Pending',
             ]);
 
+            // 2. Process Fuel Sales & AUTO-UPDATE METERS
             if (!empty($validated['fuel_sales'])) {
                 foreach ($validated['fuel_sales'] as $fuel) {
-                    $pump = Pump::where('name', $fuel['pump'])->first();
-                    if ($pump) {
-                        $config = FuelConfig::where('pump_id', $pump->id)
-                            ->where('fuel_type', $fuel['fuel_type'])
-                            ->first();
+                    
+                    // Find the exact config using the ID passed from Vue
+                    $config = null;
+                    if (isset($fuel['config_id'])) {
+                        $config = FuelConfig::find($fuel['config_id']);
+                    }
 
-                        if ($config) {
-                            $shift->pumpReadings()->create([
-                                'fuel_config_id' => $config->id,
-                                'start_meter' => 0, 
-                                'close_meter' => 0,
-                                'liters_sold' => $fuel['liters'],
-                                'total_amount' => $fuel['amount'],
-                                'calibration' => 0
-                            ]);
-                        }
+                    if ($config) {
+                        // Calculate the exact meters for the history log
+                        $startMeter = $config->current_meter;
+                        $closeMeter = $startMeter + $fuel['liters'];
+
+                        // Save the historical reading to the Shift
+                        $shift->pumpReadings()->create([
+                            'fuel_config_id' => $config->id,
+                            'start_meter' => $startMeter, 
+                            'close_meter' => $closeMeter,
+                            'liters_sold' => $fuel['liters'],
+                            'total_amount' => $fuel['amount'],
+                            'calibration' => 0
+                        ]);
+
+                        // === THE AUTO-UPDATE MAGIC ===
+                        // Push the physical pump meter forward for the next shift!
+                        $config->update([
+                            'current_meter' => $closeMeter
+                        ]);
                     }
                 }
             }
 
+            // 3. Process Product Sales
             if (!empty($validated['item_sales'])) {
                 foreach ($validated['item_sales'] as $item) {
                     $parts = explode(' ', $item['product_name'], 2);
@@ -108,11 +121,13 @@ class ShiftController extends Controller
                             'quantity' => $item['quantity'],
                             'total_amount' => $item['amount'],
                         ]);
+                        // Deduct stock
                         $product->decrement('stock_quantity', $item['quantity']);
                     }
                 }
             }
 
+            // 4. Process Deductions
             if (!empty($validated['deductions'])) {
                 foreach ($validated['deductions'] as $category => $amount) {
                     if (is_numeric($amount) && $amount > 0) {

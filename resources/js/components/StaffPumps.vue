@@ -4,15 +4,13 @@
         <div class="bg-card rounded-xl shadow-sm border border-light p-[12px_16px] shrink-0 flex justify-between items-center">
             <div>
                 <h3 class="text-[0.85rem] font-bold flex items-center gap-1.5">
-                    <i class="fa-solid fa-gauge-high text-primary"></i> Pump Meter Readings
+                    <i class="fa-solid fa-gauge-high text-primary"></i> Live Pump Readings
                 </h3>
-                <p class="text-[0.65rem] text-gray mt-0.5">Record your closing meters for this shift.</p>
+                <p class="text-[0.65rem] text-gray mt-0.5">Meters update automatically based on POS transactions and calibration.</p>
             </div>
-            <button @click="saveReadings" :disabled="isSaving || pumps.length === 0" class="px-4 py-2 bg-linear-to-br from-primary to-primary-hover text-white rounded-lg font-bold text-xs flex items-center gap-1.5 transition-transform hover:-translate-y-px shadow-sm disabled:opacity-50">
-                <i class="fa-solid fa-spinner fa-spin" v-if="isSaving"></i>
-                <i class="fa-solid fa-save" v-else></i> 
-                {{ isSaving ? 'Saving...' : 'Save Readings' }}
-            </button>
+            <div class="px-3 py-1.5 bg-success/10 text-success rounded-lg font-bold text-xs flex items-center gap-1.5 border border-success/20">
+                <i class="fa-solid fa-link"></i> Synced with POS
+            </div>
         </div>
 
         <div v-if="isLoading" class="flex justify-center items-center h-32">
@@ -67,24 +65,32 @@
                                 <label class="text-[0.62rem] text-gray font-bold uppercase tracking-[0.5px]">Start Meter</label>
                                 <span class="text-[0.75rem] font-mono font-bold text-dark bg-light px-2 py-0.5 rounded">{{ parseFloat(config.current_meter).toFixed(2) }}</span>
                             </div>
-                            <div class="flex justify-between items-center">
-                                <label class="text-[0.62rem] text-gray font-bold uppercase tracking-[0.5px]">Close Meter</label>
-                                <input type="number" step="any" v-model="config.close_meter" @input="calc(config)" placeholder="0.00" class="w-24 p-1.5 border-2 border-light rounded-lg text-right font-mono text-[0.75rem] font-bold transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
-                            </div>
+                            
                             <div class="flex justify-between items-center mt-1">
                                 <label class="text-[0.62rem] text-gray font-bold uppercase tracking-[0.5px]">Calibration (L)</label>
-                                <input type="number" step="any" v-model="config.calibration" @input="calc(config)" placeholder="0.00" class="w-20 p-1 border-2 border-light rounded-lg text-right font-mono text-[0.7rem] transition-all focus:outline-none focus:border-warning focus:ring-2 focus:ring-warning/20">
+                                <span class="text-[0.75rem] font-mono font-bold text-warning">{{ getCalibration(config.id).toFixed(2) }}</span>
+                            </div>
+
+                            <div class="flex justify-between items-center mt-1">
+                                <label class="text-[0.62rem] text-gray font-bold uppercase tracking-[0.5px]">Close Meter</label>
+                                <input type="number" step="any" 
+                                    v-model="manualOverrides[config.id]" 
+                                    @input="updateOverride(config.id, manualOverrides[config.id])"
+                                    :placeholder="getAutoClose(config)" 
+                                    :class="['w-24 p-1.5 border-2 rounded-lg text-right font-mono text-[0.75rem] font-bold transition-all focus:outline-none focus:ring-2', manualOverrides[config.id] ? 'border-primary text-primary focus:border-primary focus:ring-primary/20 bg-primary-light/10' : 'border-light text-gray focus:border-primary focus:ring-primary/20 bg-white']"
+                                    title="Type a number here to manually override the POS math"
+                                >
                             </div>
                             
                             <div class="h-px bg-light w-full my-1.5"></div>
                             
                             <div class="flex justify-between items-center">
                                 <label class="text-[0.62rem] text-gray font-bold uppercase tracking-[0.5px]">Liters Sold</label>
-                                <span class="text-[0.8rem] font-mono font-bold text-blue">{{ config.liters_sold || '0.00' }} L</span>
+                                <span class="text-[0.8rem] font-mono font-bold text-blue">{{ getPosLiters(config.id).toFixed(2) }} L</span>
                             </div>
                             <div class="flex justify-between items-center bg-primary-light/30 p-1.5 rounded-lg border border-primary/20">
                                 <label class="text-[0.62rem] text-primary font-extrabold uppercase tracking-[0.5px]">Total Amount</label>
-                                <span class="text-[0.9rem] font-mono font-extrabold text-success">₱{{ config.total_amount || '0.00' }}</span>
+                                <span class="text-[0.9rem] font-mono font-extrabold text-success">₱{{ getPosAmount(config.id).toFixed(2) }}</span>
                             </div>
                         </div>
                     </div>
@@ -96,52 +102,52 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, reactive } from 'vue';
 import axios from 'axios';
 
 const isLoading = ref(true);
-const isSaving = ref(false);
 const pumps = ref([]);
 const activePumpId = ref(null);
 
+const cart = ref([]);
+const manualOverrides = reactive({}); // Stores gasman's manual edits
+
 const activePump = computed(() => pumps.value.find(p => p.id === activePumpId.value));
+
+const loadSharedState = () => {
+    const savedCart = localStorage.getItem('gas_pos_cart');
+    if (savedCart) cart.value = JSON.parse(savedCart);
+
+    const savedOverrides = localStorage.getItem('gas_pos_overrides');
+    if (savedOverrides) Object.assign(manualOverrides, JSON.parse(savedOverrides));
+};
+
+const handleStorageChange = (e) => {
+    if (e.key === 'gas_pos_cart') cart.value = JSON.parse(e.newValue || '[]');
+    if (e.key === 'gas_pos_overrides') {
+        Object.keys(manualOverrides).forEach(k => delete manualOverrides[k]);
+        Object.assign(manualOverrides, JSON.parse(e.newValue || '{}'));
+    }
+};
 
 const fetchPumps = async () => {
     try {
         const response = await axios.get('/api/pumps');
-        
-        if (!response.data || response.data.length === 0) {
-            pumps.value = [];
-            return;
-        }
+        if (!response.data || response.data.length === 0) return pumps.value = [];
 
         const uniquePumps = [];
         const seenPumps = new Set();
         
         response.data.forEach(pump => {
-            // THE FIX: Combine Name AND Type to create a truly unique key!
             const uniqueKey = `${pump.name}-${pump.type}`;
-
             if (!seenPumps.has(uniqueKey)) {
                 seenPumps.add(uniqueKey);
-                
-                const configs = pump.fuel_configs || pump.fuelConfigs || [];
-                pump.fuel_configs = configs.map(config => ({
-                    ...config,
-                    close_meter: '',
-                    calibration: '',
-                    liters_sold: '0.00',
-                    total_amount: '0.00'
-                }));
                 uniquePumps.push(pump);
             }
         });
 
         pumps.value = uniquePumps;
-        
-        if (uniquePumps.length > 0) {
-            activePumpId.value = uniquePumps[0].id;
-        }
+        if (uniquePumps.length > 0) activePumpId.value = uniquePumps[0].id;
         
     } catch (error) {
         console.error("Error fetching pumps:", error);
@@ -150,55 +156,28 @@ const fetchPumps = async () => {
     }
 };
 
-const calc = (config) => {
-    const start = parseFloat(config.current_meter) || 0;
-    const close = parseFloat(config.close_meter) || 0;
-    const calib = parseFloat(config.calibration) || 0;
+// Reads the transactions directly from the POS Cart
+const getPosLiters = (configId) => cart.value.filter(c => c.cat === 'Fuel' && c.config_id === configId).reduce((sum, c) => sum + c.liters, 0);
+const getPosAmount = (configId) => cart.value.filter(c => c.cat === 'Fuel' && c.config_id === configId).reduce((sum, c) => sum + c.amount, 0);
+const getCalibration = (configId) => cart.value.filter(c => c.cat === 'Calib' && c.config_id === configId).reduce((sum, c) => sum + c.liters, 0);
 
-    let net = close - start;
-    if (net < 0) net = 0;
-
-    const sold = net - calib;
-    config.liters_sold = sold > 0 ? sold.toFixed(2) : '0.00';
-    config.total_amount = sold > 0 ? (sold * config.selling_price).toFixed(2) : '0.00';
+// Calculates the expected "Perfect" Close Meter
+const getAutoClose = (config) => {
+    return (parseFloat(config.current_meter) + getPosLiters(config.id) + getCalibration(config.id)).toFixed(2);
 };
 
-const saveReadings = async () => {
-    isSaving.value = true;
-    
-    try {
-        let readingsPayload = [];
-        pumps.value.forEach(pump => {
-            pump.fuel_configs.forEach(config => {
-                if (config.close_meter) {
-                    readingsPayload.push({
-                        id: config.id,
-                        close_meter: parseFloat(config.close_meter)
-                    });
-                }
-            });
-        });
-
-        if (readingsPayload.length === 0) {
-            alert("Please enter at least one Close Meter before saving.");
-            isSaving.value = false;
-            return;
-        }
-
-        await axios.post('/api/pumps/save-readings', { readings: readingsPayload });
-        alert("Meters updated successfully! The next shift's starting meters are now set.");
-        
-        await fetchPumps();
-
-    } catch (error) {
-        console.error("Error saving readings:", error);
-        alert("Failed to save meters to the database. Please try again.");
-    } finally {
-        isSaving.value = false;
-    }
+// Saves the manual override to Local Storage so POS can send it!
+const updateOverride = (configId, value) => {
+    if (value === '' || value === null) delete manualOverrides[configId];
+    else manualOverrides[configId] = value;
+    localStorage.setItem('gas_pos_overrides', JSON.stringify(manualOverrides));
 };
 
-onMounted(() => fetchPumps());
+onMounted(() => {
+    loadSharedState();
+    window.addEventListener('storage', handleStorageChange);
+    fetchPumps();
+});
 </script>
 
 <style scoped>

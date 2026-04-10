@@ -29,8 +29,8 @@
                 ]"></i>
                 <span class="flex-1">{{ item.label }}</span>
                 
-                <span v-if="item.id === 'admin-reviews'" class="ml-auto bg-danger text-white text-[0.5rem] font-bold py-px px-1.5 rounded-[10px] min-w-4 text-center">
-                    2
+                <span v-if="item.id === 'admin-reviews' && pendingCount > 0" class="ml-auto bg-danger text-white text-[0.5rem] font-bold py-px px-1.5 rounded-[10px] min-w-4 text-center animate-[scaleIn_0.2s_ease-out]">
+                    {{ pendingCount }}
                 </span>
             </button>
         </div>
@@ -57,27 +57,29 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({
     role: String,
     activePage: String,
-    userName: String // <-- Added this to accept the login name from App.vue
+    userName: String
 });
 
 const emit = defineEmits(['navigate', 'logout']);
 
+const pendingCount = ref(0);
+
 const menus = {
     staff: [
         { id: 'staff-pos', label: 'GAS POS', icon: 'fa-cash-register' },
-        { id: 'staff-pumps', label: 'Pump Readings', icon: 'fa-gauge-high' },
         { id: 'staff-history', label: 'History', icon: 'fa-clock-rotate-left' }
     ],
     admin: [
         { id: 'admin-dashboard', label: 'Dashboard', icon: 'fa-chart-pie' },
         { id: 'admin-reviews', label: 'Shifts', icon: 'fa-clock' },
         { id: 'admin-audit', label: 'Audit', icon: 'fa-file-lines' },
-        { id: 'admin-pumps', label: 'Pumps', icon: 'fa-gauge-high' },
+        { id: 'admin-pumps', label: 'Master Pumps', icon: 'fa-gauge-high' },
         { id: 'admin-inventory', label: 'Inventory', icon: 'fa-boxes-stacked' },
         { id: 'admin-purchasing', label: 'P.O.', icon: 'fa-file-invoice' },
         { id: 'admin-employees', label: 'Staff', icon: 'fa-users' }
@@ -89,4 +91,34 @@ const currentMenu = computed(() => menus[props.role] || []);
 const navigate = (pageId) => {
     emit('navigate', pageId);
 };
+
+// Fetches the true number of pending shifts from the database
+const fetchPendingCount = async () => {
+    if (props.role === 'admin') {
+        try {
+            const response = await axios.get('/api/shifts');
+            const shifts = response.data.data || response.data || [];
+            pendingCount.value = shifts.filter(s => s.status === 'Pending').length;
+        } catch (error) {
+            console.error("Error fetching pending shifts count:", error);
+        }
+    }
+};
+
+onMounted(() => {
+    fetchPendingCount();
+    // Listen for the custom approval event to instantly update the badge
+    window.addEventListener('shift-approved', fetchPendingCount);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('shift-approved', fetchPendingCount);
+});
 </script>
+
+<style scoped>
+@keyframes scaleIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+</style>

@@ -11,12 +11,9 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // 1. Validate the Password (CRITICAL FIX: Changed size:4 to min:4)
         $request->validate([
             'pin' => 'required|string|min:4'
         ]);
-
-        // 2. Fetch active users and check the hash
         $users = User::where('is_active', true)->get();
         $authenticatedUser = null;
 

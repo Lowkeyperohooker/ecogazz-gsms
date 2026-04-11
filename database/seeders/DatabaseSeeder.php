@@ -87,27 +87,19 @@ class DatabaseSeeder extends Seeder
         // ==========================================
         $frontDigital = Pump::create(['name' => 'Front', 'type' => 'Digital']);
         $frontMechanical = Pump::create(['name' => 'Front', 'type' => 'Mechanical']);
-        $frontDigital = Pump::create(['name' => 'Front', 'type' => 'Digital']);
-        $frontMechanical = Pump::create(['name' => 'Front', 'type' => 'Mechanical']);
         $backDigital = Pump::create(['name' => 'Back', 'type' => 'Digital']);
         $backMechanical = Pump::create(['name' => 'Back', 'type' => 'Mechanical']);
 
-        // ==========================================
-        // 4. CREATE FUEL CONFIGS (Matched to Kimaya pricing)
-        // ==========================================
-        // Cost prices are estimated; Selling prices are exact from your Jan 2026 data
         $fuels = [
             ['fuel_type' => 'Diesel', 'cost_price' => 50.00, 'selling_price' => 55.80],
             ['fuel_type' => 'Premium', 'cost_price' => 51.00, 'selling_price' => 56.50],
             ['fuel_type' => 'Regular', 'cost_price' => 50.00, 'selling_price' => 55.80]
         ];
 
-        // Attach fuels to Front Digital
         foreach ($fuels as $idx => $f) {
             FuelConfig::create(array_merge($f, ['pump_id' => $frontDigital->id, 'current_meter' => 1000 + ($idx * 500)]));
         }
         
-        // Attach fuels to Front Mechanical
         foreach ($fuels as $idx => $f) {
             FuelConfig::create(array_merge($f, ['pump_id' => $frontMechanical->id, 'current_meter' => 500 + ($idx * 100)]));
         }

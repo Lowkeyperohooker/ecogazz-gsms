@@ -154,4 +154,67 @@ class ShiftController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * unified timeline of all fuel and product sales
+     */
+    public function salesHistory(Request $request)
+    {
+        $queryDate = $request->query('date'); // Optional filter
+
+        // Fetch Shifts with their relationships
+        $shiftsQuery = Shift::with(['user', 'pumpReadings.fuelConfig.pump', 'itemSales.product']);
+
+        if ($queryDate) {
+            $shiftsQuery->whereDate('shift_date', $queryDate);
+        }
+
+        $shifts = $shiftsQuery->orderBy('shift_date', 'desc')->get();
+
+        $historyLog = [];
+
+        foreach ($shifts as $shift) {
+            $staffName = $shift->user ? $shift->user->name : 'Unknown';
+            $date = $shift->shift_date;
+            // Since we don't have exact timestamps for every individual item, 
+            // we use the shift's created_at time as a baseline.
+            $time = $shift->created_at->format('h:i A');
+
+            // 1. Process Fuel Sales
+            foreach ($shift->pumpReadings as $reading) {
+                // Ignore calibrations in the sales audit
+                if ($reading->liters_sold > 0) {
+                    $pumpName = $reading->fuelConfig->pump->name ?? 'Pump';
+                    $fuelType = $reading->fuelConfig->fuel_type ?? 'Fuel';
+
+                    $historyLog[] = [
+                        'id' => 'fuel_' . $reading->id,
+                        'date' => $date,
+                        'time' => $time,
+                        'cat' => 'Fuel',
+                        'item' => current(explode(' ', $pumpName)) . ' ' . $fuelType, // e.g., "Front Diesel"
+                        'det' => number_format($reading->liters_sold, 2) . ' L',
+                        'amt' => (float) $reading->total_amount,
+                        'staff' => strtoupper($staffName)
+                    ];
+                }
+            }
+
+            // 2. Process Item Sales
+            foreach ($shift->itemSales as $item) {
+                $historyLog[] = [
+                    'id' => 'item_' . $item->id,
+                    'date' => $date,
+                    'time' => $time,
+                    'cat' => 'Item',
+                    'item' => $item->product ? $item->product->brand . ' ' . $item->product->name : 'Unknown Item',
+                    'det' => $item->quantity . ' Qty',
+                    'amt' => (float) $item->total_amount,
+                    'staff' => strtoupper($staffName)
+                ];
+            }
+        }
+
+        return response()->json($historyLog);
+    }
 }

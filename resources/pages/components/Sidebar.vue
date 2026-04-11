@@ -94,7 +94,8 @@ const navigate = (pageId) => {
 
 // Fetches the true number of pending shifts from the database
 const fetchPendingCount = async () => {
-    if (props.role === 'admin') {
+    // Safety check: Don't make the request if the user is logging out or has no token
+    if (props.role === 'admin' && localStorage.getItem('auth_token')) {
         try {
             const response = await axios.get('/api/shifts');
             const shifts = response.data.data || response.data || [];

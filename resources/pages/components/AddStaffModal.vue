@@ -37,15 +37,14 @@
 
                 <div class="flex flex-col">
                     <label class="text-[0.65rem] font-bold text-gray uppercase tracking-[0.5px] mb-1.5 flex justify-between items-end">
-                        4-Digit PIN Code
-                        <span v-if="isEditing" class="text-[0.55rem] font-medium text-warning normal-case">(Leave blank to keep current PIN)</span>
+                        Password
+                        <span v-if="isEditing" class="text-[0.55rem] font-medium text-warning normal-case">(Leave blank to keep current)</span>
                     </label>
                     <input 
                         type="password" 
                         v-model="form.pin" 
-                        placeholder="••••" 
-                        maxlength="4" 
-                        class="p-2.5 border-2 border-light rounded-lg text-[1rem] font-bold tracking-[8px] text-center text-dark transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        placeholder="••••••••" 
+                        class="p-2.5 border-2 border-light rounded-lg text-[1rem] font-bold tracking-widest text-center text-dark transition-all focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     >
                 </div>
 
@@ -88,23 +87,20 @@ const emit = defineEmits(['close', 'saved']);
 const isSubmitting = ref(false);
 const errorMessage = ref('');
 
-// Reactive form state
 const form = ref({
     name: '',
     role: '', 
     pin: ''
 });
 
-// Computed property to check if we are editing
 const isEditing = computed(() => props.staffData !== null);
 
-// If editing, pre-fill the form when the modal opens
 onMounted(() => {
     if (props.staffData) {
         form.value = {
             name: props.staffData.name || props.staffData.n,
             role: props.staffData.role || props.staffData.r,
-            pin: '' // Never pre-fill the password/pin field
+            pin: '' 
         };
     }
 });
@@ -112,7 +108,6 @@ onMounted(() => {
 const submitRecord = async () => {
     errorMessage.value = '';
 
-    // STRICT VALIDATION
     if (!form.value.name || form.value.name.trim() === '') {
         errorMessage.value = 'Full Name is required.';
         return;
@@ -123,13 +118,14 @@ const submitRecord = async () => {
         return;
     }
 
-    if (!isEditing.value && (!form.value.pin || form.value.pin.length !== 4)) {
-        errorMessage.value = 'A 4-digit PIN is required for new staff.';
+    // Checking minimum length instead of strict 4
+    if (!isEditing.value && (!form.value.pin || form.value.pin.length < 4)) {
+        errorMessage.value = 'A password (min 4 characters) is required for new staff.';
         return;
     }
     
-    if (isEditing.value && form.value.pin.length > 0 && form.value.pin.length !== 4) {
-        errorMessage.value = 'If changing the PIN, it must be exactly 4 digits.';
+    if (isEditing.value && form.value.pin.length > 0 && form.value.pin.length < 4) {
+        errorMessage.value = 'If changing the password, it must be at least 4 characters.';
         return;
     }
 

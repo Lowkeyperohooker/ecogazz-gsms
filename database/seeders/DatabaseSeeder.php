@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         // 1. CREATE USERS (From Jan 2026 Daily Sales)
         // ==========================================
         $users = [
-            ['name' => 'Bryan Bacoy', 'role' => 'admin', 'pin' => 'amin'],
+            ['name' => 'Bryan Bacoy', 'role' => 'admin', 'pin' => 'admin'],
             ['name' => 'Dodong', 'role' => 'gasman', 'pin' => '1111'],
             ['name' => 'Kenneth', 'role' => 'gasman', 'pin' => '2222'],
             ['name' => 'Francis', 'role' => 'gasman', 'pin' => '3333'],
@@ -85,6 +85,8 @@ class DatabaseSeeder extends Seeder
         // ==========================================
         // 3. CREATE PUMP UNITS
         // ==========================================
+        $frontDigital = Pump::create(['name' => 'Front', 'type' => 'Digital']);
+        $frontMechanical = Pump::create(['name' => 'Front', 'type' => 'Mechanical']);
         $frontDigital = Pump::create(['name' => 'Front', 'type' => 'Digital']);
         $frontMechanical = Pump::create(['name' => 'Front', 'type' => 'Mechanical']);
         $backDigital = Pump::create(['name' => 'Back', 'type' => 'Digital']);

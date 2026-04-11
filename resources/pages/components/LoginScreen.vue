@@ -1,9 +1,8 @@
 <template>
-    
     <div class="fixed inset-0 bg-linear-to-br from-dark via-[#2d4a3e] to-dark flex justify-center items-center z-9000 p-5">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(61,187,145,0.15)_0%,transparent_60%),radial-gradient(circle_at_70%_70%,rgba(91,124,250,0.1)_0%,transparent_50%)]"></div>
         
-        <div class="bg-white/97 backdrop-blur-xl py-10 px-9 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.2)] text-center w-full max-w-95 relative z-10 animate-[scaleIn_0.5s_ease-out]">
+        <div class="bg-white/95 backdrop-blur-xl py-10 px-9 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.2)] text-center w-full max-w-95 relative z-10 animate-[scaleIn_0.5s_ease-out]">
             <div class="w-17.5 h-17.5 bg-linear-to-br from-primary to-primary-hover rounded-[20px] flex items-center justify-center mx-auto mb-4 shadow-[0_8px_25px_rgba(61,187,145,0.3)]">
                 <i class="fa-solid fa-gas-pump text-[1.8rem] text-white"></i>
             </div>
@@ -14,9 +13,9 @@
             <input 
                 type="password" 
                 v-model="pin" 
-                placeholder="● ● ● ●" 
+                placeholder="Password" 
                 @keydown.enter="attemptLogin('staff')"
-                class="w-full p-3.5 mb-4 border-2 border-[#e8ebe9] rounded-xl text-[0.95rem] text-center tracking-[4px] font-bold bg-[#fafbfa] transition-all focus:outline-none focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/15"
+                class="w-full p-3.5 mb-4 border-2 border-[#e8ebe9] rounded-xl text-[0.95rem] text-center tracking-widest font-bold bg-[#fafbfa] transition-all focus:outline-none focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/15"
             >
             
             <div class="flex gap-2.5">
@@ -30,18 +29,19 @@
         </div>
     </div>
 </template>
-
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router'; // 1. Import useRouter
 
 const emit = defineEmits(['login']);
 const pin = ref('');
 const isLoggingIn = ref(false);
+const router = useRouter(); // 2. Initialize router
 
 const attemptLogin = async (requestedRole) => {
-    if (!pin.value || pin.value.length !== 4) {
-        alert('Please enter a valid 4-digit PIN');
+    if (!pin.value || pin.value.length < 4) {
+        alert('Please enter a valid password (min 4 characters)');
         return;
     }
 
@@ -54,12 +54,16 @@ const attemptLogin = async (requestedRole) => {
 
         const { token, role, user } = response.data;
 
+        // 3. Save both the token AND the role to localStorage
         localStorage.setItem('auth_token', token);
+        localStorage.setItem('user_role', role); 
+        
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
         if (requestedRole === 'admin' && role !== 'admin') {
             alert('Access Denied: You do not have Manager privileges.');
             localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_role'); // Ensure role is cleared on failure
             return;
         }
 
@@ -68,9 +72,16 @@ const attemptLogin = async (requestedRole) => {
             name: user.name 
         });
 
+        // 4. Redirect the user based on their role after successful login
+        if (role === 'admin') {
+            router.push({ name: 'admin-dashboard' });
+        } else {
+            router.push({ name: 'staff-pos' });
+        }
+
     } catch (error) {
         console.error(error);
-        alert(error.response?.data?.message || 'Invalid PIN or server error.');
+        alert(error.response?.data?.message || 'Invalid password or server error.');
         pin.value = ''; 
     } finally {
         isLoggingIn.value = false;

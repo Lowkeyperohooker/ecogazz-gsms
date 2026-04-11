@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('role')->default('Pump Attendant'); // Manager, Pump Attendant
-            $table->string('pin', 4)->unique(); // 4-digit PIN
+            $table->string('pin')->unique(); 
             $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();

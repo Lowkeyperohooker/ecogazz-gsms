@@ -1,0 +1,24 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "package.json",
+            "use": "@vercel/static-build",
+            "config": { "buildCommand": "npm run build" }
+        },
+        {
+            "src": "api/index.php",
+            "use": "vercel-php@0.6.0"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/build/(.*)",
+            "dest": "/public/build/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/api/index.php"
+        }
+    ]
+}

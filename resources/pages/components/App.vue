@@ -1,17 +1,17 @@
 <template>
     <div class="w-full h-full">
-        <LoginScreen v-if="!isLoggedIn" @login="handleLogin" />
+        
+        <router-view v-if="$route.name === 'login'" @login="handleLogin"></router-view>
 
         <div v-else class="flex w-full h-screen bg-card overflow-hidden">
             
-        <Sidebar 
-            v-if="isLoggedIn" 
-            :role="role" 
-            :activePage="activePage" 
-            :userName="userName" 
-            @navigate="activePage = $event" 
-            @logout="handleLogout"
-        />
+            <Sidebar 
+                :role="role" 
+                :activePage="$route.name" 
+                :userName="userName" 
+                @navigate="goToPage" 
+                @logout="handleLogout"
+            />
 
             <div class="flex-1 flex flex-col bg-bg overflow-hidden min-w-0">
                 
@@ -28,19 +28,7 @@
                 </div>
 
                 <div class="flex-1 overflow-hidden p-3 flex flex-col">
-                    
-                    <StaffPos v-if="activePage === 'staff-pos'" />
-                    <StaffPumps v-if="activePage === 'staff-pumps'" />
-                    <StaffHistory v-if="activePage === 'staff-history'" />
-
-                    <AdminDashboard v-if="activePage === 'admin-dashboard'" />
-                    <AdminReviews v-if="activePage === 'admin-reviews'" />
-                    <AdminAudit v-if="activePage === 'admin-audit'" />
-                    <AdminPumps v-if="activePage === 'admin-pumps'" />
-                    <AdminInventory v-if="activePage === 'admin-inventory'" />
-                    <AdminPurchasing v-if="activePage === 'admin-purchasing'" />
-                    <AdminEmployees v-if="activePage === 'admin-employees'" />
-
+                    <router-view></router-view>
                 </div>
             </div>
         </div>
@@ -49,35 +37,22 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import axios from 'axios'; // <-- Added Axios import
+import { useRouter, useRoute } from 'vue-router';
+import axios from 'axios';
 
-// Global Shell Components
-import LoginScreen from './LoginScreen.vue';
+// Only import the Sidebar. The router handles all the other components!
 import Sidebar from './Sidebar.vue';
 
-// Staff Components
-import StaffPos from './StaffPos.vue';
-import StaffPumps from './StaffPumps.vue';
-import StaffHistory from './StaffHistory.vue';
+const router = useRouter();
+const route = useRoute();
 
-// Admin Components
-import AdminDashboard from './AdminDashboard.vue';
-import AdminReviews from './AdminReviews.vue';
-import AdminAudit from './AdminAudit.vue';
-import AdminPumps from './AdminPumps.vue';
-import AdminInventory from './AdminInventory.vue';
-import AdminPurchasing from './AdminPurchasing.vue';
-import AdminEmployees from './AdminEmployees.vue';
-
-// Application State
-const isLoggedIn = ref(false);
-const role = ref('');
-const activePage = ref('');
-const userName = ref(''); 
+// Pull state from localStorage so it survives browser refreshes
+const role = ref(localStorage.getItem('user_role') || '');
+const userName = ref(localStorage.getItem('user_name') || ''); 
 const currentTime = ref('');
 const currentDate = ref('');
 
-// Computed Page Title mapping
+// Computed Page Title mapping (Uses the router name)
 const pageTitle = computed(() => {
     const titles = {
         'staff-pos': 'GAS POS System',
@@ -91,7 +66,7 @@ const pageTitle = computed(() => {
         'admin-purchasing': 'Purchase Orders',
         'admin-employees': 'Staff Management'
     };
-    return titles[activePage.value] || 'Dashboard';
+    return titles[route.name] || 'ECOGAZZ System';
 });
 
 // Clock Logic
@@ -105,36 +80,56 @@ const updateClock = () => {
 onMounted(() => {
     updateClock();
     timer = setInterval(updateClock, 1000);
+
+    // Basic protection: If not logged in and not on the login page, redirect to login
+    if (route.name !== 'login' && !localStorage.getItem('auth_token')) {
+        router.push({ name: 'login' });
+    }
 });
 
 onUnmounted(() => {
     clearInterval(timer);
 });
 
-// Authentication Actions
+// Handle Navigation from the Sidebar
+const goToPage = (pageName) => {
+    router.push({ name: pageName });
+};
+
+// Handle Login Success
 const handleLogin = (payload) => {
     role.value = payload.role;
     userName.value = payload.name; 
-    isLoggedIn.value = true;
-    activePage.value = payload.role === 'admin' ? 'admin-dashboard' : 'staff-pos';
+    
+    // Save to local storage for persistence across reloads
+    localStorage.setItem('user_role', payload.role);
+    localStorage.setItem('user_name', payload.name);
+    
+    // Redirect via Vue Router
+    if (payload.role === 'admin') {
+        router.push({ name: 'admin-dashboard' });
+    } else {
+        router.push({ name: 'staff-pos' });
+    }
 };
 
-// <-- Updated Logout Logic using Axios -->
+// Handle Logout
 const handleLogout = async () => {
     try {
-        // Tell Laravel to destroy the token in the database
         await axios.post('/api/logout');
     } catch (error) {
         console.error("Error logging out:", error);
     } finally {
-        // Clear frontend state regardless of API success/failure
         localStorage.removeItem('auth_token');
+        localStorage.removeItem('user_role');
+        localStorage.removeItem('user_name');
         delete axios.defaults.headers.common['Authorization'];
         
-        isLoggedIn.value = false;
         role.value = '';
-        activePage.value = '';
         userName.value = '';
+        
+        // Push user back to the login URL
+        router.push({ name: 'login' });
     }
 };
 </script>

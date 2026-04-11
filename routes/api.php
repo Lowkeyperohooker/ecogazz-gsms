@@ -36,6 +36,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Shifts (POS Submission & Approvals)
     Route::apiResource('shifts', ShiftController::class);
     
+    // === NEW: Audit & Sales History ===
+    Route::get('/sales-history', [ShiftController::class, 'salesHistory']);
+    
     // Inventory
     Route::get('/products', [ProductController::class, 'index']);
     Route::post('/products/bulk-update', [ProductController::class, 'bulkUpdate']);
@@ -47,4 +50,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/pumps/update-configs', [PumpController::class, 'updateConfigs']);
     Route::post('/pumps/save-readings', [PumpController::class, 'saveReadings']);
     Route::get('/pumps/latest-readings', [PumpReadingController::class, 'index']);
-}); 
+});
